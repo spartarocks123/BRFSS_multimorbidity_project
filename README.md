@@ -1,7 +1,7 @@
 # BRFSS Multimorbidity Project
 
 **Author:** Mohammed Amish-Malik  
-**Purpose:** Portfolio artifact using 2024 BRFSS data to study the association between multimorbidity and routine healthcare utilization.  
+**Purpose:** Portfolio artifact using 2024 BRFSS data to study the associations between multimorbidity, routine healthcare utilization, and deferred care due to cost.  
 
 **Folder Structure:**
 - `data/` → Simulated or example dataset showing variable structure
