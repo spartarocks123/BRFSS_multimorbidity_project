@@ -9,7 +9,7 @@
 - `figures/` → Placeholder for plots
 - `tables/` → Placeholder for output tables
 
-**Note:** No raw BRFSS data is included. All datasets are simulated or structure-only for reproducibility.
+**Note:** No raw BRFSS data is included. The dataset used is simulated for reproducibility.
 
 **Methods:** Collapse the conditions into multimorbidity burden category. compare against the “healthy” baseline and interpretation reasons as odds of routine care/cost barrier among people with multimorbidity relative to no chronic conditions. Outcomes: Primary: Had a routine care in past 12 months (Yes/No) Secondary: Deferred care due to cost (Yes/No). Covariates are Age, Sex, Race/ethnicity, Insurance status, Income category, & Education. The following chronic conditions were used in this analysis: Heart attack / Myocardial infarction or Coronary heart disease, Stroke, Asthma, Any cancer (collapsed from skin cancer and other cancers), Chronic obstructive pulmonary disease (COPD), emphysema, or chronic bronchitis, Depressive disorder (including major, minor, or dysthymia), Chronic kidney disease, Diabetes (chronic; excludes pregnancy-only or pre-diabetes). 
 
