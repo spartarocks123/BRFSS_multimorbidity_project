@@ -5,7 +5,7 @@
 
 **Folder Structure:**
 - `data/` → Simulated or example dataset showing variable structure
-- `scripts/` → R scripts for data cleaning, analysis, and visualization
+- `scripts/` → R scripts for data cleaning, analysis, and visualization. SAS was used to create descriptive tables. SQL will be used later to replicate project as well. 
 - `figures/` → Placeholder for plots
 - `tables/` → Placeholder for output tables
 
