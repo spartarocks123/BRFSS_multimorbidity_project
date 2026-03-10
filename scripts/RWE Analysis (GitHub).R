@@ -1,6 +1,6 @@
 # ==========================================================
 # Simulated Dataset Analysis (Replication of BRFSS Workflow)
-# NA-free version (Testing commit #3)
+# NA-free version 
 # ==========================================================
 
 library(tidyverse)
@@ -13,30 +13,30 @@ library(viridis)
 # ------------------------------
 # 1. Load Simulated Dataset
 # ------------------------------
-sim_br <- read_csv("data/brfss_example.csv", show_col_types = FALSE)
+sim_brfss <- read_csv("data/brfss_example.csv", show_col_types = FALSE)
 
 # ------------------------------
 # 2. Adjust Survey Design
 # ------------------------------
-sim_br <- sim_br %>%
+sim_brfss <- sim_brfss %>%
   mutate(STSTR2 = as.character(STSTR))
 
-singleton_strata <- names(table(sim_br$STSTR2))[table(sim_br$STSTR2) == 1]
-sim_br$STSTR2[sim_br$STSTR2 %in% singleton_strata] <- "singleton"
+singleton_strata <- names(table(sim_brfss$STSTR2))[table(sim_brfss$STSTR2) == 1]
+sim_brfss$STSTR2[sim_brfss$STSTR2 %in% singleton_strata] <- "singleton"
 
 options(survey.lonely.psu = "adjust")
 sim_design <- svydesign(
   ids     = ~PSU,
   strata  = ~STSTR2,
   weights = ~LLCPWT,
-  data    = sim_br,
+  data    = sim_brfss,
   nest    = TRUE
 )
 
 # ------------------------------
 # 3. Ensure Correct Factor Order
 # ------------------------------
-sim_br <- sim_br %>%
+sim_brfss <- sim_brfss %>%
   mutate(
     cc_cat2 = factor(cc_cat2, levels = c("0","1","2","3+")),
     cc_cat2 = relevel(cc_cat2, ref = "0"),
@@ -73,15 +73,15 @@ sim_br <- sim_br %>%
 # ------------------------------
 sim_design <- update(
   sim_design,
-  cc_cat2      = sim_br$cc_cat2,
-  agegrp       = sim_br$agegrp,
-  sex          = sim_br$sex,
-  race         = sim_br$race,
-  educ         = sim_br$educ,
-  income       = sim_br$income,
-  insured      = sim_br$insured,
-  routine_care = sim_br$routine_care,
-  cost_barrier = sim_br$cost_barrier
+  cc_cat2      = sim_brfss$cc_cat2,
+  agegrp       = sim_brfss$agegrp,
+  sex          = sim_brfss$sex,
+  race         = sim_brfss$race,
+  educ         = sim_brfss$educ,
+  income       = sim_brfss$income,
+  insured      = sim_brfss$insured,
+  routine_care = sim_brfss$routine_care,
+  cost_barrier = sim_brfss$cost_barrier
 )
 
 # ------------------------------
@@ -194,5 +194,8 @@ ggplot(pred_cost_sim, aes(x = x, y = predicted)) +
         axis.text.y = element_blank(),
         axis.ticks = element_blank(),
         panel.grid = element_blank())
+
+# Replace 'sim_brfss' with whatever your data frame is called
+write_csv(sim_brfss, "/Users/moh/Desktop/Research Assistant/BRFSS_multimorbidity_project/data/sim_brfss.csv")
 
 
