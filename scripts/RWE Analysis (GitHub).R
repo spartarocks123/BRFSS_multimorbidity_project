@@ -1,5 +1,5 @@
 # ==========================================================
-# Simulated Dataset Analysis (Replication of BRFSS Workflow) (Testing commit #4)
+# Simulated Dataset Analysis (Replication of BRFSS Workflow)
 # ==========================================================
 
 library(tidyverse)
@@ -14,11 +14,21 @@ library(viridis)
 # ------------------------------
 sim_brfss <- read_csv("data/brfss_example.csv", show_col_types = FALSE)
 
-# Optional check (useful for debugging)
+# Optional check
 glimpse(sim_brfss)
 
 # ------------------------------
-# 2. Adjust Survey Design
+# 2. Recode variables
+# ------------------------------
+sim_brfss <- sim_brfss %>%
+  mutate(
+    # Only cc_cat2 is treated as a factor
+    cc_cat2 = factor(cc_cat2, levels = c("0","1","2","3+")),
+    cc_cat2 = relevel(cc_cat2, ref = "0")
+  )
+
+# ------------------------------
+# 3. Adjust Survey Design
 # ------------------------------
 sim_brfss <- sim_brfss %>%
   mutate(STSTR2 = as.character(STSTR))
@@ -37,32 +47,22 @@ sim_design <- svydesign(
 )
 
 # ------------------------------
-# 3. Ensure Correct Factor Order
-# ------------------------------
-sim_brfss <- sim_brfss %>%
-  mutate(
-    cc_cat2 = factor(cc_cat2, levels = c("0","1","2","3+")),
-    cc_cat2 = relevel(cc_cat2, ref = "0")
-  )
-
-# ------------------------------
 # 4. Weighted Logistic Models
 # ------------------------------
-
 design_routine_sim <- subset(
   sim_design,
   !is.na(routine_care) &
     !is.na(cc_cat2) &
-    !is.na(agegrp) &
-    !is.na(sex) &
-    !is.na(race) &
-    !is.na(educ) &
-    !is.na(income) &
-    !is.na(insured)
+    !is.na(AGEG5YR) &
+    !is.na(SEXVAR) &
+    !is.na(RACE) &
+    !is.na(EDUCAG) &
+    !is.na(INCOMG1) &
+    !is.na(HLTHPL2)
 )
 
 model_routine_sim <- svyglm(
-  routine_care ~ cc_cat2 + agegrp + sex + race + educ + income + insured,
+  routine_care ~ cc_cat2 + AGEG5YR + SEXVAR + RACE + EDUCAG + INCOMG1 + HLTHPL2,
   design = design_routine_sim,
   family = quasibinomial()
 )
@@ -71,16 +71,16 @@ design_cost_sim <- subset(
   sim_design,
   !is.na(cost_barrier) &
     !is.na(cc_cat2) &
-    !is.na(agegrp) &
-    !is.na(sex) &
-    !is.na(race) &
-    !is.na(educ) &
-    !is.na(income) &
-    !is.na(insured)
+    !is.na(AGEG5YR) &
+    !is.na(SEXVAR) &
+    !is.na(RACE) &
+    !is.na(EDUCAG) &
+    !is.na(INCOMG1) &
+    !is.na(HLTHPL2)
 )
 
 model_cost_sim <- svyglm(
-  cost_barrier ~ cc_cat2 + agegrp + sex + race + educ + income + insured,
+  cost_barrier ~ cc_cat2 + AGEG5YR + SEXVAR + RACE + EDUCAG + INCOMG1 + HLTHPL2,
   design = design_cost_sim,
   family = quasibinomial()
 )
@@ -88,7 +88,6 @@ model_cost_sim <- svyglm(
 # ------------------------------
 # 5. Extract Predicted Probabilities
 # ------------------------------
-
 pred_routine_sim <- ggpredict(model_routine_sim, terms = "cc_cat2") %>%
   mutate(x = factor(x, levels = c("0","1","2","3+"))) %>%
   filter(!is.na(x))
@@ -100,11 +99,8 @@ pred_cost_sim <- ggpredict(model_cost_sim, terms = "cc_cat2") %>%
 # ------------------------------
 # 6. Extract Odds Ratios
 # ------------------------------
-
 extract_or <- function(model, drop_intercept = FALSE){
-  
   coef_table <- summary(model)$coefficients
-  
   res <- tibble(
     Variable = rownames(coef_table),
     OR       = exp(coef_table[, "Estimate"]),
@@ -112,11 +108,7 @@ extract_or <- function(model, drop_intercept = FALSE){
     CI_upper = exp(coef_table[, "Estimate"] + 1.96 * coef_table[, "Std. Error"]),
     p_value  = coef_table[, "Pr(>|t|)"]
   )
-  
-  if(drop_intercept) {
-    res <- filter(res, Variable != "(Intercept)")
-  }
-  
+  if(drop_intercept) res <- filter(res, Variable != "(Intercept)")
   res %>%
     mutate(
       OR       = round(OR,2),
@@ -132,25 +124,15 @@ cost_or    <- extract_or(model_cost_sim, TRUE)
 # ------------------------------
 # 7. Figure 1: Routine Checkup
 # ------------------------------
-
 ggplot(pred_routine_sim, aes(x = x, y = predicted)) +
   geom_col(fill = viridis(1, option = "C", alpha = 0.8), width = 0.6) +
-  geom_errorbar(
-    aes(ymin = conf.low, ymax = conf.high),
-    width = 0.25,
-    color = "gray20",
-    linewidth = 1.5
-  ) +
-  geom_text(
-    aes(label = percent(predicted, accuracy = 1),
-        y = conf.high + 0.02),
-    size = 4,
-    fontface = "bold"
-  ) +
-  scale_y_continuous(
-    labels = percent_format(accuracy = 1),
-    limits = c(0, max(pred_routine_sim$conf.high)*1.1)
-  ) +
+  geom_errorbar(aes(ymin = conf.low, ymax = conf.high),
+                width = 0.25, color = "gray20", linewidth = 1.5) +
+  geom_text(aes(label = percent(predicted, accuracy = 1),
+                y = conf.high + 0.02),
+            size = 4, fontface = "bold") +
+  scale_y_continuous(labels = percent_format(accuracy = 1),
+                     limits = c(0, max(pred_routine_sim$conf.high)*1.1)) +
   labs(
     x = "Number of Chronic Conditions",
     y = NULL,
@@ -170,25 +152,15 @@ ggplot(pred_routine_sim, aes(x = x, y = predicted)) +
 # ------------------------------
 # 8. Figure 2: Cost Barrier
 # ------------------------------
-
 ggplot(pred_cost_sim, aes(x = x, y = predicted)) +
   geom_col(fill = viridis(1, option = "D", alpha = 0.8), width = 0.6) +
-  geom_errorbar(
-    aes(ymin = conf.low, ymax = conf.high),
-    width = 0.25,
-    color = "gray20",
-    linewidth = 1.5
-  ) +
-  geom_text(
-    aes(label = percent(predicted, accuracy = 1),
-        y = conf.high + 0.005),
-    size = 4,
-    fontface = "bold"
-  ) +
-  scale_y_continuous(
-    labels = percent_format(accuracy = 1),
-    limits = c(0, max(pred_cost_sim$conf.high)*1.1)
-  ) +
+  geom_errorbar(aes(ymin = conf.low, ymax = conf.high),
+                width = 0.25, color = "gray20", linewidth = 1.5) +
+  geom_text(aes(label = percent(predicted, accuracy = 1),
+                y = conf.high + 0.005),
+            size = 4, fontface = "bold") +
+  scale_y_continuous(labels = percent_format(accuracy = 1),
+                     limits = c(0, max(pred_cost_sim$conf.high)*1.1)) +
   labs(
     x = "Number of Chronic Conditions",
     y = NULL,
@@ -206,11 +178,7 @@ ggplot(pred_cost_sim, aes(x = x, y = predicted)) +
   )
 
 # ------------------------------
-# 9. Save Dataset
+# 9. Save Simulated Dataset
 # ------------------------------
-
-write_csv(
-  sim_brfss,
-  "/Users/moh/Desktop/Research Assistant/BRFSS_multimorbidity_project/data/sim_brfss.csv"
-)
+write_csv(sim_brfss, "data/sim_brfss.csv")
 
