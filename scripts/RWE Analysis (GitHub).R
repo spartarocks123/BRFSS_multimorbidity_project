@@ -1,3 +1,119 @@
+# ------------------------------
+# Simulate Example BRFSS Dataset (Logit-Scale Probabilities, Covariates as Single Variables)
+# ------------------------------
+if (generate_sim_brfss) {
+  set.seed(123)
+  n <- 460000L
+  
+  bern <- function(p) rbinom(n, 1, p)
+  
+  # ------------------------------
+  # Covariates
+  # ------------------------------
+  sim_brfss <- tibble(
+    cc_mi       = bern(0.10),
+    cc_stroke   = bern(0.05),
+    cc_asthma   = bern(0.15),
+    cc_skin_ca  = bern(0.02),
+    cc_other_ca = bern(0.03),
+    cc_copd     = bern(0.10),
+    cc_depress  = bern(0.20),
+    cc_ckd      = bern(0.05),
+    cc_diabetes = bern(0.10),
+    
+    AGEG5YR = sample(1:13, n, replace = TRUE),
+    SEXVAR  = sample(c(1,2), n, replace = TRUE),
+    RACE    = sample(1:5, n, replace = TRUE),
+    EDUCAG  = sample(1:6, n, replace = TRUE),
+    INCOMG1 = sample(1:8, n, replace = TRUE),
+    HLTHPL2 = sample(c(1,2), n, replace = TRUE),
+    
+    LLCPWT = runif(n, 0.5, 2),
+    PSU    = sample(1:250, n, replace = TRUE),
+    STSTR  = sample(1:100, n, replace = TRUE)
+  )
+  
+  # ------------------------------
+  # Derived variables
+  # ------------------------------
+  sim_brfss <- sim_brfss %>%
+    mutate(
+      cc_count = rowSums(across(cc_mi:cc_diabetes)),
+      cc_cat2 = case_when(
+        cc_count == 0 ~ "0",
+        cc_count == 1 ~ "1",
+        cc_count == 2 ~ "2",
+        cc_count >= 3 ~ "3+"
+      ),
+      cc_cat2 = factor(cc_cat2, levels = c("0","1","2","3+"))
+    )
+  
+  # ------------------------------
+  # Target log-odds coefficients (β) based on original ORs
+  # ------------------------------
+  beta_list <- list(
+    intercept  = log(0.44 / (1 - 0.44)),
+    cc_cat21   = log(1.48),
+    cc_cat22   = log(2.05),
+    cc_cat23p  = log(2.67),
+    AGEG5YR    = log(1.16),
+    SEXVAR     = log(1.53),   # 2=Female
+    RACE       = log(0.98),   # per unit increase
+    EDUCAG     = log(1.09),
+    INCOMG1    = log(1.04),
+    HLTHPL2    = log(0.98)    # 2=Insured
+  )
+  
+  # ------------------------------
+  # Function to compute linear predictor
+  # ------------------------------
+  compute_lp <- function(df, beta) {
+    lp <- beta$intercept +
+      ifelse(df$cc_cat2=="1", beta$cc_cat21, 0) +
+      ifelse(df$cc_cat2=="2", beta$cc_cat22, 0) +
+      ifelse(df$cc_cat2=="3+", beta$cc_cat23p, 0) +
+      df$AGEG5YR * beta$AGEG5YR +
+      (df$SEXVAR==2) * beta$SEXVAR +
+      df$RACE * beta$RACE +
+      df$EDUCAG * beta$EDUCAG +
+      df$INCOMG1 * beta$INCOMG1 +
+      (df$HLTHPL2==2) * beta$HLTHPL2
+    return(lp)
+  }
+  
+  # ------------------------------
+  # Simulate outcomes using logistic function
+  # ------------------------------
+  # Routine care: use original βs
+  lp_routine <- compute_lp(sim_brfss, beta_list)
+  sim_brfss$routine_care <- rbinom(n, 1, plogis(lp_routine))
+  
+  # Cost barrier: scale βs to approximate original BRFSS ORs
+  # Here we adjust intercept + scale numeric predictors to match original cost_barrier ORs
+  beta_list_cost <- beta_list
+  beta_list_cost$intercept <- log(0.37 / (1 - 0.37))
+  beta_list_cost$cc_cat21   <- log(1.73)
+  beta_list_cost$cc_cat22   <- log(2.24)
+  beta_list_cost$cc_cat23p  <- log(2.97)
+  beta_list_cost$AGEG5YR    <- log(0.86)
+  beta_list_cost$SEXVAR     <- log(1.21)
+  beta_list_cost$RACE       <- log(1.09)
+  beta_list_cost$EDUCAG     <- log(0.82)
+  beta_list_cost$INCOMG1    <- log(0.89)
+  beta_list_cost$HLTHPL2    <- log(1.04)
+  
+  lp_cost <- compute_lp(sim_brfss, beta_list_cost)
+  sim_brfss$cost_barrier <- rbinom(n, 1, plogis(lp_cost))
+  
+  # ------------------------------
+  # Save simulated dataset
+  # ------------------------------
+  if(!dir.exists("data")) dir.create("data")
+  write.csv(sim_brfss, file.path("data","brfss_example.csv"), row.names = FALSE)
+}
+
+
+
 # ==========================================================
 # Simulated Dataset Analysis (Replication of BRFSS Workflow)
 # ==========================================================
