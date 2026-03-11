@@ -7,6 +7,7 @@ library(survey)
 library(ggeffects)
 library(scales)
 library(viridis)
+library(car)
 
 use_cached        <- TRUE
 compute_figures   <- TRUE
@@ -314,4 +315,11 @@ ggplot(pred_cost_sim, aes(x = x, y = predicted)) +
 # 9. Save Simulated Dataset
 # ------------------------------
 write_csv(sim_brfss, ".../sim_brfss.csv")
+
+# ------------------------------
+# 10. Multicollinearity tests
+# ------------------------------
+vif(model_routine_sim)
+vif(model_cost_sim)
+
 
