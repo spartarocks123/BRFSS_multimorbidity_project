@@ -13,8 +13,6 @@
 
 **Results:** So far, there appears to be a dose-response relationship between the number of chronic conditions and routine healthcare utilization. As the number of chronic conditions increase in an individual, the predicted probability of routine checkup increases. This is expected and correlates with what has been found in the literature. Interestingly, the predicted probability of delayed care due to cost also increases in accordance with the number of chronic conditions. All the p values are less than 0.01 and the OR increases as the number of chronic conditions increases. 
 
-Happy to receive any professional feedback—please keep it constructive and focused on analysis, methodology, or reproducibility.
-
 **Note:** No raw BRFSS data is included. The dataset used is simulated for reproducibility. Fully reproducible using the scripts in scripts/. Figures and tables will be saved in figures/ and tables/. This dataset is simulated for replication purposes. Variable names match BRFSS, but values are generated synthetically
 
 **AI Assistance:** Code development and debugging for this project were assisted using AI tools (ChatGPT and Cursor). All decisions regarding analysis, data processing, and interpretation were made by the author.
@@ -26,3 +24,5 @@ Happy to receive any professional feedback—please keep it constructive and foc
 - Finalize interpretation of results and documentation
 - Replicate analysis with SQL & Python
 - Document technical rationale through code comments. If any changes are needed, that will be explained by the code comments and the commit. 
+
+Happy to receive any professional feedback—please keep it constructive and focused on analysis, methodology, or reproducibility.
