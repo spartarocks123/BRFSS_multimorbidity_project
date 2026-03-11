@@ -1,5 +1,5 @@
 # ------------------------------
-# Simulate Example BRFSS Dataset (Logit-Scale Probabilities, Covariates as Single Variables) (Testing commit #2)
+# Simulate Example BRFSS Dataset (Logit-Scale Probabilities, Covariates as Single Variables)
 # ------------------------------
 library(haven)
 library(tidyverse)
