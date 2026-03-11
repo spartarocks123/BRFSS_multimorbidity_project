@@ -9,6 +9,7 @@ library(scales)
 library(viridis)
 library(car)
 library(pROC)
+install.packages("ResourceSelection")   # run once if not installed
 library(ResourceSelection)
 library(pscl)
 
@@ -325,4 +326,45 @@ write_csv(sim_brfss, ".../sim_brfss.csv")
 vif(model_routine_sim)
 vif(model_cost_sim)
 
+# ------------------------------
+# 11. Goodness-of-fit (Hosmer-Lemeshow)
+# ------------------------------
+
+hl_routine<-hoslem.test(
+  sim_brfss$routine_care,
+  fitted(model_routine_sim),
+  g=10
+)
+
+hl_cost<-hoslem.test(
+  sim_brfss$cost_barrier,
+  fitted(model_cost_sim),
+  g=10
+)
+
+print(hl_routine)
+print(hl_cost)
+
+# ------------------------------
+# ROC Curves
+# ------------------------------
+
+roc_routine <- roc(sim_brfss$routine_care, fitted(model_routine_sim))
+roc_cost <- roc(sim_brfss$cost_barrier, fitted(model_cost_sim))
+
+plot(roc_routine, main = "ROC Curve: Routine Care Model")
+plot(roc_cost, main = "ROC Curve: Cost Barrier Model")
+
+auc(roc_routine)
+auc(roc_cost)
+
+# ------------------------------
+# Pseudo R-squared
+# ------------------------------
+
+pseudo_r2_routine<-pscl::pR2(model_routine_sim)
+pseudo_r2_cost<-pscl::pR2(model_cost_sim)
+
+print(pseudo_r2_routine)
+print(pseudo_r2_cost)
 
