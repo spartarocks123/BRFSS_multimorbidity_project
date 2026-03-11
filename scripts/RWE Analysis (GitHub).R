@@ -121,6 +121,11 @@ extract_or <- function(model, drop_intercept = FALSE){
 routine_or <- extract_or(model_routine_sim, TRUE)
 cost_or    <- extract_or(model_cost_sim, TRUE)
 
+github_dir <- ".../tables/"
+
+write.csv(routine_or, file = paste0(github_dir, "routine_or.csv"), row.names = FALSE)
+write.csv(cost_or, file = paste0(github_dir, "cost_or.csv"), row.names = FALSE)
+
 # ------------------------------
 # 7. Figure 1: Routine Checkup
 # ------------------------------
