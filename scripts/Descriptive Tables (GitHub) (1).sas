@@ -3,7 +3,7 @@
    ========================================== */
 
 /* Step 1: Import the cleaned CSV dataset */
-proc import datafile="/home/u64389751/RWE/sim_brfss.csv"
+proc import datafile=".../sim_brfss.csv"
     out=brfss_keep
     dbms=csv
     replace;
@@ -15,7 +15,7 @@ proc contents data=brfss_keep;
 run;
 
 /* --- PDF Output for Covariates --- */
-ods pdf file="/home/u64389751/RWE/covariates.pdf";
+ods pdf file=".../covariates.pdf";
 
 title "Weighted Distribution of Categorical Covariates by Multimorbidity Category";
 proc surveyfreq data=brfss_keep;
@@ -28,7 +28,7 @@ run;
 ods pdf close;
 
 /* --- PDF Output for Outcomes --- */
-ods pdf file="/home/u64389751/RWE/outcomes.pdf";
+ods pdf file=".../outcomes.pdf";
 
 title "Weighted Distribution of Outcomes by Multimorbidity Category";
 proc surveyfreq data=brfss_keep;
