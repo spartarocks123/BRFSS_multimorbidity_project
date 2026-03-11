@@ -185,5 +185,5 @@ ggplot(pred_cost_sim, aes(x = x, y = predicted)) +
 # ------------------------------
 # 9. Save Simulated Dataset
 # ------------------------------
-write_csv(sim_brfss, "/Users/moh/Desktop/Research Assistant/BRFSS_multimorbidity_project/data/sim_brfss.csv")
+write_csv(sim_brfss, ".../sim_brfss.csv")
 
