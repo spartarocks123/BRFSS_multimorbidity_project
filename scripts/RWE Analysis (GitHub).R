@@ -8,6 +8,9 @@ library(ggeffects)
 library(scales)
 library(viridis)
 library(car)
+library(pROC)
+library(ResourceSelection)
+library(pscl)
 
 use_cached        <- TRUE
 compute_figures   <- TRUE
