@@ -1,6 +1,18 @@
 # ------------------------------
 # Simulate Example BRFSS Dataset (Logit-Scale Probabilities, Covariates as Single Variables)
 # ------------------------------
+library(haven)
+library(tidyverse)
+library(survey)
+library(ggeffects)
+library(scales)
+library(viridis)
+
+use_cached        <- TRUE
+compute_figures   <- TRUE
+save_outputs      <- TRUE
+generate_sim_brfss <- TRUE
+
 if (generate_sim_brfss) {
   set.seed(123)
   n <- 460000L
