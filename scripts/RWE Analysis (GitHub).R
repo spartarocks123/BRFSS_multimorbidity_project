@@ -388,3 +388,98 @@ pred_probs_cost <- predict(small_model_cost, type = "response")
 roc_cost <- roc(small_brfss$cost_barrier, pred_probs_cost, weights = small_brfss$LLCPWT)
 cat("AUC - Cost barrier:", auc(roc_cost), "\n")
 plot(roc_cost, col = "red", lwd = 2, main = "ROC Curve - Cost Barrier")
+
+
+# ------------------------------
+# 12. Calibration
+# ------------------------------
+# predicted probabilities
+small_brfss$pred_routine <- predict(small_model_routine, type = "response")
+small_brfss$pred_cost    <- predict(small_model_cost, type = "response")
+
+# create 10 bins of predicted probabilities for routine care
+small_brfss <- small_brfss %>%
+  mutate(
+    decile_routine = ntile(pred_routine, 10),
+    decile_cost    = ntile(pred_cost, 10)
+  )
+
+library(dplyr)
+
+# routine care calibration
+calib_routine <- small_brfss %>%
+  group_by(decile_routine) %>%
+  summarise(
+    obs = sum(routine_care * LLCPWT) / sum(LLCPWT),
+    pred = mean(pred_routine)
+  )
+
+# cost barrier calibration
+calib_cost <- small_brfss %>%
+  group_by(decile_cost) %>%
+  summarise(
+    obs = sum(cost_barrier * LLCPWT) / sum(LLCPWT),
+    pred = mean(pred_cost)
+  )
+
+library(ggplot2)
+
+# routine care
+ggplot(calib_routine, aes(x = pred, y = obs)) +
+  geom_point(color = "blue", size = 3) +
+  geom_line(color = "blue", linewidth = 1) +   # updated
+  geom_abline(intercept = 0, slope = 1, linetype = "dashed", color = "gray") +
+  labs(
+    x = "Mean Predicted Probability",
+    y = "Observed Probability",
+    title = "Calibration Plot - Routine Care"
+  ) +
+  theme_minimal(base_size = 14)
+
+# cost barrier
+ggplot(calib_cost, aes(x = pred, y = obs)) +
+  geom_point(color = "red", size = 3) +
+  geom_line(color = "red", linewidth = 1) +   # updated
+  geom_abline(intercept = 0, slope = 1, linetype = "dashed", color = "gray") +
+  labs(
+    x = "Mean Predicted Probability",
+    y = "Observed Probability",
+    title = "Calibration Plot - Cost Barrier"
+  ) +
+  theme_minimal(base_size = 14)
+
+
+# ------------------------------
+# 12. Pseudo R^2
+# ------------------------------
+
+library(dplyr)
+
+# Add predicted probabilities
+small_brfss <- small_brfss %>%
+  mutate(pred_routine = predict(small_model_routine, type = "response"))
+
+small_brfss <- small_brfss %>%
+  mutate(pred_routine = predict(small_model_routine, type = "response"))
+
+# Create deciles
+small_brfss <- small_brfss %>%
+  mutate(decile_routine = ntile(pred_routine, 10))
+
+# Summarize weighted observed and expected counts
+hl_table <- small_brfss %>%
+  group_by(decile_routine) %>%
+  summarise(
+    obs = sum(routine_care * LLCPWT),
+    n   = sum(LLCPWT),
+    exp = sum(pred_routine * LLCPWT)
+  ) %>%
+  ungroup()
+
+# Compute Hosmer-Lemeshow statistic
+hl_stat <- sum((hl_table$obs - hl_table$exp)^2 / (hl_table$exp * (1 - hl_table$exp / hl_table$n)))
+hl_stat
+# Degrees of freedom = number of bins - 2 (deciles = 10 → df = 8)
+p_value <- 1 - pchisq(hl_stat, df = 8)
+p_value
+
