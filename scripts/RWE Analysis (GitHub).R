@@ -365,9 +365,21 @@ print(svy_vif_results)
 
 
 # ------------------------------
-# 11. Pseudo-R^2
+# 11. Goodness-of-Fit 
 # ------------------------------
 
 
+library(pROC)
 
+# predicted probabilities
+pred_probs <- predict(small_model, type = "response")
+
+# ROC curve
+roc_obj <- roc(small_brfss$routine_care, pred_probs, weights = small_brfss$LLCPWT)
+
+# AUC
+auc(roc_obj)  # 0.5 = random, 1 = perfect discrimination
+
+# Optional: plot ROC curve
+plot(roc_obj, col = "blue", lwd = 2, main = "ROC Curve - Survey Weighted Logistic Regression")
 
