@@ -373,7 +373,7 @@ svy_vif_routine <- svyvif(
 print(svy_vif_routine)
 
 # ------------------------------
-# 11. Goodness-of-Fit (ROC / AUC)
+# 11. Model Discrimination (ROC / AUC)
 # ------------------------------
 library(pROC)
 
@@ -453,11 +453,78 @@ ggplot(calib_cost, aes(x = pred, y = obs)) +
 # 12. Pseudo R^2
 # ------------------------------
 
-library(rms)
+pseudoR2_svyglm <- function(model, design) {
+  # Null model (intercept only)
+  null_model <- update(model, . ~ 1)
+  
+  # Log-likelihoods
+  ll_full <- as.numeric(logLik(model))
+  ll_null <- as.numeric(logLik(null_model))
+  
+  # McFadden R^2
+  r2_mcf <- 1 - (ll_full / ll_null)
+  return(r2_mcf)
+}
 
-# Using rms::lrm (can use weights)
-# Note: lrm expects data without svyglm, but can include weights
-lrm_routine <- lrm(routine_care ~ cc_cat2 + AGEG5YR + SEXVAR + RACE + EDUCAG + INCOMG1 + HLTHPL2,
-                   data = small_brfss, weights = LLCPWT)
-lrm_routine$stats["R2"]           # Nagelkerke-style R2
+# Example for routine care
+r2_routine <- pseudoR2_svyglm(small_model_routine, small_design)
+cat("McFadden Pseudo R^2 - Routine Care:", r2_routine, "\n")
 
+# Example for cost barrier
+r2_cost <- pseudoR2_svyglm(small_model_cost, small_design)
+cat("McFadden Pseudo R^2 - Cost Barrier:", r2_cost, "\n")
+
+
+# ------------------------------
+# 12. Goodness-of-fit
+# ------------------------------
+
+library(dplyr)
+
+# --- Routine care ---
+small_brfss <- small_brfss %>%
+  mutate(
+    decile_routine = ntile(pred_routine, 10)
+  )
+
+hl_routine <- small_brfss %>%
+  group_by(decile_routine) %>%
+  summarise(
+    obs = sum(routine_care * LLCPWT),
+    n   = sum(LLCPWT),
+    exp = sum(pred_routine * LLCPWT)
+  ) %>%
+  mutate(
+    chi_sq = (obs - exp)^2 / (exp * (1 - (exp / n)))
+  )
+
+HL_stat_routine <- sum(hl_routine$chi_sq)
+df_routine <- nrow(hl_routine) - 2  # df = number of groups - 2
+p_value_routine <- 1 - pchisq(HL_stat_routine, df_routine)
+
+cat("Weighted Hosmer-Lemeshow Approx - Routine Care\n")
+cat("Chi-square:", HL_stat_routine, "  df:", df_routine, "  p-value:", p_value_routine, "\n")
+
+# --- Cost barrier ---
+small_brfss <- small_brfss %>%
+  mutate(
+    decile_cost = ntile(pred_cost, 10)
+  )
+
+hl_cost <- small_brfss %>%
+  group_by(decile_cost) %>%
+  summarise(
+    obs = sum(cost_barrier * LLCPWT),
+    n   = sum(LLCPWT),
+    exp = sum(pred_cost * LLCPWT)
+  ) %>%
+  mutate(
+    chi_sq = (obs - exp)^2 / (exp * (1 - (exp / n)))
+  )
+
+HL_stat_cost <- sum(hl_cost$chi_sq)
+df_cost <- nrow(hl_cost) - 2
+p_value_cost <- 1 - pchisq(HL_stat_cost, df_cost)
+
+cat("Weighted Hosmer-Lemeshow Approx - Cost Barrier\n")
+cat("Chi-square:", HL_stat_cost, "  df:", df_cost, "  p-value:", p_value_cost, "\n")
