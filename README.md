@@ -23,6 +23,11 @@
 - Conduct sensitivity analyses if appropriate
 - Finalize interpretation of results and documentation
 - Replicate analysis with SQL & Python
-- Document technical rationale through code comments. If any changes are needed, that will be explained by the code comments and the commit. 
+- Document technical rationale through code comments. If any changes are needed, that will be explained by the code comments or README.md. 
 
 Happy to receive any professional feedback—please keep it constructive and focused on analysis, methodology, or reproducibility.
+
+**Note on diagnostics:**
+# VIF and Hosmer-Lemeshow tests are standard diagnostics for GLMs.
+# Since we are using svyglm (survey-weighted logistic regression),
+# Recently learned that VIG and Hosmer-Lemeshow tests don't fully account for weights, strata, or clustering. This dataset uses svyglm (survey-weighted logistic regression). Will utilize different tests instead. 
