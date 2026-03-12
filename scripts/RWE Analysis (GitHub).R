@@ -336,50 +336,55 @@ small_design <- svydesign(
   nest    = TRUE
 )
 
-small_model <- svyglm(
+# ------------------------------
+# Survey-weighted logistic models
+# ------------------------------
+small_model_routine <- svyglm(
   routine_care ~ cc_cat2 + AGEG5YR + SEXVAR + RACE + EDUCAG + INCOMG1 + HLTHPL2,
+  design = small_design,
+  family = quasibinomial()
+)
+
+small_model_cost <- svyglm(
+  cost_barrier ~ cc_cat2 + AGEG5YR + SEXVAR + RACE + EDUCAG + INCOMG1 + HLTHPL2,
   design = small_design,
   family = quasibinomial()
 )
 
 library(svydiags)
 
-# Build numeric predictor matrix from the model frame
-X <- model.matrix(~ cc_cat2 + AGEG5YR + SEXVAR + RACE + EDUCAG + INCOMG1 + HLTHPL2,
-                  data = model.frame(small_model))
-X <- X[, colnames(X) != "(Intercept)"]  # remove intercept
+# Build numeric predictor matrix for routine care model
+X_routine <- model.matrix(~ cc_cat2 + AGEG5YR + SEXVAR + RACE + EDUCAG + INCOMG1 + HLTHPL2,
+                          data = model.frame(small_model_routine))
+X_routine <- X_routine[, colnames(X_routine) != "(Intercept)"]
 
 # Survey weights vector
 w <- weights(small_design)
 
 # VIF with survey adjustment
-svy_vif_results <- svyvif(
-  mobj  = small_model,
-  X     = X,
+svy_vif_routine <- svyvif(
+  mobj  = small_model_routine,
+  X     = X_routine,
   w     = w,
   stvar = "STSTR2",
   clvar = "PSU"
 )
 
-print(svy_vif_results)
-
+print(svy_vif_routine)
 
 # ------------------------------
-# 11. Goodness-of-Fit 
+# 11. Goodness-of-Fit (ROC / AUC)
 # ------------------------------
-
-
 library(pROC)
 
-# predicted probabilities
-pred_probs <- predict(small_model, type = "response")
+# --- Routine care ---
+pred_probs_routine <- predict(small_model_routine, type = "response")
+roc_routine <- roc(small_brfss$routine_care, pred_probs_routine, weights = small_brfss$LLCPWT)
+cat("AUC - Routine care:", auc(roc_routine), "\n")
+plot(roc_routine, col = "blue", lwd = 2, main = "ROC Curve - Routine Care")
 
-# ROC curve
-roc_obj <- roc(small_brfss$routine_care, pred_probs, weights = small_brfss$LLCPWT)
-
-# AUC
-auc(roc_obj)  # 0.5 = random, 1 = perfect discrimination
-
-# Optional: plot ROC curve
-plot(roc_obj, col = "blue", lwd = 2, main = "ROC Curve - Survey Weighted Logistic Regression")
-
+# --- Cost barrier ---
+pred_probs_cost <- predict(small_model_cost, type = "response")
+roc_cost <- roc(small_brfss$cost_barrier, pred_probs_cost, weights = small_brfss$LLCPWT)
+cat("AUC - Cost barrier:", auc(roc_cost), "\n")
+plot(roc_cost, col = "red", lwd = 2, main = "ROC Curve - Cost Barrier")
