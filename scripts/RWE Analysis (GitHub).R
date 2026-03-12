@@ -320,51 +320,19 @@ ggplot(pred_cost_sim, aes(x = x, y = predicted)) +
 # ------------------------------
 write_csv(sim_brfss, ".../sim_brfss.csv")
 
-# ------------------------------
-# 10. Multicollinearity tests
-# ------------------------------
-vif(model_routine_sim)
-vif(model_cost_sim)
 
-# ------------------------------
-# 11. Goodness-of-fit (Hosmer-Lemeshow)
-# ------------------------------
+# Residual and null deviance from svyglm
+res_dev  <- model_routine_sim$deviance
+null_dev <- model_routine_sim$null.deviance
 
-hl_routine<-hoslem.test(
-  sim_brfss$routine_care,
-  fitted(model_routine_sim),
-  g=10
-)
+# McFadden-style pseudo-R²
+pseudo_r2_routine <- 1 - (res_dev / null_dev)
+pseudo_r2_routine
 
-hl_cost<-hoslem.test(
-  sim_brfss$cost_barrier,
-  fitted(model_cost_sim),
-  g=10
-)
+res_dev_cost  <- model_cost_sim$deviance
+null_dev_cost <- model_cost_sim$null.deviance
+pseudo_r2_cost <- 1 - (res_dev_cost / null_dev_cost)
+pseudo_r2_cost
 
-print(hl_routine)
-print(hl_cost)
 
-# ------------------------------
-# ROC Curves
-# ------------------------------
-
-roc_routine <- roc(sim_brfss$routine_care, fitted(model_routine_sim))
-roc_cost <- roc(sim_brfss$cost_barrier, fitted(model_cost_sim))
-
-plot(roc_routine, main = "ROC Curve: Routine Care Model")
-plot(roc_cost, main = "ROC Curve: Cost Barrier Model")
-
-auc(roc_routine)
-auc(roc_cost)
-
-# ------------------------------
-# Pseudo R-squared
-# ------------------------------
-
-pseudo_r2_routine<-pscl::pR2(model_routine_sim)
-pseudo_r2_cost<-pscl::pR2(model_cost_sim)
-
-print(pseudo_r2_routine)
-print(pseudo_r2_cost)
 
