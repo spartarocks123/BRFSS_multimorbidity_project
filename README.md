@@ -28,6 +28,6 @@
 Happy to receive any professional feedback—please keep it constructive and focused on analysis, methodology, or reproducibility.
 
 **Note on diagnostics:**
-# VIF and Hosmer-Lemeshow tests are standard diagnostics for GLMs.
-# Since we are using svyglm (survey-weighted logistic regression),
-# Recently learned that VIG and Hosmer-Lemeshow tests don't fully account for weights, strata, or clustering. This dataset uses svyglm (survey-weighted logistic regression). Will utilize different tests instead. 
+- VIF and Hosmer-Lemeshow tests are standard diagnostics for GLMs.
+- Since we are using svyglm (survey-weighted logistic regression),
+- Recently learned that VIG and Hosmer-Lemeshow tests don't fully account for weights, strata, or clustering. This dataset uses svyglm (survey-weighted logistic regression). Will utilize different tests instead. 
