@@ -453,33 +453,11 @@ ggplot(calib_cost, aes(x = pred, y = obs)) +
 # 12. Pseudo R^2
 # ------------------------------
 
-library(dplyr)
+library(rms)
 
-# Add predicted probabilities
-small_brfss <- small_brfss %>%
-  mutate(pred_routine = predict(small_model_routine, type = "response"))
-
-small_brfss <- small_brfss %>%
-  mutate(pred_routine = predict(small_model_routine, type = "response"))
-
-# Create deciles
-small_brfss <- small_brfss %>%
-  mutate(decile_routine = ntile(pred_routine, 10))
-
-# Summarize weighted observed and expected counts
-hl_table <- small_brfss %>%
-  group_by(decile_routine) %>%
-  summarise(
-    obs = sum(routine_care * LLCPWT),
-    n   = sum(LLCPWT),
-    exp = sum(pred_routine * LLCPWT)
-  ) %>%
-  ungroup()
-
-# Compute Hosmer-Lemeshow statistic
-hl_stat <- sum((hl_table$obs - hl_table$exp)^2 / (hl_table$exp * (1 - hl_table$exp / hl_table$n)))
-hl_stat
-# Degrees of freedom = number of bins - 2 (deciles = 10 → df = 8)
-p_value <- 1 - pchisq(hl_stat, df = 8)
-p_value
+# Using rms::lrm (can use weights)
+# Note: lrm expects data without svyglm, but can include weights
+lrm_routine <- lrm(routine_care ~ cc_cat2 + AGEG5YR + SEXVAR + RACE + EDUCAG + INCOMG1 + HLTHPL2,
+                   data = small_brfss, weights = LLCPWT)
+lrm_routine$stats["R2"]           # Nagelkerke-style R2
 
