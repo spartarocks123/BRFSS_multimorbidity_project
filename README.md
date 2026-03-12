@@ -15,7 +15,7 @@
 
 **Note:** No raw BRFSS data is included. The dataset used is simulated for reproducibility. Fully reproducible using the scripts in scripts/. Figures and tables will be saved in figures/ and tables/. This dataset is simulated for replication purposes. Variable names match BRFSS, but values are generated synthetically
 
-**AI Assistance:** Code development and debugging for this project were assisted using AI tools (ChatGPT and Cursor). All decisions regarding analysis, data processing, and interpretation were made by the author.
+**AI Assistance:** Code development and debugging for this project were assisted using AI tools (ChatGPT and Cursor). All decisions regarding analysis, data processing, and interpretation were made by the author. 
 
 ***Next Steps:***
 - Review variable selection decisions
@@ -30,4 +30,5 @@ Happy to receive any professional feedback—please keep it constructive and foc
 **Note on diagnostics:**
 - VIF and Hosmer-Lemeshow tests are standard diagnostics for GLMs.
 - Since we are using svyglm (survey-weighted logistic regression),
-- Recently learned that VIG and Hosmer-Lemeshow tests don't fully account for weights, strata, or clustering. This dataset uses svyglm (survey-weighted logistic regression). Will utilize different tests instead. 
+- Recently learned that VIG and Hosmer-Lemeshow tests don't fully account for weights, strata, or clustering. This dataset uses svyglm (survey-weighted logistic regression). Will utilize different tests instead.
+- For collinearity, 
