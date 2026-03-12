@@ -321,6 +321,9 @@ ggplot(pred_cost_sim, aes(x = x, y = predicted)) +
 write_csv(sim_brfss, ".../sim_brfss.csv")
 
 
+# ------------------------------
+# 10. Multicollinearity
+# ------------------------------
 
 set.seed(123)
 small_brfss <- sim_brfss %>% sample_n(10000)
@@ -338,6 +341,7 @@ small_model <- svyglm(
   design = small_design,
   family = quasibinomial()
 )
+
 library(svydiags)
 
 # Build numeric predictor matrix from the model frame
@@ -358,4 +362,12 @@ svy_vif_results <- svyvif(
 )
 
 print(svy_vif_results)
+
+
+# ------------------------------
+# 11. Pseudo-R^2
+# ------------------------------
+
+
+
 
