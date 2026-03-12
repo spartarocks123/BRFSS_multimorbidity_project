@@ -36,5 +36,5 @@ Happy to receive any professional feedback—please keep it constructive and foc
 - Independent Observations: BRFSS tends to survey people from the same counties, states, neighboorhoods, etc. This is demonstrated by the fact that strata and clustering are used. However, svydesign(...) code in R accounts for this. Therefore, this assumption has been met.
 - Correct model: The outcomes of interest are yes/no. Therefore, this assumption has been met.
 - Linearity:
-- Multicollinearity:
+- Multicollinearity: All intercept, adjusted predictors had VIFs below 5, indicating that multicollinearity is not a concern in this model. Therefore, this assumption has been met. 
 - Separation:
