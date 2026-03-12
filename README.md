@@ -31,4 +31,10 @@ Happy to receive any professional feedback—please keep it constructive and foc
 - VIF and Hosmer-Lemeshow tests are standard diagnostics for GLMs.
 - Since we are using svyglm (survey-weighted logistic regression),
 - Recently learned that VIG and Hosmer-Lemeshow tests don't fully account for weights, strata, or clustering. This dataset uses svyglm (survey-weighted logistic regression). Will utilize different tests instead.
-- For collinearity, 
+
+**Note on Assumptions:**
+- Independent Observations: BRFSS tends to survey people from the same counties, states, neighboorhoods, etc. This is demonstrated by the fact that strata and clustering are used. However, svydesign(...) code in R accounts for this. Therefore, this assumption has been met.
+- Correct model: The outcomes of interest are yes/no. Therefore, this assumption has been met.
+- Linearity:
+- Multicollinearity:
+- Separation:
