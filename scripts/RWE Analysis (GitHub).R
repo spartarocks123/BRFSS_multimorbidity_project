@@ -321,18 +321,41 @@ ggplot(pred_cost_sim, aes(x = x, y = predicted)) +
 write_csv(sim_brfss, ".../sim_brfss.csv")
 
 
-# Residual and null deviance from svyglm
-res_dev  <- model_routine_sim$deviance
-null_dev <- model_routine_sim$null.deviance
 
-# McFadden-style pseudo-R²
-pseudo_r2_routine <- 1 - (res_dev / null_dev)
-pseudo_r2_routine
+set.seed(123)
+small_brfss <- sim_brfss %>% sample_n(10000)
 
-res_dev_cost  <- model_cost_sim$deviance
-null_dev_cost <- model_cost_sim$null.deviance
-pseudo_r2_cost <- 1 - (res_dev_cost / null_dev_cost)
-pseudo_r2_cost
+small_design <- svydesign(
+  ids     = ~PSU,
+  strata  = ~STSTR2,
+  weights = ~LLCPWT,
+  data    = small_brfss,
+  nest    = TRUE
+)
 
+small_model <- svyglm(
+  routine_care ~ cc_cat2 + AGEG5YR + SEXVAR + RACE + EDUCAG + INCOMG1 + HLTHPL2,
+  design = small_design,
+  family = quasibinomial()
+)
+library(svydiags)
 
+# Build numeric predictor matrix from the model frame
+X <- model.matrix(~ cc_cat2 + AGEG5YR + SEXVAR + RACE + EDUCAG + INCOMG1 + HLTHPL2,
+                  data = model.frame(small_model))
+X <- X[, colnames(X) != "(Intercept)"]  # remove intercept
+
+# Survey weights vector
+w <- weights(small_design)
+
+# VIF with survey adjustment
+svy_vif_results <- svyvif(
+  mobj  = small_model,
+  X     = X,
+  w     = w,
+  stvar = "STSTR2",
+  clvar = "PSU"
+)
+
+print(svy_vif_results)
 
