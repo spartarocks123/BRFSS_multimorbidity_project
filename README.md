@@ -36,4 +36,4 @@ Happy to receive any professional feedback—please keep it constructive and foc
 - Linearity:
 - Multicollinearity: All intercept, adjusted predictors had VIFs below 5, indicating that multicollinearity is not a concern in this model. Therefore, this assumption has been met. 
 - Separation:
-- Overdispersion: Since weights and clusters are involved in this dataset, the observations are not entirely independent from each other. However, using quasibinomial modeling for both outcomes addresses this concern as it accounts for strata, clustering, and weights. 
+- Overdispersion: Since weights and clusters are involved in this dataset, the observations are not entirely independent from each other. However, using quasibinomial modeling for both outcomes addresses this concern as it adjusts for variance in the dataset. 
