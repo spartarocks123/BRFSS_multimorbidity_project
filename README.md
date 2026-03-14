@@ -39,4 +39,6 @@ Happy to receive any professional feedback—please keep it constructive and foc
 - Overdispersion: Since weights and clusters are involved in this dataset, the observations are not entirely independent from each other. However, using quasibinomial modeling for both outcomes addresses this concern as it adjusts for variance in the dataset.
 
 **Note on coding steps:**
+- Weighted Logistic Models: "!is.na" step was conducted for all the variables to ensure no missing values were utilized in the logistic regression. This was a complete case analysis. svyglm () handles weights and clusters. 
+- Covariates:
 - Logit-scale: The Odds Ratios (ORs) from the original BRFSS dataset are converted to log-odds (logit) probabilities in the simulation dataset. This was done so that the simulated dataset matches the original dataset's relationships. 
