@@ -25,7 +25,7 @@ if (generate_sim_brfss) {
   bern <- function(p) rbinom(n, 1, p)
   
   # ------------------------------
-  # Covariates
+  # Variables
   # ------------------------------
   sim_brfss <- tibble(
     cc_mi       = bern(0.10),
@@ -128,8 +128,6 @@ if (generate_sim_brfss) {
   if(!dir.exists("data")) dir.create("data")
   write.csv(sim_brfss, file.path("data","brfss_example.csv"), row.names = FALSE)
 }
-
-
 
 # ==========================================================
 # Simulated Dataset Analysis (Replication of BRFSS Workflow)
