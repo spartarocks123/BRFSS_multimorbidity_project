@@ -42,6 +42,9 @@ Happy to receive any professional feedback—please keep it constructive and foc
 - Conduct sensitivity analyses if appropriate
 - Finalize interpretation of results and documentation
 - Replicate analysis with SQL & Python
-- Document technical rationale through code comments. If any changes are needed, that will be explained by the code comments or README.md. 
+- Document technical rationale through code comments. If any changes are needed, that will be explained by the code comments or README.md.
+
+***Completed Steps:***
+- Resampled survey design variables from the original BRFSS dataset (strata, clustering, and weights). Adjusted the prevalence of all the variables to reflect the original dataset as well. 
 
 
