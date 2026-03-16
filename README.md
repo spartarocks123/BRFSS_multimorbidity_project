@@ -46,6 +46,6 @@ Happy to receive any professional feedback—please keep it constructive and foc
 
 ***Completed Steps:***
 - Resampled survey design variables from the original BRFSS dataset (strata, clustering, and weights). Adjusted the prevalence of all the variables to reflect the original dataset as well.
-- A weighted proportion of missing (NA) values was made for all predictors, covariates, and outcomes in this complete-case survey analysis. Although svyglm drops NA, documenting NAs demonstrates transparency and if any bias occurs due to the potential volume of missing data. 
+- A weighted proportion of missing (NA) values was made for all predictors, covariates, and outcomes in this complete-case survey analysis. Although svyglm drops NA, documenting NAs demonstrates transparency and if any bias occurs due to the potential volume of missing data. The table demonstrated no missing values for the simulated dataset. 
 
 
