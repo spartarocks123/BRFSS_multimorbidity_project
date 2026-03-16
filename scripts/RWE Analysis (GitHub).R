@@ -528,3 +528,6 @@ p_value_cost <- 1 - pchisq(HL_stat_cost, df_cost)
 
 cat("Weighted Hosmer-Lemeshow Approx - Cost Barrier\n")
 cat("Chi-square:", HL_stat_cost, "  df:", df_cost, "  p-value:", p_value_cost, "\n")
+
+
+
