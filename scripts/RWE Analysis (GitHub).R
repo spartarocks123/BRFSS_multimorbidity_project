@@ -28,15 +28,17 @@ if (generate_sim_brfss) {
   # Variables
   # ------------------------------
   sim_brfss <- tibble(
-    cc_mi       = bern(0.10),
-    cc_stroke   = bern(0.05),
-    cc_asthma   = bern(0.15),
-    cc_skin_ca  = bern(0.02),
-    cc_other_ca = bern(0.03),
-    cc_copd     = bern(0.10),
-    cc_depress  = bern(0.20),
-    cc_ckd      = bern(0.05),
-    cc_diabetes = bern(0.10),
+    cc_mi       = bern(0.068),
+    cc_stroke   = bern(0.035),
+    cc_asthma   = bern(0.103),
+    cc_skin_ca  = bern(0.056),
+    cc_other_ca = bern(0.084),
+    cc_copd     = bern(0.063),
+    cc_depress  = bern(0.21),
+    cc_ckd      = bern(0.041),
+    cc_diabetes = bern(0.125),
+    cc_cancer = bern(0.119),
+    
     
     AGEG5YR = sample(1:13, n, replace = TRUE),
     SEXVAR  = sample(c(1,2), n, replace = TRUE),
