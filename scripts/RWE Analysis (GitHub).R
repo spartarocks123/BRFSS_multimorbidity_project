@@ -1,5 +1,5 @@
 # ------------------------------
-# Simulate Example BRFSS Dataset (Logit-Scale Probabilities, Covariates as Single Variables)
+# Simulate Example BRFSS Dataset (Adjusted Prevalences & Survey Variables)
 # ------------------------------
 library(haven)
 library(tidyverse)
@@ -9,7 +9,6 @@ library(scales)
 library(viridis)
 library(car)
 library(pROC)
-install.packages("ResourceSelection")   # run once if not installed
 library(ResourceSelection)
 library(pscl)
 
@@ -24,10 +23,22 @@ if (generate_sim_brfss) {
   
   bern <- function(p) rbinom(n, 1, p)
   
-  # ------------------------------
-  # Variables
-  # ------------------------------
+  # --- Covariate probabilities based on weighted BRFSS prevalences ---
+  age_probs <- c(0.122, 0.076, 0.091, 0.077, 0.086, 0.067, 0.076, 0.069,
+                 0.084, 0.070, 0.063, 0.047, 0.053, 0.018)
+  sex_probs <- c(0.491, 0.509)
+  race_probs <- c(0.56, 0.115, 0.011, 0.061, 0.004, 0.011, 0.026, 0.192, 0.021)
+  educ_probs <- c(0.111, 0.272, 0.295, 0.316, 0, 0, 0, 0, 0.006)
+  income_probs <- c(0.049, 0.072, 0.089, 0.101, 0.225, 0.181, 0.076, 0, 0.208)
+  insured_probs <- c(0.086, 0.914)
+  
+  # --- Resample survey design variables from the real BRFSS ---
+  psu_vals   <- sample(brfss_keep$PSU, n, replace = TRUE)
+  strata_vals <- sample(brfss_keep$STSTR, n, replace = TRUE)
+  weight_vals <- sample(brfss_keep$LLCPWT, n, replace = TRUE)
+  
   sim_brfss <- tibble(
+    # Chronic conditions
     cc_mi       = bern(0.068),
     cc_stroke   = bern(0.035),
     cc_asthma   = bern(0.103),
@@ -37,28 +48,27 @@ if (generate_sim_brfss) {
     cc_depress  = bern(0.21),
     cc_ckd      = bern(0.041),
     cc_diabetes = bern(0.125),
-    cc_cancer = bern(0.119),
+    cc_cancer   = bern(0.119),
     
+    # Covariates
+    AGEG5YR = sample(1:14, n, replace = TRUE, prob = age_probs),
+    SEXVAR  = sample(c(1,2), n, replace = TRUE, prob = sex_probs),
+    RACE    = sample(1:9, n, replace = TRUE, prob = race_probs),
+    EDUCAG  = sample(1:9, n, replace = TRUE, prob = educ_probs),
+    INCOMG1 = sample(1:9, n, replace = TRUE, prob = income_probs),
+    HLTHPL2 = sample(c(1,2), n, replace = TRUE, prob = insured_probs),
     
-    AGEG5YR = sample(1:13, n, replace = TRUE),
-    SEXVAR  = sample(c(1,2), n, replace = TRUE),
-    RACE    = sample(1:5, n, replace = TRUE),
-    EDUCAG  = sample(1:6, n, replace = TRUE),
-    INCOMG1 = sample(1:8, n, replace = TRUE),
-    HLTHPL2 = sample(c(1,2), n, replace = TRUE),
-    
-    LLCPWT = runif(n, 0.5, 2),
-    PSU    = sample(1:250, n, replace = TRUE),
-    STSTR  = sample(1:100, n, replace = TRUE)
+    # Survey design variables (resampled from real BRFSS)
+    PSU    = psu_vals,
+    STSTR  = strata_vals,
+    LLCPWT = weight_vals
   )
   
-  # ------------------------------
-  # Derived variables
-  # ------------------------------
+  # --- Derived variables ---
   sim_brfss <- sim_brfss %>%
     mutate(
       cc_count = rowSums(across(cc_mi:cc_diabetes)),
-      cc_cat2 = case_when(
+      cc_cat2  = case_when(
         cc_count == 0 ~ "0",
         cc_count == 1 ~ "1",
         cc_count == 2 ~ "2",
@@ -66,6 +76,7 @@ if (generate_sim_brfss) {
       ),
       cc_cat2 = factor(cc_cat2, levels = c("0","1","2","3+"))
     )
+}
   
   # ------------------------------
   # Target log-odds coefficients (β) based on original ORs
@@ -129,7 +140,7 @@ if (generate_sim_brfss) {
   # ------------------------------
   if(!dir.exists("data")) dir.create("data")
   write.csv(sim_brfss, file.path("data","brfss_example.csv"), row.names = FALSE)
-}
+
 
 # ==========================================================
 # Simulated Dataset Analysis (Replication of BRFSS Workflow)
