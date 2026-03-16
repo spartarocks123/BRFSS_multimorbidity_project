@@ -36,7 +36,7 @@ Happy to receive any professional feedback—please keep it constructive and foc
 
 ***Current Steps:***
 - Adjust the covariates and other variables (strata, cluster, weighting) to reflect the original BRFSS dataset more accurately.
-- Chronic conditions are simulated independently; co-occurrence patterns may not reflect real multimorbidity correlations in BRFSS. See if that could be adjusted as well.
+- Chronic conditions are simulated independently; co-occurrence patterns may not reflect real multimorbidity correlations in BRFSS. See if that could be adjusted as well. Tetrachoric correlation may hold promise for this issue. 
 - Review variable selection decisions
 - Evaluate model assumptions and robustness
 - Conduct sensitivity analyses if appropriate
@@ -45,6 +45,6 @@ Happy to receive any professional feedback—please keep it constructive and foc
 - Document technical rationale through code comments. If any changes are needed, that will be explained by the code comments or README.md.
 
 ***Completed Steps:***
-- Resampled survey design variables from the original BRFSS dataset (strata, clustering, and weights). Adjusted the prevalence of all the variables to reflect the original dataset as well. 
+- Resampled survey design variables from the original BRFSS dataset (strata, clustering, and weights). Adjusted the prevalence of all the variables to reflect the original dataset as well.
 
 
