@@ -36,7 +36,7 @@ Happy to receive any professional feedback—please keep it constructive and foc
 
 ***Current Steps:***
 - Adjust the covariates and other variables (strata, cluster, weighting) to reflect the original BRFSS dataset more accurately.
-- The current bernoulli simulation assumes each chornic condition is independent. See if that could be adjusted as well.
+- Chronic conditions are simulated independently; co-occurrence patterns may not reflect real multimorbidity correlations in BRFSS. See if that could be adjusted as well.
 - Review variable selection decisions
 - Evaluate model assumptions and robustness
 - Conduct sensitivity analyses if appropriate
