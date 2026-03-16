@@ -39,5 +39,5 @@ Happy to receive any professional feedback—please keep it constructive and foc
 
 **Note on coding steps:**
 - Weighted Logistic Models: "!is.na" step was conducted for all the variables to ensure no missing values were utilized in the logistic regression. This was a complete case analysis. svyglm () handles weights and clusters. 
-- Variables: The bernoulli distribution was utilized to demonstrate the prevalence of the variables. Will adjust them so that they reflect the prevalence of the original BRFSS dataset more accurately. 
+- Variables: The bernoulli distribution was utilized to demonstrate the prevalence of the variables. Adjusted them so that they reflect the prevalence of the original BRFSS dataset more accurately. 
 - Logit-scale: The Odds Ratios (ORs) from the original BRFSS dataset are converted to log-odds (logit) probabilities in the simulation dataset. This was done so that the simulated dataset matches the original dataset's relationships. 
