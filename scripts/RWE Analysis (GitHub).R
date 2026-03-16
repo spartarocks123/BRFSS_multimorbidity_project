@@ -541,4 +541,22 @@ cat("Weighted Hosmer-Lemeshow Approx - Cost Barrier\n")
 cat("Chi-square:", HL_stat_cost, "  df:", df_cost, "  p-value:", p_value_cost, "\n")
 
 
+# ------------------------------
+# Check Weighted NA Proportions for All Relevant Variables
+# ------------------------------
+
+relevant_vars <- c(
+  "routine_care", "cost_barrier",
+  "cc_cat2", "AGEG5YR", "SEXVAR", "RACE", "EDUCAG", "INCOMG1", "HLTHPL2"
+)
+
+na_summary <- sim_brfss %>%
+  select(all_of(relevant_vars)) %>%
+  summarise(across(everything(), ~mean(is.na(.)))) %>%
+  pivot_longer(cols = everything(), names_to = "Variable", values_to = "NA_Fraction") %>%
+  mutate(NA_Percent = scales::percent(NA_Fraction, accuracy = 0.01))
+
+# Display in console
+print(na_summary)
+
 
