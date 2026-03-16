@@ -36,7 +36,7 @@ Happy to receive any professional feedback—please keep it constructive and foc
 
 ***Current Steps:***
 - Adjust the covariates and other variables (strata, cluster, weighting) to reflect the original BRFSS dataset more accurately.
-- Chronic conditions are simulated independently; co-occurrence patterns may not reflect real multimorbidity correlations in BRFSS. See if that could be adjusted as well. Tetrachoric correlation may hold promise for this issue. 
+- Chronic conditions are simulated independently; co-occurrence patterns may not reflect real multimorbidity correlations in BRFSS. See if that could be adjusted as well. Tetrachoric correlation may hold promise for this issue. Chronic conditions are simulated independently; therefore, co-occurrence patterns may not fully reflect real multimorbidity correlations in BRFSS. While tetrachoric correlations could theoretically model such associations, this is unnecessary because the BRFSS measures these conditions as binary indicators (a person either has the condition or doesn’t). cc_cancer is not an independent measure. Instead, it is derived from cc_skin_ca and cc_other_ca. Therefore, no separate Bernoulli draw is required. For all chronic conditions, independent Bernoulli simulations are appropriate and consistent with the codebook.
 - Review variable selection decisions
 - Evaluate model assumptions and robustness
 - Conduct sensitivity analyses if appropriate
