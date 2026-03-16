@@ -15,14 +15,6 @@
 
 **Note:** No raw BRFSS data is included. The dataset used is simulated for reproducibility. Fully reproducible using the scripts in scripts/. Figures and tables will be saved in figures/ and tables/. This dataset is simulated for replication purposes. Variable names match BRFSS, but values are generated synthetically
 
-***Next Steps:***
-- Review variable selection decisions
-- Evaluate model assumptions and robustness
-- Conduct sensitivity analyses if appropriate
-- Finalize interpretation of results and documentation
-- Replicate analysis with SQL & Python
-- Document technical rationale through code comments. If any changes are needed, that will be explained by the code comments or README.md. 
-
 Happy to receive any professional feedback—please keep it constructive and focused on analysis, methodology, or reproducibility.
 
 **Note on diagnostics:**
@@ -40,4 +32,16 @@ Happy to receive any professional feedback—please keep it constructive and foc
 **Note on coding steps:**
 - Weighted Logistic Models: "!is.na" step was conducted for all the variables to ensure no missing values were utilized in the logistic regression. This was a complete case analysis. svyglm () handles weights and clusters. 
 - Variables: The bernoulli distribution was utilized to demonstrate the prevalence of the variables. Adjusted them so that they reflect the prevalence of the original BRFSS dataset more accurately. Completed for the chronic conditions, will conduct the same for the other variables (Covariates, weighting, strata, and clusting variables if feasible and necessary) 
-- Logit-scale: The Odds Ratios (ORs) from the original BRFSS dataset are converted to log-odds (logit) probabilities in the simulation dataset. This was done so that the simulated dataset matches the original dataset's relationships. 
+- Logit-scale: The Odds Ratios (ORs) from the original BRFSS dataset are converted to log-odds (logit) probabilities in the simulation dataset. This was done so that the simulated dataset matches the original dataset's relationships.
+
+***Current Steps:***
+- Adjust the covariates and other variables (strata, cluster, weighting) to reflect the original BRFSS dataset more accurately.
+- The current bernoulli simulation assumes each chornic condition is independent. See if that could be adjusted as well.
+- Review variable selection decisions
+- Evaluate model assumptions and robustness
+- Conduct sensitivity analyses if appropriate
+- Finalize interpretation of results and documentation
+- Replicate analysis with SQL & Python
+- Document technical rationale through code comments. If any changes are needed, that will be explained by the code comments or README.md. 
+
+
