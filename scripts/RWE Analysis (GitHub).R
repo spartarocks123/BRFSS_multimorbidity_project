@@ -22,46 +22,33 @@ if (generate_sim_brfss) {
   
   set.seed(123)
   n <- 460000L
-  
   bern <- function(p) rbinom(n, 1, p)
   
-# ------------------------------------------------
-# Covariate probabilities (weighted BRFSS estimates)
-# ------------------------------------------------
-  
+  # ------------------------------------------------
+  # Covariate probabilities (weighted BRFSS estimates)
+  # ------------------------------------------------
   age_probs <- c(0.122, 0.076, 0.091, 0.077, 0.086, 0.067, 0.076, 0.069,
                  0.084, 0.070, 0.063, 0.047, 0.053, 0.018)
-  
   sex_probs <- c(0.491, 0.509)
-  
   race_probs <- c(0.56, 0.115, 0.011, 0.061, 0.004,
                   0.011, 0.026, 0.192, 0.021)
-  
   educ_probs <- c(0.111, 0.272, 0.295, 0.316,
                   0, 0, 0, 0, 0.006)
-  
   income_probs <- c(0.049, 0.072, 0.089, 0.101,
                     0.225, 0.181, 0.076, 0, 0.208)
-  
   insured_probs <- c(0.086, 0.914)
-  
   
   # ------------------------------------------------
   # Resample survey design variables from real BRFSS
   # ------------------------------------------------
-  
   psu_vals    <- sample(brfss_keep$PSU, n, replace = TRUE)
   strata_vals <- sample(brfss_keep$STSTR, n, replace = TRUE)
   weight_vals <- sample(brfss_keep$LLCPWT, n, replace = TRUE)
   
-  
   # ------------------------------------------------
   # Simulate dataset
   # ------------------------------------------------
-  
   sim_brfss <- tibble(
-    
-    # Chronic conditions
     cc_mi       = bern(0.068),
     cc_stroke   = bern(0.035),
     cc_asthma   = bern(0.103),
@@ -72,7 +59,6 @@ if (generate_sim_brfss) {
     cc_ckd      = bern(0.041),
     cc_diabetes = bern(0.125),
     
-    # Covariates
     AGEG5YR = sample(1:14, n, replace = TRUE, prob = age_probs),
     SEXVAR  = sample(c(1,2), n, replace = TRUE, prob = sex_probs),
     RACE    = sample(1:9, n, replace = TRUE, prob = race_probs),
@@ -80,84 +66,54 @@ if (generate_sim_brfss) {
     INCOMG1 = sample(1:9, n, replace = TRUE, prob = income_probs),
     HLTHPL2 = sample(c(1,2), n, replace = TRUE, prob = insured_probs),
     
-    # Survey design variables
     PSU    = psu_vals,
     STSTR  = strata_vals,
     LLCPWT = weight_vals
   )
   
+  # ------------------------------------------------
+  # Create numeric versions for simulation
+  # ------------------------------------------------
+  sim_brfss <- sim_brfss %>%
+    mutate(
+      AGEG5YR_num = as.numeric(AGEG5YR),
+      SEXVAR_num  = as.numeric(SEXVAR),
+      RACE_num    = as.numeric(RACE),
+      EDUCAG_num  = as.numeric(EDUCAG),
+      INCOMG1_num = as.numeric(INCOMG1),
+      HLTHPL2_num = as.numeric(HLTHPL2)
+    )
   
   # ------------------------------------------------
   # Derived multimorbidity variables
   # ------------------------------------------------
-  
   sim_brfss <- sim_brfss %>%
     mutate(
-      
-      # Total chronic conditions
       cc_count = rowSums(across(cc_mi:cc_diabetes)),
-      
-      # Multimorbidity category
       cc_cat2 = case_when(
         cc_count == 0 ~ "0",
         cc_count == 1 ~ "1",
         cc_count == 2 ~ "2",
         cc_count >= 3 ~ "3+"
-      ),
-      
-      # Convert predictors to factors for modeling
-      cc_cat2  = factor(cc_cat2, levels = c("0","1","2","3+")),
-      AGEG5YR  = factor(AGEG5YR),
-      RACE     = factor(RACE),
-      EDUCAG   = factor(EDUCAG),
-      INCOMG1  = factor(INCOMG1),
-      SEXVAR   = factor(SEXVAR),
-      HLTHPL2  = factor(HLTHPL2)
+      )
     )
-}
   
-  # ------------------------------
+  # ------------------------------------------------
   # Target log-odds coefficients (β) based on original ORs
-  # ------------------------------
+  # ------------------------------------------------
   beta_list <- list(
     intercept  = log(0.44 / (1 - 0.44)),
     cc_cat21   = log(1.48),
     cc_cat22   = log(2.05),
     cc_cat23p  = log(2.67),
     AGEG5YR    = log(1.16),
-    SEXVAR     = log(1.53),   # 2=Female
-    RACE       = log(0.98),   # per unit increase
+    SEXVAR     = log(1.53),
+    RACE       = log(0.98),
     EDUCAG     = log(1.09),
     INCOMG1    = log(1.04),
-    HLTHPL2    = log(0.98)    # 2=Insured
+    HLTHPL2    = log(0.98)
   )
   
-  # ------------------------------
-  # Function to compute linear predictor
-  # ------------------------------
-  compute_lp <- function(df, beta) {
-    lp <- beta$intercept +
-      ifelse(df$cc_cat2=="1", beta$cc_cat21, 0) +
-      ifelse(df$cc_cat2=="2", beta$cc_cat22, 0) +
-      ifelse(df$cc_cat2=="3+", beta$cc_cat23p, 0) +
-      df$AGEG5YR * beta$AGEG5YR +
-      (df$SEXVAR==2) * beta$SEXVAR +
-      df$RACE * beta$RACE +
-      df$EDUCAG * beta$EDUCAG +
-      df$INCOMG1 * beta$INCOMG1 +
-      (df$HLTHPL2==2) * beta$HLTHPL2
-    return(lp)
-  }
-  
-  # ------------------------------
-  # Simulate outcomes using logistic function
-  # ------------------------------
-  # Routine care: use original βs
-  lp_routine <- compute_lp(sim_brfss, beta_list)
-  sim_brfss$routine_care <- rbinom(n, 1, plogis(lp_routine))
-  
-  # Cost barrier: scale βs to approximate original BRFSS ORs
-  # Here we adjust intercept + scale numeric predictors to match original cost_barrier ORs
   beta_list_cost <- beta_list
   beta_list_cost$intercept <- log(0.37 / (1 - 0.37))
   beta_list_cost$cc_cat21   <- log(1.73)
@@ -170,14 +126,51 @@ if (generate_sim_brfss) {
   beta_list_cost$INCOMG1    <- log(0.89)
   beta_list_cost$HLTHPL2    <- log(1.04)
   
-  lp_cost <- compute_lp(sim_brfss, beta_list_cost)
-  sim_brfss$cost_barrier <- rbinom(n, 1, plogis(lp_cost))
+  # ------------------------------------------------
+  # Function to compute linear predictor
+  # ------------------------------------------------
+  compute_lp <- function(df, beta) {
+    beta$intercept +
+      ifelse(df$cc_cat2=="1", beta$cc_cat21, 0) +
+      ifelse(df$cc_cat2=="2", beta$cc_cat22, 0) +
+      ifelse(df$cc_cat2=="3+", beta$cc_cat23p, 0) +
+      df$AGEG5YR_num * beta$AGEG5YR +
+      (df$SEXVAR_num==2) * beta$SEXVAR +
+      df$RACE_num * beta$RACE +
+      df$EDUCAG_num * beta$EDUCAG +
+      df$INCOMG1_num * beta$INCOMG1 +
+      (df$HLTHPL2_num==2) * beta$HLTHPL2
+  }
   
-  # ------------------------------
+  # ------------------------------------------------
+  # Simulate outcomes
+  # ------------------------------------------------
+  sim_brfss <- sim_brfss %>%
+    mutate(
+      routine_care   = rbinom(n, 1, plogis(compute_lp(., beta_list))),
+      cost_barrier   = rbinom(n, 1, plogis(compute_lp(., beta_list_cost)))
+    )
+  
+  # ------------------------------------------------
+  # Convert to factors for modeling
+  # ------------------------------------------------
+  sim_brfss <- sim_brfss %>%
+    mutate(
+      AGEG5YR  = factor(AGEG5YR),
+      SEXVAR   = factor(SEXVAR),
+      RACE     = factor(RACE),
+      EDUCAG   = factor(EDUCAG),
+      INCOMG1  = factor(INCOMG1),
+      HLTHPL2  = factor(HLTHPL2),
+      cc_cat2  = factor(cc_cat2, levels = c("0","1","2","3+"))
+    )
+  
+  # ------------------------------------------------
   # Save simulated dataset
-  # ------------------------------
+  # ------------------------------------------------
   if(!dir.exists("data")) dir.create("data")
   write.csv(sim_brfss, file.path("data","brfss_example.csv"), row.names = FALSE)
+}
 
 
 # ==========================================================
@@ -194,22 +187,40 @@ library(viridis)
 # ------------------------------
 # 1. Load Simulated Dataset
 # ------------------------------
-  sim_brfss <- read_csv("data/brfss_example.csv", show_col_types = FALSE)
-  
-  # Convert outcome to integer and predictors to factors
   sim_brfss <- sim_brfss %>%
     mutate(
-      routine_care = as.integer(routine_care),   # 0/1
-      cost_barrier = as.integer(cost_barrier),   # optional
-      AGEG5YR      = factor(AGEG5YR),
-      SEXVAR       = factor(SEXVAR),
-      RACE         = factor(RACE),
-      EDUCAG       = factor(EDUCAG),
-      INCOMG1      = factor(INCOMG1),
-      HLTHPL2      = factor(HLTHPL2),
-      cc_cat2      = factor(cc_cat2, levels = c("0","1","2","3+"))
+      # Keep numeric for simulation
+      AGEG5YR_num = as.numeric(AGEG5YR),
+      SEXVAR_num  = as.numeric(SEXVAR),
+      RACE_num    = as.numeric(RACE),
+      EDUCAG_num  = as.numeric(EDUCAG),
+      INCOMG1_num = as.numeric(INCOMG1),
+      HLTHPL2_num = as.numeric(HLTHPL2)
     )
   
+  lp_routine <- beta_list$intercept +
+    ifelse(sim_brfss$cc_cat2=="1", beta_list$cc_cat21, 0) +
+    ifelse(sim_brfss$cc_cat2=="2", beta_list$cc_cat22, 0) +
+    ifelse(sim_brfss$cc_cat2=="3+", beta_list$cc_cat23p, 0) +
+    sim_brfss$AGEG5YR_num * beta_list$AGEG5YR +
+    (sim_brfss$SEXVAR_num==2) * beta_list$SEXVAR +
+    sim_brfss$RACE_num * beta_list$RACE +
+    sim_brfss$EDUCAG_num * beta_list$EDUCAG +
+    sim_brfss$INCOMG1_num * beta_list$INCOMG1 +
+    (sim_brfss$HLTHPL2_num==2) * beta_list$HLTHPL2
+  
+  sim_brfss$routine_care <- rbinom(n, 1, plogis(lp_routine))
+  
+  sim_brfss <- sim_brfss %>%
+    mutate(
+      AGEG5YR  = factor(AGEG5YR),
+      SEXVAR   = factor(SEXVAR),
+      RACE     = factor(RACE),
+      EDUCAG   = factor(EDUCAG),
+      INCOMG1  = factor(INCOMG1),
+      HLTHPL2  = factor(HLTHPL2),
+      cc_cat2  = factor(cc_cat2, levels = c("0","1","2","3+"))
+    )
   # ------------------------------
   # 2. Adjust survey design
   # ------------------------------
@@ -238,14 +249,6 @@ library(viridis)
     sim_design,
     !is.na(routine_care)
   )
-  
-  table(design_routine_sim$variables$AGEG5YR)
-  table(design_routine_sim$variables$SEXVAR)
-  table(design_routine_sim$variables$RACE)
-  table(design_routine_sim$variables$EDUCAG)
-  table(design_routine_sim$variables$INCOMG1)
-  table(design_routine_sim$variables$HLTHPL2)
-  table(design_routine_sim$variables$cc_cat2)
   
   # Fit survey-weighted logistic regression
   model_routine_sim <- svyglm(
