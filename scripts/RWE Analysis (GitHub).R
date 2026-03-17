@@ -100,25 +100,82 @@ if (generate_sim_brfss) {
     cc_cat21   = log(1.48),
     cc_cat22   = log(2.05),
     cc_cat23p  = log(2.67),
-    AGEG5YR    = log(1.16),
-    SEXVAR     = log(1.53),
-    RACE       = log(0.98),
-    EDUCAG     = log(1.09),
-    INCOMG1    = log(1.04),
-    HLTHPL2    = log(0.98)
+    agegrp2    = log(1.16),
+    agegrp3    = log(1.16),
+    agegrp4    = log(1.16),
+    agegrp5    = log(1.16),
+    agegrp6    = log(1.16),
+    agegrp7    = log(1.16),
+    agegrp8    = log(1.16),
+    agegrp9    = log(1.16),
+    agegrp10    = log(1.16),
+    agegrp11    = log(1.16),
+    agegrp12    = log(1.16),
+    agegrp13    = log(1.16),
+    agegrp14    = log(1.16),
+    sexFemale     = log(1.53),
+    race2       = log(0.98),
+    race3 = log(0.98),
+    race4 = log(0.98),
+    race5 = log(0.98),
+    race6 = log(0.98),
+    race7 = log(0.98),
+    race8 = log(0.98),
+    race9 = log(0.98),
+    educ2     = log(1.09),
+    educ3     = log(1.09),
+    educ4     = log(1.09),
+    educ9     = log(1.09),
+    income2    = log(1.04),
+    income3    = log(1.04),
+    income4    = log(1.04),
+    income5    = log(1.04),
+    income6    = log(1.04),
+    income7    = log(1.04),
+    income9    = log(1.04),
+    insuredInsured    = log(0.98)
   )
   
-  beta_list_cost <- beta_list
-  beta_list_cost$intercept <- log(0.37 / (1 - 0.37))
-  beta_list_cost$cc_cat21   <- log(1.73)
-  beta_list_cost$cc_cat22   <- log(2.24)
-  beta_list_cost$cc_cat23p  <- log(2.97)
-  beta_list_cost$AGEG5YR    <- log(0.86)
-  beta_list_cost$SEXVAR     <- log(1.21)
-  beta_list_cost$RACE       <- log(1.09)
-  beta_list_cost$EDUCAG     <- log(0.82)
-  beta_list_cost$INCOMG1    <- log(0.89)
-  beta_list_cost$HLTHPL2    <- log(1.04)
+  beta_list_cost <- list(
+    intercept  = log(0.37 / (1 - 0.37)),
+    cc_cat21   = log(1.73),
+    cc_cat22   = log(2.24),
+    cc_cat23p  = log(2.97),
+    agegrp2    = log(0.86),
+    agegrp3    = log(0.86),
+    agegrp4    = log(0.86),
+    agegrp5    = log(0.86),
+    agegrp6    = log(0.86),
+    agegrp7    = log(0.86),
+    agegrp8    = log(0.86),
+    agegrp9    = log(0.86),
+    agegrp10   = log(0.86),
+    agegrp11   = log(0.86),
+    agegrp12   = log(0.86),
+    agegrp13   = log(0.86),
+    agegrp14   = log(0.86),
+    sexFemale  = log(1.21),
+    race2      = log(1.09),
+    race3      = log(1.09),
+    race4      = log(1.09),
+    race5      = log(1.09),
+    race6      = log(1.09),
+    race7      = log(1.09),
+    race8      = log(1.09),
+    race9      = log(1.09),
+    educ2      = log(0.82),
+    educ3      = log(0.82),
+    educ4      = log(0.82),
+    educ9      = log(0.82),
+    income2    = log(0.89),
+    income3    = log(0.89),
+    income4    = log(0.89),
+    income5    = log(0.89),
+    income6    = log(0.89),
+    income7    = log(0.89),
+    income9    = log(0.89),
+    insuredInsured = log(1.04)
+  )
   
   # ------------------------------------------------
   # Function to compute linear predictor
