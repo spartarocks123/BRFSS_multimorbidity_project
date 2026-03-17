@@ -194,60 +194,65 @@ library(viridis)
 # ------------------------------
 # 1. Load Simulated Dataset
 # ------------------------------
-sim_brfss <- read_csv("data/brfss_example.csv", show_col_types = FALSE)
-
-# Optional check
-glimpse(sim_brfss)
-
-# ------------------------------
-# 2. Recode variables
-# ------------------------------
-sim_brfss <- sim_brfss %>%
-  mutate(
-    # Only cc_cat2 is treated as a factor
-    cc_cat2 = factor(cc_cat2, levels = c("0","1","2","3+")),
-    cc_cat2 = relevel(cc_cat2, ref = "0")
+  sim_brfss <- read_csv("data/brfss_example.csv", show_col_types = FALSE)
+  
+  # Convert outcome to integer and predictors to factors
+  sim_brfss <- sim_brfss %>%
+    mutate(
+      routine_care = as.integer(routine_care),   # 0/1
+      cost_barrier = as.integer(cost_barrier),   # optional
+      AGEG5YR      = factor(AGEG5YR),
+      SEXVAR       = factor(SEXVAR),
+      RACE         = factor(RACE),
+      EDUCAG       = factor(EDUCAG),
+      INCOMG1      = factor(INCOMG1),
+      HLTHPL2      = factor(HLTHPL2),
+      cc_cat2      = factor(cc_cat2, levels = c("0","1","2","3+"))
+    )
+  
+  # ------------------------------
+  # 2. Adjust survey design
+  # ------------------------------
+  sim_brfss <- sim_brfss %>%
+    mutate(STSTR2 = as.character(STSTR))
+  
+  # Handle singleton strata
+  singleton_strata <- names(table(sim_brfss$STSTR2))[table(sim_brfss$STSTR2) == 1]
+  sim_brfss$STSTR2[sim_brfss$STSTR2 %in% singleton_strata] <- "singleton"
+  
+  options(survey.lonely.psu = "adjust")
+  
+  sim_design <- svydesign(
+    ids     = ~PSU,
+    strata  = ~STSTR2,
+    weights = ~LLCPWT,
+    data    = sim_brfss,
+    nest    = TRUE
   )
-
-# ------------------------------
-# 3. Adjust Survey Design
-# ------------------------------
-sim_brfss <- sim_brfss %>%
-  mutate(STSTR2 = as.character(STSTR))
-
-singleton_strata <- names(table(sim_brfss$STSTR2))[table(sim_brfss$STSTR2) == 1]
-sim_brfss$STSTR2[sim_brfss$STSTR2 %in% singleton_strata] <- "singleton"
-
-options(survey.lonely.psu = "adjust")
-
-sim_design <- svydesign(
-  ids     = ~PSU,
-  strata  = ~STSTR2,
-  weights = ~LLCPWT,
-  data    = sim_brfss,
-  nest    = TRUE
-)
-
-# ------------------------------
-# 4. Weighted Logistic Models
-# ------------------------------
-design_routine_sim <- subset(
-  sim_design,
-  !is.na(routine_care) &
-    !is.na(cc_cat2) &
-    !is.na(AGEG5YR) &
-    !is.na(SEXVAR) &
-    !is.na(RACE) &
-    !is.na(EDUCAG) &
-    !is.na(INCOMG1) &
-    !is.na(HLTHPL2)
-)
-
-model_routine_sim <- svyglm(
-  routine_care ~ cc_cat2 + AGEG5YR + SEXVAR + RACE + EDUCAG + INCOMG1 + HLTHPL2,
-  design = design_routine_sim,
-  family = quasibinomial()
-)
+  
+  # ------------------------------
+  # 3. Weighted Logistic Model
+  # ------------------------------
+  # Subset only if necessary (now routine_care is numeric 0/1)
+  design_routine_sim <- subset(
+    sim_design,
+    !is.na(routine_care)
+  )
+  
+  table(design_routine_sim$variables$AGEG5YR)
+  table(design_routine_sim$variables$SEXVAR)
+  table(design_routine_sim$variables$RACE)
+  table(design_routine_sim$variables$EDUCAG)
+  table(design_routine_sim$variables$INCOMG1)
+  table(design_routine_sim$variables$HLTHPL2)
+  table(design_routine_sim$variables$cc_cat2)
+  
+  # Fit survey-weighted logistic regression
+  model_routine_sim <- svyglm(
+    routine_care ~ cc_cat2 + AGEG5YR + SEXVAR + RACE + EDUCAG + INCOMG1 + HLTHPL2,
+    design = design_routine_sim,
+    family = quasibinomial()
+  )
 
 design_cost_sim <- subset(
   sim_design,
@@ -603,7 +608,7 @@ na_summary
 # ------------------------------
 
 # Male
-design_male <- subset(sim_design, SEXVAR == 1)
+design_male_routine <- subset(sim_design, SEXVAR == 1)
 model_male_routine <- svyglm(
   routine_care ~ cc_cat2 + AGEG5YR + RACE + EDUCAG + INCOMG1 + HLTHPL2,
   design = design_male,
@@ -616,7 +621,7 @@ model_male_cost <- svyglm(
 )
 
 # Female
-design_female <- subset(sim_design, SEXVAR == 2)
+design_female_routine <- subset(sim_design, SEXVAR == 2)
 model_female_routine <- svyglm(
   routine_care ~ cc_cat2 + AGEG5YR + RACE + EDUCAG + INCOMG1 + HLTHPL2,
   design = design_female,
@@ -634,29 +639,64 @@ model_female_cost <- svyglm(
 
 
 # Insured
-design_male <- subset(sim_design, SEXVAR == 1)
-model_male_routine <- svyglm(
-  routine_care ~ cc_cat2 + AGEG5YR + RACE + EDUCAG + INCOMG1 + HLTHPL2,
-  design = design_male,
+design_insured_routine <- subset(sim_design, HLTHPL2 == 2)
+model_insured_routine <- svyglm(
+  routine_care ~ cc_cat2 + AGEG5YR + RACE + EDUCAG + INCOMG1,
+  design = design_insured,
   family = quasibinomial()
 )
-model_male_cost <- svyglm(
-  cost_barrier ~ cc_cat2 + AGEG5YR + RACE + EDUCAG + INCOMG1 + HLTHPL2,
-  design = design_male,
+model_insured_cost <- svyglm(
+  cost_barrier ~ cc_cat2 + AGEG5YR + RACE + EDUCAG + INCOMG1,
+  design = design_insured,
   family = quasibinomial()
 )
 
 # Uninsured
-design_female <- subset(sim_design, SEXVAR == 2)
-model_female_routine <- svyglm(
-  routine_care ~ cc_cat2 + AGEG5YR + RACE + EDUCAG + INCOMG1 + HLTHPL2,
-  design = design_female,
+design_uninsured_routine <- subset(sim_design, HLTHPL2 == 1)
+model_uninsured_routine <- svyglm(
+  routine_care ~ cc_cat2 + AGEG5YR + RACE + EDUCAG + INCOMG1,
+  design = design_uninsured,
   family = quasibinomial()
 )
-model_female_cost <- svyglm(
-  cost_barrier ~ cc_cat2 + AGEG5YR + RACE + EDUCAG + INCOMG1 + HLTHPL2,
-  design = design_female,
+model_uninsured_cost <- svyglm(
+  cost_barrier ~ cc_cat2 + AGEG5YR + RACE + EDUCAG + INCOMG1,
+  design = design_uninsured,
   family = quasibinomial()
 )
+
+
+#Odds Ratios 
+
+extract_or <- function(model, drop_intercept = FALSE){
+  coef_table <- summary(model)$coefficients
+  res <- tibble(
+    Variable = rownames(coef_table),
+    OR       = exp(coef_table[, "Estimate"]),
+    CI_lower = exp(coef_table[, "Estimate"] - 1.96 * coef_table[, "Std. Error"]),
+    CI_upper = exp(coef_table[, "Estimate"] + 1.96 * coef_table[, "Std. Error"]),
+    p_value  = coef_table[, "Pr(>|t|)"]
+  )
+  if(drop_intercept) res <- filter(res, Variable != "(Intercept)")
+  res %>%
+    mutate(
+      OR       = round(OR,2),
+      CI_lower = round(CI_lower,2),
+      CI_upper = round(CI_upper,2),
+      p_value  = signif(p_value,3)
+    )
+}
+
+routine_male_or <- extract_or(model_male_routine, TRUE)
+cost_male_or    <- extract_or(model_male_cost, TRUE)
+
+routine_female_or <- extract_or(model_female_routine, TRUE)
+cost_female_or    <- extract_or(model_female_cost, TRUE)
+
+routine_insured_or <- extract_or(model_insured_routine, TRUE)
+cost_insured_or    <- extract_or(model_insured_cost, TRUE)
+
+routine_uninsured_or <- extract_or(model_uninsured_routine, TRUE)
+cost_uninsured_or    <- extract_or(model_uninsured_cost, TRUE)
+
 
 
