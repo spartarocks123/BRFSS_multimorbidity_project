@@ -160,11 +160,15 @@ if (generate_sim_brfss) {
       STSTR2   = factor(STSTR) # initial strata factor
     )
   
-  # Handle singleton strata
-  singleton_strata <- names(table(sim_brfss$STSTR2))[table(sim_brfss$STSTR2)==1]
-  sim_brfss$STSTR2[sim_brfss$STSTR2 %in% singleton_strata] <- "singleton"
-  sim_brfss$STSTR2 <- factor(sim_brfss$STSTR2)
-  
+    # Handle singleton strata safely
+  sim_brfss <- sim_brfss %>%
+    mutate(
+      STSTR2 = as.character(STSTR),
+      STSTR2 = ifelse(duplicated(STSTR2) | duplicated(STSTR2, fromLast = TRUE),
+                      STSTR2,
+                      "singleton"),   # replace singletons
+      STSTR2 = factor(STSTR2)  # convert back to factor
+    )  
   options(survey.lonely.psu = "adjust")
   
   # ------------------------------------------------
