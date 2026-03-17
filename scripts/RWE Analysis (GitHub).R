@@ -181,18 +181,40 @@ if (generate_sim_brfss) {
   # Function to compute linear predictor
   # ------------------------------------------------
   compute_lp <- function(df, beta) {
-    beta$intercept +
+    lp <- beta$intercept +
+      
       ifelse(df$cc_cat2=="1", beta$cc_cat21, 0) +
       ifelse(df$cc_cat2=="2", beta$cc_cat22, 0) +
       ifelse(df$cc_cat2=="3+", beta$cc_cat23p, 0) +
-      df$AGEG5YR_num * beta$AGEG5YR +
-      (df$SEXVAR_num==2) * beta$SEXVAR +
-      df$RACE_num * beta$RACE +
-      df$EDUCAG_num * beta$EDUCAG +
-      df$INCOMG1_num * beta$INCOMG1 +
-      (df$HLTHPL2_num==2) * beta$HLTHPL2
-  }
-  
+      
+      # Age dummies
+      ifelse(df$AGEG5YR==2, beta$agegrp2, 0) +
+      ifelse(df$AGEG5YR==3, beta$agegrp3, 0) +
+      ...
+    ifelse(df$AGEG5YR==14, beta$agegrp14, 0) +
+      
+      # Sex
+      ifelse(df$SEXVAR==2, beta$sexFemale, 0) +
+      
+      # Race
+      ifelse(df$RACE==2, beta$race2, 0) +
+      ...
+    ifelse(df$RACE==9, beta$race9, 0) +
+      
+      # Education
+      ifelse(df$EDUCAG==2, beta$educ2, 0) +
+      ifelse(df$EDUCAG==3, beta$educ3, 0) +
+      ...
+    
+    # Income
+    ifelse(df$INCOMG1==2, beta$income2, 0) +
+      ...
+    
+    # Insurance
+    ifelse(df$HLTHPL2==2, beta$insuredInsured, 0)
+    
+    return(lp)
+  }  
   # ------------------------------------------------
   # Simulate outcomes (once)
   # ------------------------------------------------
