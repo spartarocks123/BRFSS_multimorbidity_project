@@ -21,7 +21,8 @@ generate_sim_brfss <- TRUE
 if (generate_sim_brfss) {
   
   set.seed(123)
-  n <- 460000L
+  n <- 10000L # Use 460000L for full dataset
+  
   bern <- function(p) rbinom(n, 1, p)
   
   # ------------------------------------------------
@@ -72,25 +73,18 @@ if (generate_sim_brfss) {
   )
   
   # ------------------------------------------------
-  # Create numeric versions for simulation
+  # Create numeric versions for simulation & derive multimorbidity
   # ------------------------------------------------
   sim_brfss <- sim_brfss %>%
     mutate(
-      AGEG5YR_num = as.numeric(AGEG5YR),
-      SEXVAR_num  = as.numeric(SEXVAR),
-      RACE_num    = as.numeric(RACE),
-      EDUCAG_num  = as.numeric(EDUCAG),
-      INCOMG1_num = as.numeric(INCOMG1),
-      HLTHPL2_num = as.numeric(HLTHPL2)
-    )
-  
-  # ------------------------------------------------
-  # Derived multimorbidity variables
-  # ------------------------------------------------
-  sim_brfss <- sim_brfss %>%
-    mutate(
-      cc_count = rowSums(across(cc_mi:cc_diabetes)),
-      cc_cat2 = case_when(
+      AGEG5YR_num  = as.numeric(AGEG5YR),
+      SEXVAR_num   = as.numeric(SEXVAR),
+      RACE_num     = as.numeric(RACE),
+      EDUCAG_num   = as.numeric(EDUCAG),
+      INCOMG1_num  = as.numeric(INCOMG1),
+      HLTHPL2_num  = as.numeric(HLTHPL2),
+      cc_count     = rowSums(across(cc_mi:cc_diabetes)),
+      cc_cat2      = case_when(
         cc_count == 0 ~ "0",
         cc_count == 1 ~ "1",
         cc_count == 2 ~ "2",
@@ -99,7 +93,7 @@ if (generate_sim_brfss) {
     )
   
   # ------------------------------------------------
-  # Target log-odds coefficients (β) based on original ORs
+  # Target log-odds coefficients (β)
   # ------------------------------------------------
   beta_list <- list(
     intercept  = log(0.44 / (1 - 0.44)),
@@ -143,16 +137,16 @@ if (generate_sim_brfss) {
   }
   
   # ------------------------------------------------
-  # Simulate outcomes
+  # Simulate outcomes (once)
   # ------------------------------------------------
   sim_brfss <- sim_brfss %>%
     mutate(
-      routine_care   = rbinom(n, 1, plogis(compute_lp(., beta_list))),
-      cost_barrier   = rbinom(n, 1, plogis(compute_lp(., beta_list_cost)))
+      routine_care = rbinom(n, 1, plogis(compute_lp(., beta_list))),
+      cost_barrier = rbinom(n, 1, plogis(compute_lp(., beta_list_cost)))
     )
   
   # ------------------------------------------------
-  # Convert to factors for modeling
+  # Convert all covariates to factors for modeling
   # ------------------------------------------------
   sim_brfss <- sim_brfss %>%
     mutate(
@@ -162,8 +156,16 @@ if (generate_sim_brfss) {
       EDUCAG   = factor(EDUCAG),
       INCOMG1  = factor(INCOMG1),
       HLTHPL2  = factor(HLTHPL2),
-      cc_cat2  = factor(cc_cat2, levels = c("0","1","2","3+"))
+      cc_cat2  = factor(cc_cat2, levels = c("0","1","2","3+")),
+      STSTR2   = factor(STSTR) # initial strata factor
     )
+  
+  # Handle singleton strata
+  singleton_strata <- names(table(sim_brfss$STSTR2))[table(sim_brfss$STSTR2)==1]
+  sim_brfss$STSTR2[sim_brfss$STSTR2 %in% singleton_strata] <- "singleton"
+  sim_brfss$STSTR2 <- factor(sim_brfss$STSTR2)
+  
+  options(survey.lonely.psu = "adjust")
   
   # ------------------------------------------------
   # Save simulated dataset
@@ -172,111 +174,38 @@ if (generate_sim_brfss) {
   write.csv(sim_brfss, file.path("data","brfss_example.csv"), row.names = FALSE)
 }
 
-
 # ==========================================================
 # Simulated Dataset Analysis (Replication of BRFSS Workflow)
 # ==========================================================
 
-library(tidyverse)
-library(survey)
-library(ggeffects)
-library(ggplot2)
-library(scales)
-library(viridis)
+# ------------------------------
+# 1. Survey design
+# ------------------------------
+sim_design <- svydesign(
+  ids     = ~PSU,
+  strata  = ~STSTR2,
+  weights = ~LLCPWT,
+  data    = sim_brfss,
+  nest    = TRUE
+)
 
 # ------------------------------
-# 1. Load Simulated Dataset
+# 2. Weighted logistic models
 # ------------------------------
-  sim_brfss <- sim_brfss %>%
-    mutate(
-      # Keep numeric for simulation
-      AGEG5YR_num = as.numeric(AGEG5YR),
-      SEXVAR_num  = as.numeric(SEXVAR),
-      RACE_num    = as.numeric(RACE),
-      EDUCAG_num  = as.numeric(EDUCAG),
-      INCOMG1_num = as.numeric(INCOMG1),
-      HLTHPL2_num = as.numeric(HLTHPL2)
-    )
-  
-  lp_routine <- beta_list$intercept +
-    ifelse(sim_brfss$cc_cat2=="1", beta_list$cc_cat21, 0) +
-    ifelse(sim_brfss$cc_cat2=="2", beta_list$cc_cat22, 0) +
-    ifelse(sim_brfss$cc_cat2=="3+", beta_list$cc_cat23p, 0) +
-    sim_brfss$AGEG5YR_num * beta_list$AGEG5YR +
-    (sim_brfss$SEXVAR_num==2) * beta_list$SEXVAR +
-    sim_brfss$RACE_num * beta_list$RACE +
-    sim_brfss$EDUCAG_num * beta_list$EDUCAG +
-    sim_brfss$INCOMG1_num * beta_list$INCOMG1 +
-    (sim_brfss$HLTHPL2_num==2) * beta_list$HLTHPL2
-  
-  sim_brfss$routine_care <- rbinom(n, 1, plogis(lp_routine))
-  
-  sim_brfss <- sim_brfss %>%
-    mutate(
-      AGEG5YR  = factor(AGEG5YR),
-      SEXVAR   = factor(SEXVAR),
-      RACE     = factor(RACE),
-      EDUCAG   = factor(EDUCAG),
-      INCOMG1  = factor(INCOMG1),
-      HLTHPL2  = factor(HLTHPL2),
-      cc_cat2  = factor(cc_cat2, levels = c("0","1","2","3+"))
-    )
-  # ------------------------------
-  # 2. Adjust survey design
-  # ------------------------------
-  sim_brfss <- sim_brfss %>%
-    mutate(STSTR2 = as.character(STSTR))
-  
-  # Handle singleton strata
-  singleton_strata <- names(table(sim_brfss$STSTR2))[table(sim_brfss$STSTR2) == 1]
-  sim_brfss$STSTR2[sim_brfss$STSTR2 %in% singleton_strata] <- "singleton"
-  
-  options(survey.lonely.psu = "adjust")
-  
-  sim_design <- svydesign(
-    ids     = ~PSU,
-    strata  = ~STSTR2,
-    weights = ~LLCPWT,
-    data    = sim_brfss,
-    nest    = TRUE
-  )
-  
-  # ------------------------------
-  # 3. Weighted Logistic Model
-  # ------------------------------
-  # Subset only if necessary (now routine_care is numeric 0/1)
-  design_routine_sim <- subset(
-    sim_design,
-    !is.na(routine_care)
-  )
-  
-  # Fit survey-weighted logistic regression
-  model_routine_sim <- svyglm(
-    routine_care ~ cc_cat2 + AGEG5YR + SEXVAR + RACE + EDUCAG + INCOMG1 + HLTHPL2,
-    design = design_routine_sim,
-    family = quasibinomial()
-  )
-
-design_cost_sim <- subset(
-  sim_design,
-  !is.na(cost_barrier) &
-    !is.na(cc_cat2) &
-    !is.na(AGEG5YR) &
-    !is.na(SEXVAR) &
-    !is.na(RACE) &
-    !is.na(EDUCAG) &
-    !is.na(INCOMG1) &
-    !is.na(HLTHPL2)
+model_routine_sim <- svyglm(
+  routine_care ~ cc_cat2 + AGEG5YR + SEXVAR + RACE + EDUCAG + INCOMG1 + HLTHPL2,
+  design = subset(sim_design, !is.na(routine_care)),
+  family = quasibinomial()
 )
 
 model_cost_sim <- svyglm(
   cost_barrier ~ cc_cat2 + AGEG5YR + SEXVAR + RACE + EDUCAG + INCOMG1 + HLTHPL2,
-  design = design_cost_sim,
+  design = subset(sim_design, !is.na(cost_barrier)),
   family = quasibinomial()
 )
 
 # ------------------------------
-# 5. Extract Predicted Probabilities
+# 3. Extract predicted probabilities
 # ------------------------------
 pred_routine_sim <- ggpredict(model_routine_sim, terms = "cc_cat2") %>%
   mutate(x = factor(x, levels = c("0","1","2","3+"))) %>%
@@ -287,7 +216,7 @@ pred_cost_sim <- ggpredict(model_cost_sim, terms = "cc_cat2") %>%
   filter(!is.na(x))
 
 # ------------------------------
-# 6. Extract Odds Ratios
+# 4. Extract odds ratios
 # ------------------------------
 extract_or <- function(model, drop_intercept = FALSE){
   coef_table <- summary(model)$coefficients
@@ -312,12 +241,13 @@ routine_or <- extract_or(model_routine_sim, TRUE)
 cost_or    <- extract_or(model_cost_sim, TRUE)
 
 github_dir <- ".../tables/"
+if(!dir.exists(github_dir)) dir.create(github_dir, recursive = TRUE)
 
 write.csv(routine_or, file = paste0(github_dir, "routine_or.csv"), row.names = FALSE)
 write.csv(cost_or, file = paste0(github_dir, "cost_or.csv"), row.names = FALSE)
 
 # ------------------------------
-# 7. Figure 1: Routine Checkup
+# 5. Figure 1: Routine Checkup
 # ------------------------------
 ggplot(pred_routine_sim, aes(x = x, y = predicted)) +
   geom_col(fill = viridis(1, option = "C", alpha = 0.8), width = 0.6) +
