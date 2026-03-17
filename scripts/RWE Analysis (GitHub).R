@@ -633,6 +633,30 @@ model_female_cost <- svyglm(
 # ------------------------------
 
 
+# Insured
+design_male <- subset(sim_design, SEXVAR == 1)
+model_male_routine <- svyglm(
+  routine_care ~ cc_cat2 + AGEG5YR + RACE + EDUCAG + INCOMG1 + HLTHPL2,
+  design = design_male,
+  family = quasibinomial()
+)
+model_male_cost <- svyglm(
+  cost_barrier ~ cc_cat2 + AGEG5YR + RACE + EDUCAG + INCOMG1 + HLTHPL2,
+  design = design_male,
+  family = quasibinomial()
+)
 
+# Uninsured
+design_female <- subset(sim_design, SEXVAR == 2)
+model_female_routine <- svyglm(
+  routine_care ~ cc_cat2 + AGEG5YR + RACE + EDUCAG + INCOMG1 + HLTHPL2,
+  design = design_female,
+  family = quasibinomial()
+)
+model_female_cost <- svyglm(
+  cost_barrier ~ cc_cat2 + AGEG5YR + RACE + EDUCAG + INCOMG1 + HLTHPL2,
+  design = design_female,
+  family = quasibinomial()
+)
 
 
