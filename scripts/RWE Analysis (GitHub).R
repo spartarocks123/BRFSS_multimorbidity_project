@@ -2,7 +2,7 @@
 # Simulate Example BRFSS Dataset (Adjusted Prevalences & Survey Variables)
 # ------------------------------
 
-library(haven)
+library(haven) #allows you to load foreign data formats (SAS, SPSS and Stata) in to R
 library(tidyverse)
 library(survey)
 library(ggeffects)
