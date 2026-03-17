@@ -1,6 +1,7 @@
 # ------------------------------
 # Simulate Example BRFSS Dataset (Adjusted Prevalences & Survey Variables)
 # ------------------------------
+
 library(haven)
 library(tidyverse)
 library(survey)
@@ -12,32 +13,54 @@ library(pROC)
 library(ResourceSelection)
 library(pscl)
 
-use_cached        <- TRUE
-compute_figures   <- TRUE
-save_outputs      <- TRUE
+use_cached         <- TRUE
+compute_figures    <- TRUE
+save_outputs       <- TRUE
 generate_sim_brfss <- TRUE
 
 if (generate_sim_brfss) {
+  
   set.seed(123)
   n <- 460000L
   
   bern <- function(p) rbinom(n, 1, p)
   
-  # --- Covariate probabilities based on weighted BRFSS prevalences ---
+# ------------------------------------------------
+# Covariate probabilities (weighted BRFSS estimates)
+# ------------------------------------------------
+  
   age_probs <- c(0.122, 0.076, 0.091, 0.077, 0.086, 0.067, 0.076, 0.069,
                  0.084, 0.070, 0.063, 0.047, 0.053, 0.018)
+  
   sex_probs <- c(0.491, 0.509)
-  race_probs <- c(0.56, 0.115, 0.011, 0.061, 0.004, 0.011, 0.026, 0.192, 0.021)
-  educ_probs <- c(0.111, 0.272, 0.295, 0.316, 0, 0, 0, 0, 0.006)
-  income_probs <- c(0.049, 0.072, 0.089, 0.101, 0.225, 0.181, 0.076, 0, 0.208)
+  
+  race_probs <- c(0.56, 0.115, 0.011, 0.061, 0.004,
+                  0.011, 0.026, 0.192, 0.021)
+  
+  educ_probs <- c(0.111, 0.272, 0.295, 0.316,
+                  0, 0, 0, 0, 0.006)
+  
+  income_probs <- c(0.049, 0.072, 0.089, 0.101,
+                    0.225, 0.181, 0.076, 0, 0.208)
+  
   insured_probs <- c(0.086, 0.914)
   
-  # --- Resample survey design variables from the real BRFSS ---
-  psu_vals   <- sample(brfss_keep$PSU, n, replace = TRUE)
+  
+  # ------------------------------------------------
+  # Resample survey design variables from real BRFSS
+  # ------------------------------------------------
+  
+  psu_vals    <- sample(brfss_keep$PSU, n, replace = TRUE)
   strata_vals <- sample(brfss_keep$STSTR, n, replace = TRUE)
   weight_vals <- sample(brfss_keep$LLCPWT, n, replace = TRUE)
   
+  
+  # ------------------------------------------------
+  # Simulate dataset
+  # ------------------------------------------------
+  
   sim_brfss <- tibble(
+    
     # Chronic conditions
     cc_mi       = bern(0.068),
     cc_stroke   = bern(0.035),
@@ -48,7 +71,6 @@ if (generate_sim_brfss) {
     cc_depress  = bern(0.21),
     cc_ckd      = bern(0.041),
     cc_diabetes = bern(0.125),
-    cc_cancer   = bern(0.119),
     
     # Covariates
     AGEG5YR = sample(1:14, n, replace = TRUE, prob = age_probs),
@@ -58,23 +80,39 @@ if (generate_sim_brfss) {
     INCOMG1 = sample(1:9, n, replace = TRUE, prob = income_probs),
     HLTHPL2 = sample(c(1,2), n, replace = TRUE, prob = insured_probs),
     
-    # Survey design variables (resampled from real BRFSS)
+    # Survey design variables
     PSU    = psu_vals,
     STSTR  = strata_vals,
     LLCPWT = weight_vals
   )
   
-  # --- Derived variables ---
+  
+  # ------------------------------------------------
+  # Derived multimorbidity variables
+  # ------------------------------------------------
+  
   sim_brfss <- sim_brfss %>%
     mutate(
+      
+      # Total chronic conditions
       cc_count = rowSums(across(cc_mi:cc_diabetes)),
-      cc_cat2  = case_when(
+      
+      # Multimorbidity category
+      cc_cat2 = case_when(
         cc_count == 0 ~ "0",
         cc_count == 1 ~ "1",
         cc_count == 2 ~ "2",
         cc_count >= 3 ~ "3+"
       ),
-      cc_cat2 = factor(cc_cat2, levels = c("0","1","2","3+"))
+      
+      # Convert predictors to factors for modeling
+      cc_cat2  = factor(cc_cat2, levels = c("0","1","2","3+")),
+      AGEG5YR  = factor(AGEG5YR),
+      RACE     = factor(RACE),
+      EDUCAG   = factor(EDUCAG),
+      INCOMG1  = factor(INCOMG1),
+      SEXVAR   = factor(SEXVAR),
+      HLTHPL2  = factor(HLTHPL2)
     )
 }
   
@@ -555,4 +593,46 @@ na_summary <- sim_brfss %>%
   dplyr::mutate(NA_Percent = scales::percent(NA_Fraction, accuracy = 0.01))
 
 na_summary
+
+# ==========================================================
+# Sensitivity Analyses (Gender, Insurance Status)
+# ==========================================================
+
+# ------------------------------
+# Sensitivity Analysis (Gender)
+# ------------------------------
+
+# Male
+design_male <- subset(sim_design, SEXVAR == 1)
+model_male_routine <- svyglm(
+  routine_care ~ cc_cat2 + AGEG5YR + RACE + EDUCAG + INCOMG1 + HLTHPL2,
+  design = design_male,
+  family = quasibinomial()
+)
+model_male_cost <- svyglm(
+  cost_barrier ~ cc_cat2 + AGEG5YR + RACE + EDUCAG + INCOMG1 + HLTHPL2,
+  design = design_male,
+  family = quasibinomial()
+)
+
+# Female
+design_female <- subset(sim_design, SEXVAR == 2)
+model_female_routine <- svyglm(
+  routine_care ~ cc_cat2 + AGEG5YR + RACE + EDUCAG + INCOMG1 + HLTHPL2,
+  design = design_female,
+  family = quasibinomial()
+)
+model_female_cost <- svyglm(
+  cost_barrier ~ cc_cat2 + AGEG5YR + RACE + EDUCAG + INCOMG1 + HLTHPL2,
+  design = design_female,
+  family = quasibinomial()
+)
+
+# ------------------------------
+# Sensitivity Analysis (Insurance Status)
+# ------------------------------
+
+
+
+
 
