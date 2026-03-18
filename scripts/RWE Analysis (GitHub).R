@@ -13,19 +13,27 @@ set.seed(123)
 n <- 10000L
 
 # ------------------------------
-# 1. Covariates and chronic conditions
+# 1. Covariates and chronic conditions (fully auto)
 # ------------------------------
-cov_probs <- sim_brfss %>%
-  select(AGEG5YR, SEXVAR, RACE, EDUCAG, INCOMG1, HLTHPL2) %>%
-  map(~ prop.table(table(.x)) %>% as.numeric())
 
-sim_brfss <- map_dfc(cov_probs, ~sample(seq_along(.x), n, replace=TRUE, prob=.x)) %>%
-  mutate(across(everything(), factor))
+# Covariates: sample according to existing proportions
+cov_vars <- c("AGEG5YR","SEXVAR","RACE","EDUCAG","INCOMG1","HLTHPL2")
+sim_brfss[cov_vars] <- lapply(cov_vars, function(v) {
+  probs <- prop.table(table(sim_brfss[[v]]))
+  factor(sample(names(probs), n, replace = TRUE, prob = probs))
+})
 
+# Chronic conditions: compute probabilities from original dataset prevalence
+cc_vars <- c("cc_mi","cc_stroke","cc_asthma","cc_skin_ca","cc_other_ca",
+             "cc_copd","cc_depress","cc_ckd","cc_diabetes")
 
-cc_probs <- c(0.068,0.035,0.103,0.056,0.084,0.063,0.21,0.041,0.125)
-cc_vars <- c("cc_mi","cc_stroke","cc_asthma","cc_skin_ca","cc_other_ca","cc_copd","cc_depress","cc_ckd","cc_diabetes")
-sim_brfss[cc_vars] <- map_dfc(cc_probs, ~rbinom(n,1,.x))
+cc_probs <- sapply(cc_vars, function(v) mean(sim_brfss[[v]], na.rm=TRUE))
+
+sim_brfss[cc_vars] <- lapply(cc_vars, function(v){
+  rbinom(n, 1, cc_probs[v])
+})
+
+# Multimorbidity count & category
 sim_brfss <- sim_brfss %>%
   mutate(cc_count = rowSums(across(all_of(cc_vars))),
          cc_cat2  = cut(cc_count, breaks=c(-1,0,1,2,Inf), labels=c("0","1","2","3+")))
@@ -48,17 +56,30 @@ options(survey.lonely.psu="adjust")
 simulate_outcome <- function(df, beta) {
   mm <- model.matrix(~ cc_cat2 + AGEG5YR + SEXVAR + RACE + EDUCAG + INCOMG1 + HLTHPL2, data=df)
   probs <- plogis(mm %*% beta)
-  rbinom(nrow(df),1,probs)
+  rbinom(nrow(df), 1, probs)
 }
 
-# Example beta vectors (intercept + dummy variables in model.matrix order)
-beta_routine <- c(log(0.44/(1-0.44)), rep(log(1.16),13), log(1.53), rep(log(0.98),8), rep(log(1.09),4), rep(log(1.04),7), log(0.98))
-beta_cost    <- c(log(0.37/(1-0.37)), rep(log(0.86),13), log(1.21), rep(log(1.09),8), rep(log(0.82),4), rep(log(0.89),7), log(1.04))
+# ------------------------------
+# Automatically compute log-odds from prevalence
+# ------------------------------
 
+# Function to convert prevalence to log-odds
+prev2logit <- function(p) log(p / (1 - p))
+
+# 1. Compute overall prevalence for each outcome
+prev_routine <- 0.44  # or compute from data: mean(sim_brfss$routine_care, na.rm=TRUE)
+prev_cost    <- 0.37  # or compute from data
+
+# 2. Set intercept = log-odds of overall prevalence
+#    All other covariates set to 0 → outcome prevalence matches overall target
+beta_routine_auto <- c(prev2logit(prev_routine), rep(0, ncol(model.matrix(~ cc_cat2 + AGEG5YR + SEXVAR + RACE + EDUCAG + INCOMG1 + HLTHPL2, sim_brfss)))-1)
+beta_cost_auto    <- c(prev2logit(prev_cost),    rep(0, ncol(model.matrix(~ cc_cat2 + AGEG5YR + SEXVAR + RACE + EDUCAG + INCOMG1 + HLTHPL2, sim_brfss)))-1)
+
+# 3. Simulate outcomes
 sim_brfss <- sim_brfss %>%
   mutate(
-    routine_care = simulate_outcome(., beta_routine),
-    cost_barrier = simulate_outcome(., beta_cost)
+    routine_care = simulate_outcome(., beta_routine_auto),
+    cost_barrier = simulate_outcome(., beta_cost_auto)
   )
 
 # ------------------------------
