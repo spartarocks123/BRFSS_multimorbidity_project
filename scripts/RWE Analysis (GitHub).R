@@ -1,7 +1,6 @@
 # =========================================
 # Simulate BRFSS Example Dataset & Analysis
 # =========================================
-
 library(tidyverse)
 library(survey)
 library(ggeffects)
@@ -11,47 +10,77 @@ library(pROC)
 
 set.seed(123)
 n <- 10000L
-
-# Start EMPTY simulation dataset
-sim_brfss <- data.frame(matrix(nrow = n, ncol = 0))
-
 cov_vars <- c("agegrp","sex","race","educ","income","insured")
 
-# Sample from REAL data distribution
-sim_brfss[cov_vars] <- lapply(cov_vars, function(v) {
-  probs <- prop.table(table(brfss_keep[[v]]))
-  sample(names(probs), n, replace = TRUE, prob = probs)
-})
+sim_brfss <- data.frame(
+  lapply(cov_vars, function(v) {
+    # get levels of the factor
+    lvls <- levels(brfss_keep[[v]])
+    # get probabilities from the real data
+    probs <- prop.table(table(brfss_keep[[v]]))
+    # sample using probabilities, ensure names match levels
+    factor(
+      sample(names(probs), n, replace = TRUE, prob = probs),
+      levels = lvls
+    )
+  })
+)
 
-# Ensure correct factor structure
-sim_brfss <- sim_brfss %>%
-  mutate(across(all_of(cov_vars),
-                ~ factor(.x, levels = levels(brfss_keep[[cur_column()]]))))
 # ------------------------------
-# 1. Covariates and chronic conditions (fully auto)
+# 2. Simulate exposure (cc_cat2)
 # ------------------------------
 
-# Covariates: sample according to existing proportions
-cov_vars <- c("agegrp","sex","race","educ","income","insured")
-sim_brfss[cov_vars] <- lapply(cov_vars, function(v) {
-  probs <- prop.table(table(sim_brfss[[v]]))
-  factor(sample(names(probs), n, replace = TRUE, prob = probs))
-})
+sim_brfss$cc_cat2 <- sample(
+  brfss_keep$cc_cat2,
+  n,
+  replace = TRUE
+)
 
-# Chronic conditions: compute probabilities from original dataset prevalence
-cc_vars <- c("cc_mi","cc_stroke","cc_asthma","cc_skin_ca","cc_other_ca",
-             "cc_copd","cc_depress","cc_ckd","cc_diabetes")
+# ------------------------------
+# 3. Ensure factor levels match original data
+# ------------------------------
 
-cc_probs <- sapply(cc_vars, function(v) mean(sim_brfss[[v]], na.rm=TRUE))
-
-sim_brfss[cc_vars] <- lapply(cc_vars, function(v){
-  rbinom(n, 1, cc_probs[v])
-})
-
-# Multimorbidity count & category
 sim_brfss <- sim_brfss %>%
-  mutate(cc_count = rowSums(across(all_of(cc_vars))),
-         cc_cat2  = cut(cc_count, breaks=c(-1,0,1,2,Inf), labels=c("0","1","2","3+")))
+  mutate(
+    across(all_of(cov_vars),
+           ~ factor(.x, levels = levels(brfss_keep[[cur_column()]]))),
+    cc_cat2 = factor(cc_cat2, levels = levels(brfss_keep$cc_cat2))
+  )
+
+# ------------------------------
+# 4. Define simulation function (logistic model)
+# ------------------------------
+
+simulate_outcome <- function(df, beta) {
+  mm <- model.matrix(~ cc_cat2 + agegrp + sex + race + educ + income + insured, data = df)
+  probs <- plogis(mm %*% beta)
+  rbinom(nrow(df), 1, probs)
+}
+
+# ------------------------------
+# 5. Define beta coefficients
+# ------------------------------
+# NOTE: Length must match model.matrix columns exactly
+
+beta_routine <- c(
+  log(0.44/(1-0.44)),   # intercept
+  rep(log(1.16), 3),    # cc_cat2 levels (excluding reference)
+  rep(log(1.02), length(levels(sim_brfss$agegrp)) - 1),
+  log(1.10),            # sex
+  rep(log(1.05), length(levels(sim_brfss$race)) - 1),
+  rep(log(1.03), length(levels(sim_brfss$educ)) - 1),
+  rep(log(0.97), length(levels(sim_brfss$income)) - 1),
+  log(0.90)             # insured
+)
+
+# ------------------------------
+# 6. Simulate outcomes
+# ------------------------------
+
+sim_brfss <- sim_brfss %>%
+  mutate(
+    routine_care = simulate_outcome(., beta_routine)
+  )
 
 # ------------------------------
 # 2. Simulate survey design variables
