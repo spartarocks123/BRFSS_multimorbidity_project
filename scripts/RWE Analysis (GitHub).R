@@ -12,12 +12,27 @@ library(pROC)
 set.seed(123)
 n <- 10000L
 
+# Start EMPTY simulation dataset
+sim_brfss <- data.frame(matrix(nrow = n, ncol = 0))
+
+cov_vars <- c("agegrp","sex","race","educ","income","insured")
+
+# Sample from REAL data distribution
+sim_brfss[cov_vars] <- lapply(cov_vars, function(v) {
+  probs <- prop.table(table(brfss_keep[[v]]))
+  sample(names(probs), n, replace = TRUE, prob = probs)
+})
+
+# Ensure correct factor structure
+sim_brfss <- sim_brfss %>%
+  mutate(across(all_of(cov_vars),
+                ~ factor(.x, levels = levels(brfss_keep[[cur_column()]]))))
 # ------------------------------
 # 1. Covariates and chronic conditions (fully auto)
 # ------------------------------
 
 # Covariates: sample according to existing proportions
-cov_vars <- c("AGEG5YR","SEXVAR","RACE","EDUCAG","INCOMG1","HLTHPL2")
+cov_vars <- c("agegrp","sex","race","educ","income","insured")
 sim_brfss[cov_vars] <- lapply(cov_vars, function(v) {
   probs <- prop.table(table(sim_brfss[[v]]))
   factor(sample(names(probs), n, replace = TRUE, prob = probs))
