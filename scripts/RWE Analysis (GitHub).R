@@ -26,7 +26,7 @@ derv_br$STSTR2[derv_br$STSTR2 %in% singleton_strata] <- "singleton"
 
 options(survey.lonely.psu = "adjust")
 
-sim_design <- svydesign(
+derv_design <- svydesign(
   ids     = ~PSU,
   strata  = ~STSTR2,
   weights = ~LLCPWT,
@@ -52,46 +52,46 @@ derv_br <- derv_br %>%
 # ------------------------------
 # 4. Weighted Logistic Models
 # ------------------------------
-design_routine_sim <- subset(sim_design,
-                             !is.na(routine_care) &
-                               !is.na(cc_cat2) &
-                               !is.na(agegrp) &
-                               !is.na(sex) &
-                               !is.na(race) &
-                               !is.na(educ) &
-                               !is.na(income) &
-                               !is.na(insured))
+design_routine_derv <- subset(derv_design,
+                              !is.na(routine_care) &
+                                !is.na(cc_cat2) &
+                                !is.na(agegrp) &
+                                !is.na(sex) &
+                                !is.na(race) &
+                                !is.na(educ) &
+                                !is.na(income) &
+                                !is.na(insured))
 
-model_routine_sim <- svyglm(
+model_routine_derv <- svyglm(
   routine_care ~ cc_cat2 + agegrp + sex + race + educ + income + insured,
-  design = design_routine_sim,
+  design = design_routine_derv,
   family = quasibinomial()
 )
 
-design_cost_sim <- subset(sim_design,
-                          !is.na(cost_barrier) &
-                            !is.na(cc_cat2) &
-                            !is.na(agegrp) &
-                            !is.na(sex) &
-                            !is.na(race) &
-                            !is.na(educ) &
-                            !is.na(income) &
-                            !is.na(insured))
+design_cost_derv <- subset(derv_design,
+                           !is.na(cost_barrier) &
+                             !is.na(cc_cat2) &
+                             !is.na(agegrp) &
+                             !is.na(sex) &
+                             !is.na(race) &
+                             !is.na(educ) &
+                             !is.na(income) &
+                             !is.na(insured))
 
-model_cost_sim <- svyglm(
+model_cost_derv <- svyglm(
   cost_barrier ~ cc_cat2 + agegrp + sex + race + educ + income + insured,
-  design = design_cost_sim,
+  design = design_cost_derv,
   family = quasibinomial()
 )
 
 # ------------------------------
 # 5. Extract Predicted Probabilities
 # ------------------------------
-pred_routine_sim <- ggpredict(model_routine_sim, terms = "cc_cat2") %>%
+pred_routine_derv <- ggpredict(model_routine_derv, terms = "cc_cat2") %>%
   mutate(x = factor(x, levels = c("0","1","2","3+"))) %>%
   filter(!is.na(x))
 
-pred_cost_sim <- ggpredict(model_cost_sim, terms = "cc_cat2") %>%
+pred_cost_derv <- ggpredict(model_cost_derv, terms = "cc_cat2") %>%
   mutate(x = factor(x, levels = c("0","1","2","3+"))) %>%
   filter(!is.na(x))
 
@@ -117,13 +117,13 @@ extract_or <- function(model, drop_intercept = FALSE){
     )
 }
 
-routine_or <- extract_or(model_routine_sim, TRUE)
-cost_or    <- extract_or(model_cost_sim, TRUE)
+routine_or <- extract_or(model_routine_derv, TRUE)
+cost_or    <- extract_or(model_cost_derv, TRUE)
 
 # ------------------------------
 # 7. Figure 1: Routine Checkup
 # ------------------------------
-ggplot(pred_routine_sim, aes(x = x, y = predicted)) +
+ggplot(pred_routine_derv, aes(x = x, y = predicted)) +
   geom_col(fill = viridis(1, option = "C", alpha = 0.8), width = 0.6) +
   geom_errorbar(aes(ymin = conf.low, ymax = conf.high),
                 width = 0.25, color = "gray20", linewidth = 1.5) +
@@ -131,7 +131,7 @@ ggplot(pred_routine_sim, aes(x = x, y = predicted)) +
                 y = conf.high + 0.02),
             size = 4, fontface = "bold") +
   scale_y_continuous(labels = percent_format(accuracy = 1),
-                     limits = c(0, max(pred_routine_sim$conf.high)*1.1)) +
+                     limits = c(0, max(pred_routine_derv$conf.high)*1.1)) +
   labs(x = "Number of Chronic Conditions", y = NULL,
        title = "Figure 1: Adjusted Predicted Probability of Routine Checkup by Multimorbidity",
        caption = "Derived analytic dataset; survey-weighted logistic regression with 95% CI") +
@@ -140,7 +140,7 @@ ggplot(pred_routine_sim, aes(x = x, y = predicted)) +
 # ------------------------------
 # 8. Figure 2: Cost Barrier
 # ------------------------------
-ggplot(pred_cost_sim, aes(x = x, y = predicted)) +
+ggplot(pred_cost_derv, aes(x = x, y = predicted)) +
   geom_col(fill = viridis(1, option = "D", alpha = 0.8), width = 0.6) +
   geom_errorbar(aes(ymin = conf.low, ymax = conf.high),
                 width = 0.25, color = "gray20", linewidth = 1.5) +
@@ -148,7 +148,7 @@ ggplot(pred_cost_sim, aes(x = x, y = predicted)) +
                 y = conf.high + 0.005),
             size = 4, fontface = "bold") +
   scale_y_continuous(labels = percent_format(accuracy = 1),
-                     limits = c(0, max(pred_cost_sim$conf.high)*1.1)) +
+                     limits = c(0, max(pred_cost_derv$conf.high)*1.1)) +
   labs(x = "Number of Chronic Conditions", y = NULL,
        title = "Figure 2: Adjusted Predicted Probability of Cost Barrier by Multimorbidity",
        caption = "Derived analytic dataset; survey-weighted logistic regression with 95% CI") +
@@ -164,8 +164,8 @@ plot_roc_auc <- function(model, design, outcome, color){
   auc(roc_obj)
 }
 
-auc_routine <- plot_roc_auc(model_routine_sim, design_routine_sim, "routine_care", "blue")
-auc_cost    <- plot_roc_auc(model_cost_sim, design_cost_sim, "cost_barrier", "red")
+auc_routine <- plot_roc_auc(model_routine_derv, design_routine_derv, "routine_care", "blue")
+auc_cost    <- plot_roc_auc(model_cost_derv, design_cost_derv, "cost_barrier", "red")
 
 # ------------------------------
 # 10. Calibration plots
@@ -191,26 +191,27 @@ calibration_plot <- function(model, design, outcome, color){
     theme_minimal(base_size = 14)
 }
 
-calibration_plot(model_routine_sim, design_routine_sim, "routine_care", "blue")
-calibration_plot(model_cost_sim, design_cost_sim, "cost_barrier", "red")
+calibration_plot(model_routine_derv, design_routine_derv, "routine_care", "blue")
+calibration_plot(model_cost_derv, design_cost_derv, "cost_barrier", "red")
 
 # ------------------------------
-# 10. Sensitivity analyses (gender & insurance)
+# 11. Sensitivity analyses (gender & insurance)
 # ------------------------------
 subset_designs <- list(
-  male = subset(sim_design, SEXVAR==1),
-  female = subset(sim_design, SEXVAR==2),
-  insured = subset(sim_design, HLTHPL2==2),
-  uninsured = subset(sim_design, HLTHPL2==1)
+  male = subset(derv_design, SEXVAR == 1),
+  female = subset(derv_design, SEXVAR == 2),
+  insured = subset(derv_design, HLTHPL2 == 2),
+  uninsured = subset(derv_design, HLTHPL2 == 1)
 )
 
 sensitivity_models <- map(subset_designs, function(dsg){
   list(
-    routine = fit_svyglm("routine_care", dsg),
-    cost    = fit_svyglm("cost_barrier", dsg)
+    routine = svyglm(routine_care ~ cc_cat2 + agegrp + sex + race + educ + income + insured,
+                     design = dsg, family = quasibinomial()),
+    cost    = svyglm(cost_barrier ~ cc_cat2 + agegrp + sex + race + educ + income + insured,
+                     design = dsg, family = quasibinomial())
   )
 })
 
 sensitivity_or <- map(sensitivity_models, ~map(.x, extract_or))
-
 
