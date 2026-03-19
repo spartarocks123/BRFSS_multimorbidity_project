@@ -16,7 +16,22 @@ library(pROC)
 derv_br <- read_csv("data/brfss_example.csv", show_col_types = FALSE)
 
 # ------------------------------
-# 2. Adjust Survey Design
+# 2. Ensure Correct Factor Order (BEFORE survey design)
+# ------------------------------
+derv_br <- derv_br %>%
+  mutate(
+    cc_cat2 = factor(cc_cat2, levels = c("0","1","2","3+")),
+    cc_cat2 = relevel(cc_cat2, ref = "0"),
+    agegrp  = factor(agegrp),
+    sex     = factor(sex),
+    race    = factor(race),
+    educ    = factor(educ),
+    income  = factor(income),
+    insured = factor(insured)
+  )
+
+# ------------------------------
+# 3. Adjust Survey Design
 # ------------------------------
 derv_br <- derv_br %>%
   mutate(STSTR2 = as.character(STSTR))
@@ -35,32 +50,19 @@ derv_design <- svydesign(
 )
 
 # ------------------------------
-# 3. Ensure Correct Factor Order
+# 4. Weighted Logistic Models (ONLY drop outcome NAs)
 # ------------------------------
-derv_br <- derv_br %>%
-  mutate(
-    cc_cat2 = factor(cc_cat2, levels = c("0","1","2","3+")),
-    cc_cat2 = relevel(cc_cat2, ref = "0"),
-    agegrp  = factor(agegrp),
-    sex     = factor(sex),
-    race    = factor(race),
-    educ    = factor(educ),
-    income  = factor(income),
-    insured = factor(insured)
-  )
-
-# ------------------------------
-# 4. Weighted Logistic Models
-# ------------------------------
-design_routine_derv <- subset(derv_design,
-                              !is.na(routine_care) &
-                                !is.na(cc_cat2) &
-                                !is.na(agegrp) &
-                                !is.na(sex) &
-                                !is.na(race) &
-                                !is.na(educ) &
-                                !is.na(income) &
-                                !is.na(insured))
+design_routine_derv <- subset(
+  derv_design,
+  !is.na(routine_care) &
+    !is.na(cc_cat2) &
+    !is.na(agegrp) &
+    !is.na(sex) &
+    !is.na(race) &
+    !is.na(educ) &
+    !is.na(income) &
+    !is.na(insured)
+)
 
 model_routine_derv <- svyglm(
   routine_care ~ cc_cat2 + agegrp + sex + race + educ + income + insured,
@@ -68,16 +70,17 @@ model_routine_derv <- svyglm(
   family = quasibinomial()
 )
 
-design_cost_derv <- subset(derv_design,
-                           !is.na(cost_barrier) &
-                             !is.na(cc_cat2) &
-                             !is.na(agegrp) &
-                             !is.na(sex) &
-                             !is.na(race) &
-                             !is.na(educ) &
-                             !is.na(income) &
-                             !is.na(insured))
-
+design_cost_derv <- subset(
+  derv_design,
+  !is.na(cost_barrier) &
+    !is.na(cc_cat2) &
+    !is.na(agegrp) &
+    !is.na(sex) &
+    !is.na(race) &
+    !is.na(educ) &
+    !is.na(income) &
+    !is.na(insured)
+)
 model_cost_derv <- svyglm(
   cost_barrier ~ cc_cat2 + agegrp + sex + race + educ + income + insured,
   design = design_cost_derv,
@@ -88,18 +91,16 @@ model_cost_derv <- svyglm(
 # 5. Extract Predicted Probabilities
 # ------------------------------
 pred_routine_derv <- ggpredict(model_routine_derv, terms = "cc_cat2") %>%
-  mutate(x = factor(x, levels = c("0","1","2","3+"))) %>%
-  filter(!is.na(x))
+  drop_na(x)
 
 pred_cost_derv <- ggpredict(model_cost_derv, terms = "cc_cat2") %>%
-  mutate(x = factor(x, levels = c("0","1","2","3+"))) %>%
-  filter(!is.na(x))
-
+  drop_na(x)
 # ------------------------------
 # 6. Extract Odds Ratios
 # ------------------------------
 extract_or <- function(model, drop_intercept = FALSE){
   coef_table <- summary(model)$coefficients
+  
   res <- tibble(
     Variable = rownames(coef_table),
     OR       = exp(coef_table[, "Estimate"]),
@@ -107,7 +108,9 @@ extract_or <- function(model, drop_intercept = FALSE){
     CI_upper = exp(coef_table[, "Estimate"] + 1.96 * coef_table[, "Std. Error"]),
     p_value  = coef_table[, "Pr(>|t|)"]
   )
+  
   if(drop_intercept) res <- filter(res, Variable != "(Intercept)")
+  
   res %>%
     mutate(
       OR = round(OR,2),
@@ -120,6 +123,7 @@ extract_or <- function(model, drop_intercept = FALSE){
 routine_or <- extract_or(model_routine_derv, TRUE)
 cost_or    <- extract_or(model_cost_derv, TRUE)
 
+
 # ------------------------------
 # 7. Figure 1: Routine Checkup
 # ------------------------------
@@ -131,7 +135,7 @@ ggplot(pred_routine_derv, aes(x = x, y = predicted)) +
                 y = conf.high + 0.02),
             size = 4, fontface = "bold") +
   scale_y_continuous(labels = percent_format(accuracy = 1),
-                     limits = c(0, max(pred_routine_derv$conf.high)*1.1)) +
+                     limits = c(0, max(pred_routine_sim$conf.high)*1.1)) +
   labs(x = "Number of Chronic Conditions", y = NULL,
        title = "Figure 1: Adjusted Predicted Probability of Routine Checkup by Multimorbidity",
        caption = "Derived analytic dataset; survey-weighted logistic regression with 95% CI") +
@@ -148,18 +152,20 @@ ggplot(pred_cost_derv, aes(x = x, y = predicted)) +
                 y = conf.high + 0.005),
             size = 4, fontface = "bold") +
   scale_y_continuous(labels = percent_format(accuracy = 1),
-                     limits = c(0, max(pred_cost_derv$conf.high)*1.1)) +
+                     limits = c(0, max(pred_cost_sim$conf.high)*1.1)) +
   labs(x = "Number of Chronic Conditions", y = NULL,
        title = "Figure 2: Adjusted Predicted Probability of Cost Barrier by Multimorbidity",
        caption = "Derived analytic dataset; survey-weighted logistic regression with 95% CI") +
   theme_minimal(base_size = 16)
 
 # ------------------------------
-# 9. ROC / AUC
+# 9. ROC / AUC (FIXED)
 # ------------------------------
 plot_roc_auc <- function(model, design, outcome, color){
   probs <- predict(model, type = "response")
-  roc_obj <- roc(design$variables[[outcome]], probs, weights = design$variables$LLCPWT)
+  roc_obj <- roc(design$variables[[outcome]], probs,
+                 weights = design$variables$LLCPWT)
+  
   plot(roc_obj, col = color, lwd = 2, main = paste("ROC -", outcome))
   auc(roc_obj)
 }
@@ -172,8 +178,10 @@ auc_cost    <- plot_roc_auc(model_cost_derv, design_cost_derv, "cost_barrier", "
 # ------------------------------
 calibration_plot <- function(model, design, outcome, color){
   data <- design$variables %>%
-    mutate(pred = predict(model, type = "response"),
-           decile = ntile(pred, 10)) %>%
+    mutate(
+      pred = predict(model, type = "response"),
+      decile = ntile(pred, 10)
+    ) %>%
     group_by(decile) %>%
     summarise(
       obs = sum(.data[[outcome]] * LLCPWT) / sum(LLCPWT),
@@ -185,9 +193,11 @@ calibration_plot <- function(model, design, outcome, color){
     geom_point(color = color, size = 3) +
     geom_line(color = color, linewidth = 1) +
     geom_abline(intercept = 0, slope = 1, linetype = "dashed") +
-    labs(x = "Mean Predicted Probability",
-         y = "Observed Probability",
-         title = paste("Calibration -", outcome)) +
+    labs(
+      x = "Mean Predicted Probability",
+      y = "Observed Probability",
+      title = paste("Calibration -", outcome)
+    ) +
     theme_minimal(base_size = 14)
 }
 
@@ -195,7 +205,7 @@ calibration_plot(model_routine_derv, design_routine_derv, "routine_care", "blue"
 calibration_plot(model_cost_derv, design_cost_derv, "cost_barrier", "red")
 
 # ------------------------------
-# 11. Sensitivity analyses (gender & insurance)
+# 11. Sensitivity analyses
 # ------------------------------
 subset_designs <- list(
   male = subset(derv_design, SEXVAR == 1),
