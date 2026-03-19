@@ -4,7 +4,7 @@
 **Purpose:** Portfolio artifact using 2024 BRFSS data to study the associations between multimorbidity, routine healthcare utilization, and deferred care due to cost.  
 
 **Folder Structure:**
-- `data/` → Simulated or example dataset showing variable structure
+- `data/` → Derived dataset showing variable structure
 - `scripts/` → R scripts for data cleaning, analysis, and visualization. SAS was used to create descriptive tables. SQL, Python, and/or Power BI/Tableau will be used later to replicate project as well to demonstrate proficiency. 
 - `figures/` → Placeholder for plots
 - `tables/` → Placeholder for output tables
@@ -13,7 +13,7 @@
 
 **Results:** So far, there appears to be a dose-response relationship between the number of chronic conditions and routine healthcare utilization. As the number of chronic conditions increase in an individual, the predicted probability of routine checkup increases. This is expected and correlates with what has been found in the literature. Interestingly, the predicted probability of delayed care due to cost also increases in accordance with the number of chronic conditions. All the p values are less than 0.01 and the OR increases as the number of chronic conditions increases. 
 
-**Note:** No raw BRFSS data is included. The dataset used is simulated for reproducibility and learning purposes. Fully reproducible using the scripts in scripts/. Figures and tables will be saved in figures/ and tables/. This dataset is simulated for replication purposes. Variable names match BRFSS, but values are generated synthetically
+**Note:** No raw BRFSS data is included. The dataset used is a derived analytic dataset created by cleaning and recoding publicly available BRFSS data through the provided scripts. This is used for reproducibility and learning purposes. Fully reproducible using the scripts in scripts/. Figures and tables will be saved in figures/ and tables/. This dataset is simulated for replication purposes. Variable names match BRFSS, but values are generated synthetically
 
 Happy to receive any professional feedback—please keep it constructive and focused on analysis, methodology, or reproducibility.
 
