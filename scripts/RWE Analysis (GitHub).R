@@ -1,5 +1,5 @@
 # ==========================================================
-# Derived Dataset Analysis (Replication of BRFSS Workflow)
+# Derived Dataset Analysis
 # ==========================================================
 
 library(tidyverse)
@@ -257,11 +257,12 @@ calibration_plot(model_cost_derv, design_cost_derv, "cost_barrier", "red")
 # 11. Sensitivity analyses
 # ------------------------------
 subset_designs <- list(
-  male = subset(derv_design, SEXVAR == 1),
-  female = subset(derv_design, SEXVAR == 2),
-  insured = subset(derv_design, HLTHPL2 == 2),
-  uninsured = subset(derv_design, HLTHPL2 == 1)
+  male = subset(derv_design, sex == levels(derv_br$sex)[1]),
+  female = subset(derv_design, sex == levels(derv_br$sex)[2]),
+  insured = subset(derv_design, insured == "Insured"),
+  uninsured = subset(derv_design, insured == "Uninsured")
 )
+
 
 sensitivity_models <- map(subset_designs, function(dsg){
   list(
