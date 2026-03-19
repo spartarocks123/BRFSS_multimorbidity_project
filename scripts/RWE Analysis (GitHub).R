@@ -165,6 +165,7 @@ ggplot(pred_routine_derv, aes(x = x, y = predicted)) +
     plot.title = element_text(hjust = 0.5)  # 🔥 center title
   )
 
+derv_br <- read_csv("data/brfss_example.csv", show_col_types = FALSE)
 
 # ------------------------------
 # 8. Figure 2: Cost Barrier
@@ -206,6 +207,8 @@ ggplot(pred_cost_derv, aes(x = x, y = predicted)) +
     panel.grid = element_blank(),
     plot.title = element_text(hjust = 0.5)  # 🔥 center title
   )
+
+derv_br <- read_csv("data/brfss_example.csv", show_col_types = FALSE)
 
 # ------------------------------
 # 9. ROC / AUC (FIXED)
