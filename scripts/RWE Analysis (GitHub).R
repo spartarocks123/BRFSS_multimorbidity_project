@@ -1,170 +1,157 @@
-# =========================================
-# Simulate BRFSS Example Dataset & Analysis
-# =========================================
+# ==========================================================
+# Simulated Dataset Analysis (Replication of BRFSS Workflow)
+# NA-free version
+# ==========================================================
+
 library(tidyverse)
 library(survey)
 library(ggeffects)
-library(viridis)
+library(ggplot2)
 library(scales)
-library(pROC)
-
-set.seed(123)
-n <- 10000L
+library(viridis)
 
 # ------------------------------
-# 1. Simulate covariates (from real distributions)
+# 1. Load Simulated Dataset
 # ------------------------------
-
-cov_vars <- c("agegrp","sex","race","educ","income","insured")
-
-sim_brfss <- data.frame(
-  lapply(cov_vars, function(v) {
-    sample(brfss_keep[[v]], n, replace = TRUE)
-  })
-)
-
-names(sim_brfss) <- cov_vars
+sim_br <- read_csv("data/brfss_example.csv", show_col_types = FALSE)
 
 # ------------------------------
-# 2. Simulate exposure (cc_cat2)
+# 2. Adjust Survey Design
 # ------------------------------
+sim_br <- sim_br %>%
+  mutate(STSTR2 = as.character(STSTR))
 
-sim_brfss$cc_cat2 <- sample(
-  brfss_keep$cc_cat2,
-  n,
-  replace = TRUE
+singleton_strata <- names(table(sim_br$STSTR2))[table(sim_br$STSTR2) == 1]
+sim_br$STSTR2[sim_br$STSTR2 %in% singleton_strata] <- "singleton"
+
+options(survey.lonely.psu = "adjust")
+sim_design <- svydesign(
+  ids     = ~PSU,
+  strata  = ~STSTR2,
+  weights = ~LLCPWT,
+  data    = sim_br,
+  nest    = TRUE
 )
 
 # ------------------------------
-# 3. Ensure factor levels match original data
+# 3. Ensure Correct Factor Order
 # ------------------------------
-
-sim_brfss <- sim_brfss %>%
+sim_br <- sim_br %>%
   mutate(
-    across(all_of(cov_vars),
-           ~ factor(.x, levels = levels(brfss_keep[[cur_column()]]))),
-    cc_cat2 = factor(cc_cat2, levels = levels(brfss_keep$cc_cat2))
-  )
+    cc_cat2 = factor(cc_cat2, levels = c("0","1","2","3+")),
+    cc_cat2 = relevel(cc_cat2, ref = "0"),
+    agegrp  = factor(agegrp),
+    sex     = factor(sex),
+    race    = factor(race),
+    educ    = factor(educ),
+    income  = factor(income),
+    insured = factor(insured)
+  ) %>%
+  # Simulate outcomes dependent on multimorbidity
+  mutate(
+    p_cost = case_when(
+      cc_cat2 == "0"  ~ 0.06,
+      cc_cat2 == "1"  ~ 0.09,
+      cc_cat2 == "2"  ~ 0.12,
+      cc_cat2 == "3+" ~ 0.15,
+      TRUE            ~ 0.09
+    ),
+    p_rout = case_when(
+      cc_cat2 == "0"  ~ 0.78,
+      cc_cat2 == "1"  ~ 0.80,
+      cc_cat2 == "2"  ~ 0.82,
+      cc_cat2 == "3+" ~ 0.84,
+      TRUE            ~ 0.80
+    ),
+    cost_barrier = rbinom(n(), size = 1, prob = p_cost),
+    routine_care = rbinom(n(), size = 1, prob = p_rout)
+  ) %>%
+  select(-p_cost, -p_rout)
 
 # ------------------------------
-# 4. Define simulation function (logistic model)
+# 4. Rebuild Survey Design with New Outcomes
 # ------------------------------
-
-simulate_outcome <- function(df, beta) {
-  mm <- model.matrix(~ cc_cat2 + agegrp + sex + race + educ + income + insured, data = df)
-  probs <- plogis(mm %*% beta)
-  rbinom(nrow(df), 1, probs)
-}
-
-# ------------------------------
-# 5. Define beta coefficients
-# ------------------------------
-# NOTE: Length must match model.matrix columns exactly
-
-beta_routine <- c(
-  log(0.44/(1-0.44)),   # intercept
-  rep(log(1.16), 3),    # cc_cat2 levels (excluding reference)
-  rep(log(1.02), length(levels(sim_brfss$agegrp)) - 1),
-  log(1.10),            # sex
-  rep(log(1.05), length(levels(sim_brfss$race)) - 1),
-  rep(log(1.03), length(levels(sim_brfss$educ)) - 1),
-  rep(log(0.97), length(levels(sim_brfss$income)) - 1),
-  log(0.90)             # insured
+sim_design <- update(
+  sim_design,
+  cc_cat2      = sim_br$cc_cat2,
+  agegrp       = sim_br$agegrp,
+  sex          = sim_br$sex,
+  race         = sim_br$race,
+  educ         = sim_br$educ,
+  income       = sim_br$income,
+  insured      = sim_br$insured,
+  routine_care = sim_br$routine_care,
+  cost_barrier = sim_br$cost_barrier
 )
 
 # ------------------------------
-# 6. Simulate outcomes
+# 5. Weighted Logistic Models
 # ------------------------------
+design_routine_sim <- subset(sim_design,
+                             !is.na(routine_care) &
+                               !is.na(cc_cat2) &
+                               !is.na(agegrp) &
+                               !is.na(sex) &
+                               !is.na(race) &
+                               !is.na(educ) &
+                               !is.na(income) &
+                               !is.na(insured)
+)
 
-sim_brfss <- sim_brfss %>%
-  mutate(
-    routine_care = simulate_outcome(., beta_routine)
-  )
+model_routine_sim <- svyglm(
+  routine_care ~ cc_cat2 + agegrp + sex + race + educ + income + insured,
+  design = design_routine_sim,
+  family = quasibinomial()
+)
 
-# ------------------------------
-# 2. Simulate survey design variables
-# ------------------------------
-# replace brfss_keep$PSU, STSTR, LLCPWT with arbitrary sampling for demo
-sim_brfss <- sim_brfss %>%
-  mutate(PSU = sample(1:500, n, replace=TRUE),
-         STSTR = sample(1:100, n, replace=TRUE),
-         LLCPWT = runif(n, 0.5, 1.5),
-         STSTR2 = factor(ifelse(duplicated(STSTR)|duplicated(STSTR,fromLast=TRUE), STSTR, "singleton")))
+design_cost_sim <- subset(sim_design,
+                          !is.na(cost_barrier) &
+                            !is.na(cc_cat2) &
+                            !is.na(agegrp) &
+                            !is.na(sex) &
+                            !is.na(race) &
+                            !is.na(educ) &
+                            !is.na(income) &
+                            !is.na(insured)
+)
 
-options(survey.lonely.psu="adjust")
-
-# ------------------------------
-# 3. Function to simulate outcome based on log-odds
-# ------------------------------
-simulate_outcome <- function(df, beta) {
-  mm <- model.matrix(~ cc_cat2 + AGEG5YR + SEXVAR + RACE + EDUCAG + INCOMG1 + HLTHPL2, data=df)
-  probs <- plogis(mm %*% beta)
-  rbinom(nrow(df), 1, probs)
-}
-
-# ------------------------------
-# Automatically compute log-odds from prevalence
-# ------------------------------
-
-# Function to convert prevalence to log-odds
-prev2logit <- function(p) log(p / (1 - p))
-
-# 1. Compute overall prevalence for each outcome
-prev_routine <- 0.44  # or compute from data: mean(sim_brfss$routine_care, na.rm=TRUE)
-prev_cost    <- 0.37  # or compute from data
-
-# 2. Set intercept = log-odds of overall prevalence
-#    All other covariates set to 0 → outcome prevalence matches overall target
-beta_routine_auto <- c(prev2logit(prev_routine), rep(0, ncol(model.matrix(~ cc_cat2 + AGEG5YR + SEXVAR + RACE + EDUCAG + INCOMG1 + HLTHPL2, sim_brfss)))-1)
-beta_cost_auto    <- c(prev2logit(prev_cost),    rep(0, ncol(model.matrix(~ cc_cat2 + AGEG5YR + SEXVAR + RACE + EDUCAG + INCOMG1 + HLTHPL2, sim_brfss)))-1)
-
-# 3. Simulate outcomes
-sim_brfss <- sim_brfss %>%
-  mutate(
-    routine_care = simulate_outcome(., beta_routine_auto),
-    cost_barrier = simulate_outcome(., beta_cost_auto)
-  )
-
-# ------------------------------
-# 4. Survey design
-# ------------------------------
-sim_design <- svydesign(ids=~PSU, strata=~STSTR2, weights=~LLCPWT, data=sim_brfss, nest=TRUE)
-
-# ------------------------------
-# 5. Fit weighted logistic models
-# ------------------------------
-fit_svyglm <- function(outcome, design, extra_cov=NULL){
-  formula <- as.formula(paste(outcome,"~ cc_cat2 + AGEG5YR + SEXVAR + RACE + EDUCAG + INCOMG1 + HLTHPL2", if(!is.null(extra_cov)) paste("+", extra_cov)))
-  svyglm(formula, design=design, family=quasibinomial())
-}
-
-models <- list(
-  routine_main = fit_svyglm("routine_care", sim_design),
-  cost_main    = fit_svyglm("cost_barrier", sim_design)
+model_cost_sim <- svyglm(
+  cost_barrier ~ cc_cat2 + agegrp + sex + race + educ + income + insured,
+  design = design_cost_sim,
+  family = quasibinomial()
 )
 
 # ------------------------------
-# 6. Extract ORs
+# 6. Extract Predicted Probabilities
 # ------------------------------
-extract_or <- function(model, drop_intercept=TRUE){
-  coefs <- summary(model)$coefficients
+pred_routine_sim <- ggpredict(model_routine_sim, terms = "cc_cat2") %>%
+  mutate(x = factor(x, levels = c("0","1","2","3+"))) %>%
+  filter(!is.na(x))  # remove any residual NA
+
+pred_cost_sim <- ggpredict(model_cost_sim, terms = "cc_cat2") %>%
+  mutate(x = factor(x, levels = c("0","1","2","3+"))) %>%
+  filter(!is.na(x))  # remove any residual NA
+
+# ------------------------------
+# 7. Optional: Extract Odds Ratios
+# ------------------------------
+extract_or <- function(model, drop_intercept = FALSE){
+  coef_table <- summary(model)$coefficients
   res <- tibble(
-    Variable = rownames(coefs),
-    OR       = exp(coefs[, "Estimate"]),
-    CI_lower = exp(coefs[, "Estimate"] - 1.96*coefs[, "Std. Error"]),
-    CI_upper = exp(coefs[, "Estimate"] + 1.96*coefs[, "Std. Error"]),
-    p_value  = coefs[, "Pr(>|t|)"]
+    Variable = rownames(coef_table),
+    OR       = exp(coef_table[, "Estimate"]),
+    CI_lower = exp(coef_table[, "Estimate"] - 1.96 * coef_table[, "Std. Error"]),
+    CI_upper = exp(coef_table[, "Estimate"] + 1.96 * coef_table[, "Std. Error"]),
+    p_value  = coef_table[, "Pr(>|t|)"]
   )
-  if(drop_intercept) res <- filter(res, Variable!="(Intercept)")
-  res %>% mutate(across(c(OR, CI_lower, CI_upper), ~round(.,2)), p_value=signif(p_value,3))
+  if(drop_intercept) res <- filter(res, Variable != "(Intercept)")
+  res %>%
+    mutate(OR = round(OR,2), CI_lower = round(CI_lower,2), CI_upper = round(CI_upper,2),
+           p_value = signif(p_value,3))
 }
 
-or_results <- map(models, extract_or)
-
-# ------------------------------
-# 7. Predicted probabilities for plotting
-# ------------------------------
-pred_probs <- map(models, ~ggpredict(.x, terms="cc_cat2") %>% mutate(x=factor(x, levels=c("0","1","2","3+"))))
+routine_or <- extract_or(model_routine_sim, TRUE)
+cost_or    <- extract_or(model_cost_sim, TRUE)
 
 # ------------------------------
 # 8. Figure 1: Routine Checkup
@@ -207,6 +194,7 @@ ggplot(pred_cost_sim, aes(x = x, y = predicted)) +
         axis.text.y = element_blank(),
         axis.ticks = element_blank(),
         panel.grid = element_blank())
+
 
 # ------------------------------
 # 8. ROC / AUC function
