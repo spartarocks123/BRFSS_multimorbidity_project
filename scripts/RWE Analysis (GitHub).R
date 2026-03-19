@@ -10,21 +10,20 @@ library(pROC)
 
 set.seed(123)
 n <- 10000L
+
+# ------------------------------
+# 1. Simulate covariates (from real distributions)
+# ------------------------------
+
 cov_vars <- c("agegrp","sex","race","educ","income","insured")
 
 sim_brfss <- data.frame(
   lapply(cov_vars, function(v) {
-    # get levels of the factor
-    lvls <- levels(brfss_keep[[v]])
-    # get probabilities from the real data
-    probs <- prop.table(table(brfss_keep[[v]]))
-    # sample using probabilities, ensure names match levels
-    factor(
-      sample(names(probs), n, replace = TRUE, prob = probs),
-      levels = lvls
-    )
+    sample(brfss_keep[[v]], n, replace = TRUE)
   })
 )
+
+names(sim_brfss) <- cov_vars
 
 # ------------------------------
 # 2. Simulate exposure (cc_cat2)
@@ -166,6 +165,48 @@ or_results <- map(models, extract_or)
 # 7. Predicted probabilities for plotting
 # ------------------------------
 pred_probs <- map(models, ~ggpredict(.x, terms="cc_cat2") %>% mutate(x=factor(x, levels=c("0","1","2","3+"))))
+
+# ------------------------------
+# 8. Figure 1: Routine Checkup
+# ------------------------------
+ggplot(pred_routine_sim, aes(x = x, y = predicted)) +
+  geom_col(fill = viridis(1, option = "C", alpha = 0.8), width = 0.6) +
+  geom_errorbar(aes(ymin = conf.low, ymax = conf.high), width = 0.25, color = "gray20", linewidth = 1.5) +
+  geom_text(aes(label = percent(predicted, accuracy = 1), y = conf.high + 0.02),
+            size = 4, fontface = "bold") +
+  scale_y_continuous(labels = percent_format(accuracy = 1),
+                     limits = c(0, max(pred_routine_sim$conf.high)*1.1)) +
+  labs(x = "Number of Chronic Conditions", y = NULL,
+       title = "Figure 1: Adjusted Predicted Probability of Routine Checkup by Multimorbidity",
+       caption = "Simulated data example; survey-weighted logistic regression with 95% CI") +
+  theme_minimal(base_size = 16) +
+  theme(plot.title = element_text(face="bold", size=18, hjust=0.5),
+        axis.title.x = element_text(face="bold"),
+        axis.text.x = element_text(color="black", size=14),
+        axis.text.y = element_blank(),
+        axis.ticks = element_blank(),
+        panel.grid = element_blank())
+
+# ------------------------------
+# 9. Figure 2: Cost Barrier
+# ------------------------------
+ggplot(pred_cost_sim, aes(x = x, y = predicted)) +
+  geom_col(fill = viridis(1, option = "D", alpha = 0.8), width = 0.6) +
+  geom_errorbar(aes(ymin = conf.low, ymax = conf.high), width = 0.25, color = "gray20", linewidth = 1.5) +
+  geom_text(aes(label = percent(predicted, accuracy = 1), y = conf.high + 0.005),
+            size = 4, fontface = "bold") +
+  scale_y_continuous(labels = percent_format(accuracy = 1),
+                     limits = c(0, max(pred_cost_sim$conf.high)*1.1)) +
+  labs(x = "Number of Chronic Conditions", y = NULL,
+       title = "Figure 2: Adjusted Predicted Probability of Cost Barrier by Multimorbidity",
+       caption = "Simulated data example; survey-weighted logistic regression with 95% CI") +
+  theme_minimal(base_size = 16) +
+  theme(plot.title = element_text(face="bold", size=18, hjust=0.5),
+        axis.title.x = element_text(face="bold"),
+        axis.text.x = element_text(color="black", size=14),
+        axis.text.y = element_blank(),
+        axis.ticks = element_blank(),
+        panel.grid = element_blank())
 
 # ------------------------------
 # 8. ROC / AUC function
