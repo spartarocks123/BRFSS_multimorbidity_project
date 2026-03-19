@@ -128,19 +128,36 @@ cost_or    <- extract_or(model_cost_derv, TRUE)
 # 7. Figure 1: Routine Checkup
 # ------------------------------
 ggplot(pred_routine_derv, aes(x = x, y = predicted)) +
-  geom_col(fill = viridis(1, option = "C", alpha = 0.8), width = 0.6) +
-  geom_errorbar(aes(ymin = conf.low, ymax = conf.high),
-                width = 0.25, color = "gray20", linewidth = 1.5) +
-  geom_text(aes(label = percent(predicted, accuracy = 1),
-                y = conf.high + 0.02),
-            size = 4, fontface = "bold") +
-  scale_y_continuous(labels = percent_format(accuracy = 1),
-                     limits = c(0, max(pred_routine_sim$conf.high)*1.1)) +
-  labs(x = "Number of Chronic Conditions", y = NULL,
-       title = "Figure 1: Adjusted Predicted Probability of Routine Checkup by Multimorbidity",
-       caption = "Derived analytic dataset; survey-weighted logistic regression with 95% CI") +
-  theme_minimal(base_size = 16)
-
+  geom_col(fill = viridis(1, option = "C", alpha = 0.85), width = 0.6) +
+  geom_errorbar(
+    aes(ymin = conf.low, ymax = conf.high),
+    width = 0.2,
+    color = "black",
+    linewidth = 1.3,
+    alpha = 0.9
+  ) +
+  geom_text(
+    aes(label = percent(predicted, accuracy = 1),
+        y = conf.high + 0.015),
+    size = 4.2,
+    fontface = "bold"
+  ) +
+  scale_y_continuous(
+    labels = percent_format(accuracy = 1),
+    limits = c(0, max(pred_routine_derv$conf.high) * 1.1),
+    expand = expansion(mult = c(0, 0.05))
+  ) +
+  labs(
+    x = "Number of Chronic Conditions",
+    title = "Figure 1: Adjusted Predicted Probability of Routine Checkup by Multimorbidity",
+    caption = "Derived analytic dataset; survey-weighted logistic regression with 95% CI"
+  ) +
+  theme_minimal(base_size = 16) +
+  theme(
+    axis.line = element_blank(),
+    axis.ticks = element_blank(),
+    panel.grid.minor = element_blank()
+  )
 # ------------------------------
 # 8. Figure 2: Cost Barrier
 # ------------------------------
