@@ -13,13 +13,13 @@
 
 **Results:** So far, there appears to be a dose-response relationship between the number of chronic conditions and routine healthcare utilization. As the number of chronic conditions increase in an individual, the predicted probability of routine checkup increases. This is expected and correlates with what has been found in the literature. Interestingly, the predicted probability of delayed care due to cost also increases in accordance with the number of chronic conditions. All the p values are less than 0.01 and the OR increases as the number of chronic conditions increases. 
 
-**Note:** No raw BRFSS data is included. The dataset used is a derived analytic dataset created by cleaning and recoding publicly available BRFSS data through the provided scripts. This is used for reproducibility and learning purposes. Fully reproducible using the scripts in scripts/. Figures and tables will be saved in figures/ and tables/. This dataset is simulated for replication purposes. Variable names match BRFSS, but values are generated synthetically
+**Note:** No raw BRFSS data is included. The dataset used is a derived analytic dataset created by cleaning and recoding publicly available BRFSS data through the provided scripts. This project is fully reproducible using the scripts in the scripts/ directory, which generate the analytic dataset, figures, and tables. Variable names correspond to standard BRFSS variables, and values are transformed through established recoding and data-cleaning procedures
 
 Happy to receive any professional feedback—please keep it constructive and focused on analysis, methodology, or reproducibility.
 
 **Note on diagnostics:**
 - VIF and Hosmer-Lemeshow tests are standard diagnostics for GLMs.
-- Recently learned that VIG and Hosmer-Lemeshow tests don't fully account for weights, strata, or clustering. This dataset uses svyglm (survey-weighted logistic regression). Will utilize different tests instead.
+- Recently learned that VIF and Hosmer-Lemeshow tests don't fully account for weights, strata, or clustering. This dataset uses svyglm (survey-weighted logistic regression). Will utilize different tests instead.
 
 **Note on Assumptions:**
 - Independent Observations: BRFSS tends to survey people from the same counties, states, neighboorhoods, etc. This is demonstrated by the fact that strata and clustering are used. However, svydesign(...) code in R accounts for this. Therefore, this assumption has been met.
