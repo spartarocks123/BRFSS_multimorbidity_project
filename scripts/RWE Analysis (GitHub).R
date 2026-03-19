@@ -127,7 +127,7 @@ cost_or    <- extract_or(model_cost_derv, TRUE)
 # ------------------------------
 # 7. Figure 1: Routine Checkup
 # ------------------------------
-ggplot(pred_routine_derv, aes(x = x, y = predicted)) +
+fig1 <- ggplot(pred_routine_derv, aes(x = x, y = predicted)) +
   geom_col(fill = viridis(1, option = "C", alpha = 0.85), width = 0.6) +
   geom_errorbar(
     aes(ymin = conf.low, ymax = conf.high),
@@ -164,8 +164,14 @@ ggplot(pred_routine_derv, aes(x = x, y = predicted)) +
     panel.grid = element_blank(),
     plot.title = element_text(hjust = 0.5)  # 🔥 center title
   )
-
-derv_br <- read_csv("data/brfss_example.csv", show_col_types = FALSE)
+dir.create("figures", showWarnings = FALSE)
+ggsave(
+  filename = "/Users/moh/Desktop/Research Assistant/BRFSS_multimorbidity_project/figures/figure1_routine_checkup.png",
+  plot = fig1,
+  width = 8,
+  height = 6,
+  dpi = 300
+)
 
 # ------------------------------
 # 8. Figure 2: Cost Barrier
