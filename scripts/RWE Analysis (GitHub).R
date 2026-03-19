@@ -123,6 +123,10 @@ extract_or <- function(model, drop_intercept = FALSE){
 routine_or <- extract_or(model_routine_derv, TRUE)
 cost_or    <- extract_or(model_cost_derv, TRUE)
 
+dir.create("tables", showWarnings = FALSE)
+
+write_csv(routine_or, "/Users/moh/Desktop/Research Assistant/BRFSS_multimorbidity_project/tables/routine_odds_ratios.csv")
+write_csv(cost_or, "/Users/moh/Desktop/Research Assistant/BRFSS_multimorbidity_project/tables/cost_odds_ratios.csv")
 
 # ------------------------------
 # 7. Figure 1: Routine Checkup
@@ -166,11 +170,11 @@ fig1 <- ggplot(pred_routine_derv, aes(x = x, y = predicted)) +
   )
 dir.create("figures", showWarnings = FALSE)
 ggsave(
-  filename = "/Users/moh/Desktop/Research Assistant/BRFSS_multimorbidity_project/figures/Figure 1: Routine Checkup.png",
+  filename = "/Users/moh/Desktop/Research Assistant/BRFSS_multimorbidity_project/figures/Figure 1: Routine Checkup.pdf",
   plot = fig1,
-  width = 6,
-  height = 4,
-  dpi = 300
+  width = 15,
+  height = 10,
+  dpi = 600
 )
 
 # ------------------------------
@@ -215,15 +219,15 @@ fig2 <-ggplot(pred_cost_derv, aes(x = x, y = predicted)) +
   )
 dir.create("figures", showWarnings = FALSE)
 ggsave(
-  filename = "/Users/moh/Desktop/Research Assistant/BRFSS_multimorbidity_project/figures/Figure 2: Cost Barrier.png",
-  plot = fig1,
-  width = 6,
-  height = 4,
-  dpi = 300
+  filename = "/Users/moh/Desktop/Research Assistant/BRFSS_multimorbidity_project/figures/Figure 2: Cost Barrier.pdf",
+  plot = fig2,
+  width = 15,
+  height = 10,
+  dpi = 600
 )
 
 # ------------------------------
-# 9. ROC / AUC (FIXED)
+# 9. ROC / AUC
 # ------------------------------
 plot_roc_auc <- function(model, design, outcome, color){
   probs <- predict(model, type = "response")
