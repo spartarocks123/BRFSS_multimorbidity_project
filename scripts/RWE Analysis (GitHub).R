@@ -13,7 +13,7 @@ library(pROC)
 # ------------------------------
 # 1. Load Derived Dataset
 # ------------------------------
-derv_br <- read_csv("data/brfss_example.csv", show_col_types = FALSE)
+derv_br <- read_csv("/Users/moh/Desktop/Research Assistant/BRFSS_multimorbidity_project/data/brfss_example.csv", show_col_types = FALSE)
 
 # ------------------------------
 # 2. Ensure Correct Factor Order (BEFORE survey design)
