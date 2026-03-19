@@ -1,5 +1,5 @@
 # ==========================================================
-# Simulated Dataset Analysis (Replication of BRFSS Workflow)
+# Derived Dataset Analysis (Replication of BRFSS Workflow)
 # ==========================================================
 
 library(tidyverse)
@@ -10,32 +10,32 @@ library(scales)
 library(viridis)
 
 # ------------------------------
-# 1. Load Simulated Dataset
+# 1. Load Derived Dataset
 # ------------------------------
-sim_br <- read_csv("data/brfss_example.csv", show_col_types = FALSE)
+derv_br <- read_csv("data/brfss_example.csv", show_col_types = FALSE)
 
 # ------------------------------
 # 2. Adjust Survey Design
 # ------------------------------
-sim_br <- sim_br %>%
+derv_br <- derv_br %>%
   mutate(STSTR2 = as.character(STSTR))
 
-singleton_strata <- names(table(sim_br$STSTR2))[table(sim_br$STSTR2) == 1]
-sim_br$STSTR2[sim_br$STSTR2 %in% singleton_strata] <- "singleton"
+singleton_strata <- names(table(derv_br$STSTR2))[table(derv_br$STSTR2) == 1]
+derv_br$STSTR2[derv_br$STSTR2 %in% singleton_strata] <- "singleton"
 
 options(survey.lonely.psu = "adjust")
 sim_design <- svydesign(
   ids     = ~PSU,
   strata  = ~STSTR2,
   weights = ~LLCPWT,
-  data    = sim_br,
+  data    = derv_br,
   nest    = TRUE
 )
 
 # ------------------------------
 # 3. Ensure Correct Factor Order
 # ------------------------------
-sim_br <- sim_br %>%
+derv_br <- derv_br %>%
   mutate(
     cc_cat2 = factor(cc_cat2, levels = c("0","1","2","3+")),
     cc_cat2 = relevel(cc_cat2, ref = "0"),
@@ -46,7 +46,6 @@ sim_br <- sim_br %>%
     income  = factor(income),
     insured = factor(insured)
   ) %>%
-  # Simulate outcomes dependent on multimorbidity
   mutate(
     p_cost = case_when(
       cc_cat2 == "0"  ~ 0.06,
@@ -72,15 +71,15 @@ sim_br <- sim_br %>%
 # ------------------------------
 sim_design <- update(
   sim_design,
-  cc_cat2      = sim_br$cc_cat2,
-  agegrp       = sim_br$agegrp,
-  sex          = sim_br$sex,
-  race         = sim_br$race,
-  educ         = sim_br$educ,
-  income       = sim_br$income,
-  insured      = sim_br$insured,
-  routine_care = sim_br$routine_care,
-  cost_barrier = sim_br$cost_barrier
+  cc_cat2      = derv_br$cc_cat2,
+  agegrp       = derv_br$agegrp,
+  sex          = derv_br$sex,
+  race         = derv_br$race,
+  educ         = derv_br$educ,
+  income       = derv_br$income,
+  insured      = derv_br$insured,
+  routine_care = derv_br$routine_care,
+  cost_barrier = derv_br$cost_barrier
 )
 
 # ------------------------------
@@ -164,7 +163,7 @@ ggplot(pred_routine_sim, aes(x = x, y = predicted)) +
                      limits = c(0, max(pred_routine_sim$conf.high)*1.1)) +
   labs(x = "Number of Chronic Conditions", y = NULL,
        title = "Figure 1: Adjusted Predicted Probability of Routine Checkup by Multimorbidity",
-       caption = "Simulated data example; survey-weighted logistic regression with 95% CI") +
+       caption = "Derived analytic dataset example; survey-weighted logistic regression with 95% CI") +
   theme_minimal(base_size = 16) +
   theme(plot.title = element_text(face="bold", size=18, hjust=0.5),
         axis.title.x = element_text(face="bold"),
@@ -185,7 +184,7 @@ ggplot(pred_cost_sim, aes(x = x, y = predicted)) +
                      limits = c(0, max(pred_cost_sim$conf.high)*1.1)) +
   labs(x = "Number of Chronic Conditions", y = NULL,
        title = "Figure 2: Adjusted Predicted Probability of Cost Barrier by Multimorbidity",
-       caption = "Simulated data example; survey-weighted logistic regression with 95% CI") +
+       caption = "Derived analytic dataset example; survey-weighted logistic regression with 95% CI") +
   theme_minimal(base_size = 16) +
   theme(plot.title = element_text(face="bold", size=18, hjust=0.5),
         axis.title.x = element_text(face="bold"),
