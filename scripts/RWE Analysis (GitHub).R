@@ -1,6 +1,5 @@
 # ==========================================================
 # Simulated Dataset Analysis (Replication of BRFSS Workflow)
-# NA-free version
 # ==========================================================
 
 library(tidyverse)
