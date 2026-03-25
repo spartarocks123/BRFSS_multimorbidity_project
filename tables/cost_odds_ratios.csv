@@ -2,7 +2,7 @@ Variable,OR,CI_lower,CI_upper,p_value
 1 chronic condition,1.97,1.24,3.14,0.00435
 2 chronic conditions,3.49,1.93,6.31,3.62e-5
 ≥3 chronic conditions,3.35,1.24,9.09,0.0176
-agegrp1,6.38,2.56,15.89,6.94e-5
+Age 18 to 24,6.38,2.56,15.89,6.94e-5
 Age 25 to 29,11.19,4.72,26.52,4.39e-8
 Age 30 to 34,6.65,2.68,16.53,4.55e-5
 Age 35 to 39,7.05,2.44,20.37,3.1e-4
@@ -22,10 +22,10 @@ Female,1.58,1.05,2.4,0.0291
 "Other race only, non-Hispanic",4.19,0.81,21.59,0.0866
 "Multiracial, non-Hispanic",2.11,0.41,11,0.374
 Hispanic,1.67,0.96,2.91,0.0675
-educ1,1.48,0.55,3.94,0.434
+Did not graduate High School,1.48,0.55,3.94,0.434
 Graduated High School,1.24,0.7,2.2,0.455
 Attended College or Technical School,1.45,0.79,2.65,0.235
-income1,2.76,1.26,6.05,0.0114
+"Less than $15,000",2.76,1.26,6.05,0.0114
 "$15,000 to < $25,000",1.64,0.78,3.45,0.191
 "$25,000 to < $35,000",1.52,0.79,2.91,0.213
 "$35,000 to < $50,000",1.4,0.75,2.6,0.29
