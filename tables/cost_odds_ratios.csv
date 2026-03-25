@@ -1,38 +1,34 @@
 Variable,OR,CI_lower,CI_upper,p_value
-1 chronic condition,1.82,1.16,2.83,0.00853
-2 chronic conditions,2.85,1.59,5.08,4.06e-4
-≥3 chronic conditions,3.85,1.84,8.09,3.63e-4
-Age 25 to 29,1.76,0.88,3.54,0.112
-Age 30 to 34,0.94,0.44,2,0.864
-Age 35 to 39,1.24,0.5,3.07,0.635
-Age 40 to 44,1.08,0.44,2.62,0.866
-Age 45 to 49,0.9,0.4,2.02,0.801
-Age 50 to 54,0.45,0.22,0.94,0.033
-Age 55 to 59,0.34,0.14,0.79,0.012
-Age 60 to 64,0.15,0.06,0.35,8.78e-6
-Age 65 to 69,0.33,0.14,0.77,0.0105
-Age 70 to 74,0.39,0.14,1.14,0.0848
-Age 75 to 79,0.18,0.04,0.88,0.034
-Age 80 or older,0.1,0.03,0.31,5.86e-5
-agegrp14,0.32,0.07,1.5,0.148
-Female,1.57,1.06,2.32,0.0232
-"Black only, non-Hispanic",2.29,1.31,4.02,0.00386
-"American Indian or Alaskan Native only, Non-Hispanic",0.37,0.09,1.59,0.182
-"Asian only, non-Hispanic",0.77,0.32,1.85,0.559
-"Native Hawaiian or other Pacific Islander only, Non-Hispanic",0.62,0.09,4.1,0.62
-"Other race only, non-Hispanic",5.47,1.08,27.59,0.0396
-"Multiracial, non-Hispanic",3.64,1.11,11.89,0.0324
-Hispanic,2.09,1.28,3.44,0.00346
-race9,3.86,1.11,13.46,0.0342
-Graduated High School,0.62,0.32,1.21,0.162
-Attended College or Technical School,0.62,0.32,1.21,0.162
-Graduated from College or Technical School,0.44,0.21,0.92,0.0301
-educ9,0.41,0.06,2.92,0.375
-"$15,000 to < $25,000",0.59,0.24,1.41,0.233
-"$25,000 to < $35,000",0.53,0.24,1.19,0.125
-"$35,000 to < $50,000",0.55,0.25,1.19,0.128
-"$50,000 to < $100,000",0.46,0.21,0.97,0.0418
-"$100,000 to < $200,000",0.31,0.13,0.74,0.00769
-"$200,000 or more",0.18,0.04,0.82,0.0268
-income9,0.6,0.29,1.25,0.173
-Uninsured,5.08,2.95,8.73,4.41e-9
+1 chronic condition,1.97,1.24,3.14,0.00435
+2 chronic conditions,3.49,1.93,6.31,3.62e-5
+≥3 chronic conditions,3.35,1.24,9.09,0.0176
+Age 25 to 29,1.75,0.85,3.61,0.127
+Age 30 to 34,1.04,0.47,2.32,0.919
+Age 35 to 39,1.11,0.43,2.86,0.837
+Age 40 to 44,1.11,0.43,2.83,0.834
+Age 45 to 49,1.06,0.45,2.51,0.9
+Age 50 to 54,0.55,0.25,1.21,0.135
+Age 55 to 59,0.25,0.1,0.65,0.00432
+Age 60 to 64,0.16,0.06,0.39,6.94e-5
+Age 65 to 69,0.25,0.1,0.64,0.00366
+Age 70 to 74,0.22,0.07,0.67,0.00785
+Age 75 to 79,0,0,0.02,9.84e-14
+Age 80 or older,0.01,0,0.07,9.91e-6
+Female,1.58,1.05,2.4,0.0291
+"Black only, non-Hispanic",2.1,1.21,3.62,0.00796
+"American Indian or Alaskan Native only, Non-Hispanic",0.17,0.03,0.92,0.0397
+"Asian only, non-Hispanic",0.52,0.18,1.48,0.219
+"Native Hawaiian or other Pacific Islander only, Non-Hispanic",1.45,0.25,8.46,0.678
+"Other race only, non-Hispanic",4.19,0.81,21.59,0.0866
+"Multiracial, non-Hispanic",2.11,0.41,11,0.374
+Hispanic,1.67,0.96,2.91,0.0675
+Graduated High School,0.84,0.36,1.97,0.69
+Attended College or Technical School,0.98,0.41,2.35,0.959
+Graduated from College or Technical School,0.68,0.25,1.8,0.434
+"$15,000 to < $25,000",0.6,0.25,1.39,0.232
+"$25,000 to < $35,000",0.55,0.25,1.21,0.136
+"$35,000 to < $50,000",0.51,0.23,1.12,0.0925
+"$50,000 to < $100,000",0.36,0.17,0.8,0.0114
+"$100,000 to < $200,000",0.24,0.09,0.6,0.00234
+"$200,000 or more",0.13,0.03,0.6,0.00918
+Uninsured,4.03,2.18,7.48,9.89e-6
