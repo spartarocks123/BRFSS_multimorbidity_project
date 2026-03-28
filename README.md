@@ -24,9 +24,7 @@ Happy to receive any professional feedback—please keep it constructive and foc
 **Note on Assumptions:**
 - Independent Observations: BRFSS tends to survey people from the same counties, states, neighboorhoods, etc. This is demonstrated by the fact that strata and clustering are used. However, svydesign(...) code in R accounts for this. Therefore, this assumption has been met.
 - Correct model: The outcomes of interest are yes/no. Therefore, this assumption has been met.
-- Linearity:
 - Multicollinearity: All intercept, adjusted predictors had VIFs below 5, indicating that multicollinearity is not a concern in this model. Therefore, this assumption has been met. 
-- Separation:
 - Overdispersion: Since weights and clusters are involved in this dataset, the observations are not entirely independent from each other. However, using quasibinomial modeling for both outcomes addresses this concern as it adjusts for variance in the dataset.
 
 **Note on coding steps:**
@@ -48,7 +46,6 @@ Happy to receive any professional feedback—please keep it constructive and foc
 ***Completed Steps:***
 - Resampled survey design variables from the original BRFSS dataset (strata, clustering, and weights). Adjusted the prevalence of all the variables to reflect the original dataset as well.
 - A weighted proportion of missing (NA) values was made for all predictors, covariates, and outcomes in this complete-case survey analysis. Although svyglm drops NA, documenting NAs demonstrates transparency and if any bias occurs due to the potential volume of missing data. The table demonstrated no missing values for the simulated dataset.
-
 
 ***Note:***
 This project presents a learning-oriented exploration of simulating binary outcomes via logistic models. The code and methodology are being refined iteratively as part of developing a stronger foundation in statistical modeling.
