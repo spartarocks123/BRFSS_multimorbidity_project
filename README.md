@@ -1,4 +1,4 @@
-**Multimorbidity Burden and its association with routine healthcare utilization and delayed care due to cost: Analysis of BRFSS 2024 Data**
+**Multimorbidity burden and its Associations with Routine Healthcare Utilization and Delayed Care due to Cost: Analysis of BRFSS 2024 Data**
 
 **Author:** Muhammad Amish-Malik
 
