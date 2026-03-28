@@ -1,6 +1,6 @@
-**Multimorbidity and Healthcare Utilization: Analysis of BRFSS 2024 Data**
+**Multimorbidity Burden and its association with routine healthcare utilization and delayed care due to cost: Analysis of BRFSS 2024 Data**
 
-**Author:** Mohammed Amish-Malik
+**Author:** Muhammad Amish-Malik
 
 ---
 
@@ -11,7 +11,7 @@ This project examines how multimorbidity (the presence of multiple chronic condi
 Specifically, it evaluates:
 
 - Whether individuals with more chronic conditions are more likely to attend routine checkups
-- Whether they are also more likely to delay care due to cost
+- Whether they are also more likely to delay care due to cost barriers
 
 ---
 
