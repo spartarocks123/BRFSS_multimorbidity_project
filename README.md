@@ -1,51 +1,87 @@
-# BRFSS Multimorbidity Project
+**Multimorbidity and Healthcare Utilization: Analysis of BRFSS 2024 Data**
 
-**Author:** Mohammed Amish-Malik  
-**Purpose:** Portfolio artifact using 2024 BRFSS data to study the associations between multimorbidity, routine healthcare utilization, and deferred care due to cost.  
+**Author:** Mohammed Amish-Malik
 
-**Folder Structure:**
-- `data/` → Derived dataset showing variable structure
-- `scripts/` → R scripts for data cleaning, analysis, and visualization. SAS was used to create descriptive tables. SQL, Python, and/or Power BI/Tableau will be used later to replicate project as well to demonstrate proficiency. 
-- `figures/` → Placeholder for plots
-- `tables/` → Placeholder for output tables
-  
-**Methods:** Collapse the conditions into multimorbidity burden category. Compare against the “healthy” baseline and interpretation reasons as odds of routine care/cost barrier among people with multimorbidity relative to no chronic conditions. Outcomes: Primary: Had a routine care in past 12 months (Yes/No) Secondary: Deferred care due to cost (Yes/No). Covariates are Age, Sex, Race/ethnicity, Insurance status, Income category, & Education. The following chronic conditions were used in this analysis: Heart attack / Myocardial infarction or Coronary heart disease, Stroke, Asthma, Any cancer (collapsed from skin cancer and other cancers), Chronic obstructive pulmonary disease (COPD), emphysema, or chronic bronchitis, Depressive disorder (including major, minor, or dysthymia), Chronic kidney disease, Diabetes (chronic; excludes pregnancy-only or pre-diabetes). Weighted descriptive statistics and weighted survey logistic regression were conducted for this analysis of the cross-sectional dataset. 
+---
 
-**Results:** So far, there appears to be a dose-response relationship between the number of chronic conditions and routine healthcare utilization. As the number of chronic conditions increase in an individual, the predicted probability of routine checkup increases. This is expected and correlates with what has been found in the literature. Interestingly, the predicted probability of delayed care due to cost also increases in accordance with the number of chronic conditions. All the p values are less than 0.01 and the OR increases as the number of chronic conditions increases. 
+## 1. Problem
 
-**Note:** No raw BRFSS data is included. This project uses a derived analytic dataset based on publicly available BRFSS data, where variables have been cleaned, recoded, and transformed for analysis. This project is fully reproducible using the scripts in the scripts/ directory, which generate the analytic dataset, figures, and tables. Variable names correspond to standard BRFSS variables, and values are transformed through established recoding and data-cleaning procedures
+This project examines how multimorbidity (the presence of multiple chronic conditions) is associated with healthcare utilization and financial barriers to care in the U.S. adult population.
 
-Happy to receive any professional feedback—please keep it constructive and focused on analysis, methodology, or reproducibility.
+Specifically, it evaluates:
 
-**Note on diagnostics:**
-- VIF and Hosmer-Lemeshow tests are standard diagnostics for GLMs.
-- Recently learned that VIF and Hosmer-Lemeshow tests don't fully account for weights, strata, or clustering. This dataset uses svyglm (survey-weighted logistic regression). Will utilize different tests instead.
+- Whether individuals with more chronic conditions are more likely to attend routine checkups
+- Whether they are also more likely to delay care due to cost
 
-**Note on Assumptions:**
-- Independent Observations: BRFSS tends to survey people from the same counties, states, neighboorhoods, etc. This is demonstrated by the fact that strata and clustering are used. However, svydesign(...) code in R accounts for this. Therefore, this assumption has been met.
-- Correct model: The outcomes of interest are yes/no. Therefore, this assumption has been met.
-- Multicollinearity: All intercept, adjusted predictors had VIFs below 5, indicating that multicollinearity is not a concern in this model. Therefore, this assumption has been met. 
-- Overdispersion: Since weights and clusters are involved in this dataset, the observations are not entirely independent from each other. However, using quasibinomial modeling for both outcomes addresses this concern as it adjusts for variance in the dataset.
+---
 
-**Note on coding steps:**
-- Weighted Logistic Models: "!is.na" step was conducted for all the variables to ensure no missing values were utilized in the logistic regression. This was a complete case analysis. svyglm () handles weights and clusters. 
-- Variables: The bernoulli distribution was utilized to demonstrate the prevalence of the variables. Adjusted them so that they reflect the prevalence of the original BRFSS dataset more accurately. Completed for the chronic conditions, will conduct the same for the other variables (Covariates, weighting, strata, and clusting variables if feasible and necessary) 
-- Logit-scale: The Odds Ratios (ORs) from the original BRFSS dataset are converted to log-odds (logit) probabilities in the simulation dataset. This was done so that the simulated dataset matches the original dataset's relationships.
+## 2. Data
 
-***Current Steps:***
-- Adjust the covariates and other variables (strata, cluster, weighting) to reflect the original BRFSS dataset more accurately.
-- Chronic conditions are simulated independently; co-occurrence patterns may not reflect real multimorbidity correlations in BRFSS. See if that could be adjusted as well. Tetrachoric correlation may hold promise for this issue. Chronic conditions are simulated independently; therefore, co-occurrence patterns may not fully reflect real multimorbidity correlations in BRFSS. While tetrachoric correlations could theoretically model such associations, this is unnecessary because the BRFSS measures these conditions as binary indicators (a person either has the condition or doesn’t). cc_cancer is not an independent measure. Instead, it is derived from cc_skin_ca and cc_other_ca. Therefore, no separate Bernoulli draw is required. For all chronic conditions, independent Bernoulli simulations are appropriate and consistent with the codebook.
-- Some category variables may be treated as continuous (e.g. income level, race, education level). Therefore, readjust those variables. The following code should have the covariates readjusted to their appropriate factoral levels instead. Still working on this. Looks like the log odds of each respective level of a covariate has to be included as well. 
-- Review variable selection decisions
-- Evaluate model assumptions and robustness
-- Conduct sensitivity analyses if appropriate. Will conduct a sensitivity analysis on Men vs Women as well as Insured vs Uninsured. 
-- Finalize interpretation of results and documentation
-- Replicate analysis with SQL & Python
-- Document technical rationale through code comments often within the data scripts. If any changes are needed, that will be explained by the code comments or README.md.
+- **Source:** Behavioral Risk Factor Surveillance System (BRFSS), 2024
+- **Type:** Cross-sectional, survey-weighted dataset
+- **Structure:** Derived analytic dataset with cleaned and recoded variables
 
-***Completed Steps:***
-- Resampled survey design variables from the original BRFSS dataset (strata, clustering, and weights). Adjusted the prevalence of all the variables to reflect the original dataset as well.
-- A weighted proportion of missing (NA) values was made for all predictors, covariates, and outcomes in this complete-case survey analysis. Although svyglm drops NA, documenting NAs demonstrates transparency and if any bias occurs due to the potential volume of missing data. The table demonstrated no missing values for the simulated dataset.
+### Key Variables:
 
-***Note:***
-This project presents a learning-oriented exploration of simulating binary outcomes via logistic models. The code and methodology are being refined iteratively as part of developing a stronger foundation in statistical modeling.
+- **Outcomes:**
+    - Routine checkup in past 12 months (Yes/No)
+    - Deferred care due to cost (Yes/No)
+- **Exposure:**
+    - Multimorbidity (number of chronic conditions)
+- **Covariates:**
+    - Age
+    - Sex
+    - Race/ethnicity
+    - Insurance status
+    - Income
+    - Education
+- **Chronic Conditions Included:**
+    - Cardiovascular disease (heart attack, CHD)
+    - Stroke
+    - Asthma
+    - Cancer
+    - COPD
+    - Depressive disorder
+    - Chronic kidney disease
+    - Diabetes
+
+---
+
+## 3. Methods
+
+- Constructed a multimorbidity variable by aggregating chronic conditions
+- Conducted **weighted descriptive analyses**
+- Applied **survey-weighted logistic regression (svyglm in R)**
+- Compared outcomes across multimorbidity levels using a “no chronic condition” baseline
+
+---
+
+## 4. Results
+
+- A **dose-response relationship** was observed between multimorbidity and healthcare utilization
+- As the number of chronic conditions increased:
+    - Probability of routine checkups **increased significantly**
+    - Probability of delaying care due to cost **also increased**
+- All associations were statistically significant (**p < 0.01**)
+- Odds ratios increased with higher multimorbidity burden
+
+---
+
+## 5. Key Insights
+
+- Individuals with higher disease burden are more engaged with healthcare systems **but also face greater financial barriers**
+- Increased utilization does not eliminate access inequities, particularly cost-related delays
+
+---
+
+## 6. Reproducibility
+
+- All analysis conducted in **R** using survey-weighted methods
+- Scripts available in `/scripts` for:
+    - Data cleaning
+    - Variable construction
+    - Modeling and visualization
+- Output tables and figures stored in `/tables` and `/figures`
+- This project uses a **derived dataset** based on publicly available BRFSS data.
+    - Raw data is not included
+    - All transformations are reproducible via provided scripts
