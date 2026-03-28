@@ -77,11 +77,11 @@ Specifically, it evaluates:
 ## 6. Reproducibility
 
 - All analysis conducted in **R** using survey-weighted methods
-- Scripts available in `/scripts` for:
-    - Data cleaning
-    - Variable construction
-    - Modeling and visualization
-- Output tables and figures stored in `/tables` and `/figures`
-- This project uses a **derived dataset** based on publicly available BRFSS data.
+- Project structure:
+    - `/data` → Derived analytic dataset with cleaned and recoded variables
+    - `/scripts` → Data cleaning, variable construction, modeling, and visualization
+    - `/tables` → Output tables
+    - `/figures` → Visualizations
+- This project uses a **derived dataset** based on publicly available BRFSS data:
     - Raw data is not included
-    - All transformations are reproducible via provided scripts
+    - All transformations are reproducible via scripts in `/scripts`
