@@ -16,22 +16,50 @@ library(pROC)
 derv_br <- read_csv("/Users/moh/Desktop/Research Assistant/BRFSS_multimorbidity_project/data/brfss_example.csv", show_col_types = FALSE)
 
 # ------------------------------
-# 2. Ensure Correct Factor Order (BEFORE survey design)
+# 2. Ensure Correct Factor Order
 # ------------------------------
+
+set_ref_weighted <- function(x, w) {
+  
+  # Ensure factor
+  x <- factor(x)
+  
+  df <- data.frame(x = x, w = w)
+  
+  freq <- df %>%
+    group_by(x) %>%
+    summarise(w_sum = sum(w, na.rm = TRUE), .groups = "drop")
+  
+  ref_level <- as.character(freq$x[which.max(freq$w_sum)])
+  
+  # 🔥 Clean levels safely
+  new_levels <- unique(c(ref_level, setdiff(levels(x), ref_level)))
+  
+  factor(x, levels = new_levels)
+}
+# 🔥 FILTER HERE
+derv_br <- derv_br %>%
+  filter(
+    agegrp != "14",
+    race   != "9",
+    educ   != "9",
+    income != "9"
+  )
+
+# 🔥 APPLY REFERENCE LEVEL LOGIC HERE
 derv_br <- derv_br %>%
   mutate(
-    cc_cat2 = factor(cc_cat2, levels = c("0","1","2","3+")),
-    cc_cat2 = relevel(cc_cat2, ref = "0"),
-    agegrp  = factor(agegrp),
-    sex     = factor(sex),
-    race    = factor(race),
-    educ    = factor(educ),
-    income  = factor(income),
-    insured = factor(insured)
+    cc_cat2 = set_ref_weighted(cc_cat2, LLCPWT),
+    agegrp  = set_ref_weighted(agegrp, LLCPWT),
+    sex     = set_ref_weighted(sex, LLCPWT),
+    race    = set_ref_weighted(race, LLCPWT),
+    educ    = set_ref_weighted(educ, LLCPWT),
+    income  = set_ref_weighted(income, LLCPWT),
+    insured = set_ref_weighted(insured, LLCPWT)
   )
 
 # ------------------------------
-# 3. Adjust Survey Design
+# 3. Survey Design
 # ------------------------------
 derv_br <- derv_br %>%
   mutate(STSTR2 = as.character(STSTR))
@@ -50,7 +78,7 @@ derv_design <- svydesign(
 )
 
 # ------------------------------
-# 4. Weighted Logistic Models (ONLY drop outcome NAs)
+# 4. Models (complete case)
 # ------------------------------
 design_routine_derv <- subset(
   derv_design,
@@ -81,6 +109,7 @@ design_cost_derv <- subset(
     !is.na(income) &
     !is.na(insured)
 )
+
 model_cost_derv <- svyglm(
   cost_barrier ~ cc_cat2 + agegrp + sex + race + educ + income + insured,
   design = design_cost_derv,
@@ -88,45 +117,111 @@ model_cost_derv <- svyglm(
 )
 
 # ------------------------------
-# 5. Extract Predicted Probabilities
+# 5. Predicted Probabilities
 # ------------------------------
-pred_routine_derv <- ggpredict(model_routine_derv, terms = "cc_cat2") %>%
-  drop_na(x)
+pred_routine_derv <- ggpredict(model_routine_derv, terms = "cc_cat2") %>% drop_na(x)
+pred_cost_derv    <- ggpredict(model_cost_derv, terms = "cc_cat2") %>% drop_na(x)
 
-pred_cost_derv <- ggpredict(model_cost_derv, terms = "cc_cat2") %>%
-  drop_na(x)
 # ------------------------------
-# 6. Extract Odds Ratios
+# 6. Clean OR Extraction
 # ------------------------------
-extract_or <- function(model, drop_intercept = FALSE){
+extract_or_clean <- function(model){
+  
   coef_table <- summary(model)$coefficients
   
-  res <- tibble(
-    Variable = rownames(coef_table),
+  tibble(
+    term     = rownames(coef_table),
     OR       = exp(coef_table[, "Estimate"]),
     CI_lower = exp(coef_table[, "Estimate"] - 1.96 * coef_table[, "Std. Error"]),
     CI_upper = exp(coef_table[, "Estimate"] + 1.96 * coef_table[, "Std. Error"]),
     p_value  = coef_table[, "Pr(>|t|)"]
-  )
-  
-  if(drop_intercept) res <- filter(res, Variable != "(Intercept)")
-  
-  res %>%
+  ) %>%
+    filter(term != "(Intercept)") %>%
+    
     mutate(
-      OR = round(OR,2),
-      CI_lower = round(CI_lower,2),
-      CI_upper = round(CI_upper,2),
-      p_value = signif(p_value,3)
+      Variable = case_when(
+        
+        # Multimorbidity
+        term == "cc_cat21" ~ "1 chronic condition",
+        term == "cc_cat22" ~ "2 chronic conditions",
+        term == "cc_cat23+" ~ "≥3 chronic conditions",
+        
+        # Sex
+        term == "sex2" ~ "Female",
+        
+        # Insurance
+        term == "insuredUninsured" ~ "Uninsured",
+        
+        # Age
+        term == "agegrp1" ~ "Age 18 to 24",
+        term == "agegrp2" ~ "Age 25 to 29",
+        term == "agegrp3" ~ "Age 30 to 34",
+        term == "agegrp4" ~ "Age 35 to 39",
+        term == "agegrp5" ~ "Age 40 to 44",
+        term == "agegrp6" ~ "Age 45 to 49",
+        term == "agegrp7" ~ "Age 50 to 54",
+        term == "agegrp8" ~ "Age 55 to 59",
+        term == "agegrp9" ~ "Age 60 to 64",
+        term == "agegrp10" ~ "Age 65 to 69",
+        term == "agegrp11" ~ "Age 70 to 74",
+        term == "agegrp12" ~ "Age 75 to 79",
+        term == "agegrp13" ~ "Age 80 or older",
+        
+        # Race
+        term == "race2" ~ "Black only, non-Hispanic",
+        term == "race3" ~ "American Indian or Alaskan Native only, Non-Hispanic",
+        term == "race4" ~ "Asian only, non-Hispanic",
+        term == "race5" ~ "Native Hawaiian or other Pacific Islander only, Non-Hispanic",
+        term == "race6" ~ "Other race only, non-Hispanic",
+        term == "race7" ~ "Multiracial, non-Hispanic",
+        term == "race8" ~ "Hispanic",
+        
+        # Education
+        term == "educ1" ~ "Did not graduate High School",
+        term == "educ2" ~ "Graduated High School",
+        term == "educ3" ~ "Attended College or Technical School",
+        term == "educ4" ~ "Graduated from College or Technical School",
+        
+        # Income
+        term == "income1" ~ "Less than $15,000",
+        term == "income2" ~ "$15,000 to < $25,000",
+        term == "income3" ~ "$25,000 to < $35,000",
+        term == "income4" ~ "$35,000 to < $50,000",
+        term == "income5" ~ "$50,000 to < $100,000",
+        term == "income6" ~ "$100,000 to < $200,000",
+        term == "income7" ~ "$200,000 or more",
+        TRUE ~ term
+      )
+    ) %>%
+    
+    select(Variable, OR, CI_lower, CI_upper, p_value) %>%
+    
+    mutate(
+      OR = round(OR, 2),
+      CI_lower = round(CI_lower, 2),
+      CI_upper = round(CI_upper, 2),
+      p_value = signif(p_value, 3)
     )
 }
 
-routine_or <- extract_or(model_routine_derv, TRUE)
-cost_or    <- extract_or(model_cost_derv, TRUE)
+# ✅ Correct function calls
+routine_or <- extract_or_clean(model_routine_derv)
+cost_or    <- extract_or_clean(model_cost_derv)
 
+# ------------------------------
+# 7. Save Tables
+# ------------------------------
 dir.create("tables", showWarnings = FALSE)
 
-write_csv(routine_or, "/Users/moh/Desktop/Research Assistant/BRFSS_multimorbidity_project/tables/routine_odds_ratios.csv")
-write_csv(cost_or, "/Users/moh/Desktop/Research Assistant/BRFSS_multimorbidity_project/tables/cost_odds_ratios.csv")
+write_csv(
+  routine_or,
+  "/Users/moh/Desktop/Research Assistant/BRFSS_multimorbidity_project/tables/routine_odds_ratios.csv"
+)
+
+write_csv(
+  cost_or,
+  "/Users/moh/Desktop/Research Assistant/BRFSS_multimorbidity_project/tables/cost_odds_ratios.csv"
+)
 
 # ------------------------------
 # 7. Figure 1: Routine Checkup
@@ -226,20 +321,36 @@ ggsave(
   dpi = 600
 )
 
+
 # ------------------------------
 # 9. ROC / AUC
 # ------------------------------
 plot_roc_auc <- function(model, design, outcome, color){
+  
   probs <- predict(model, type = "response")
-  roc_obj <- roc(design$variables[[outcome]], probs,
-                 weights = design$variables$LLCPWT)
+  
+  roc_obj <- roc(
+    design$variables[[outcome]],
+    probs,
+    weights = design$variables$LLCPWT
+  )
   
   plot(roc_obj, col = color, lwd = 2, main = paste("ROC -", outcome))
-  auc(roc_obj)
+  
+  tibble(
+    outcome = outcome,
+    AUC = as.numeric(auc(roc_obj))
+  )
 }
 
 auc_routine <- plot_roc_auc(model_routine_derv, design_routine_derv, "routine_care", "blue")
 auc_cost    <- plot_roc_auc(model_cost_derv, design_cost_derv, "cost_barrier", "red")
+
+auc_all <- bind_rows(auc_routine, auc_cost)
+
+write_csv(
+  auc_all,
+  "/Users/moh/Desktop/Research Assistant/BRFSS_multimorbidity_project/tables/AUC Results.csv")
 
 # ------------------------------
 # 10. Calibration plots
@@ -276,21 +387,64 @@ calibration_plot(model_cost_derv, design_cost_derv, "cost_barrier", "red")
 # 11. Sensitivity analyses
 # ------------------------------
 subset_designs <- list(
-  male = subset(derv_design, sex == levels(derv_br$sex)[1]),
-  female = subset(derv_design, sex == levels(derv_br$sex)[2]),
-  insured = subset(derv_design, insured == "Insured"),
-  uninsured = subset(derv_design, insured == "Uninsured")
+  male       = subset(derv_design, sex == "Male"),
+  female     = subset(derv_design, sex == "Female"),
+  insured    = subset(derv_design, insured == "Insured"),
+  uninsured  = subset(derv_design, insured == "Uninsured")
 )
 
+formulas <- list(
+  male = list(
+    routine = routine_care ~ cc_cat2 + agegrp + race + educ + income + insured,
+    cost    = cost_barrier ~ cc_cat2 + agegrp + race + educ + income + insured
+  ),
+  
+  female = list(
+    routine = routine_care ~ cc_cat2 + agegrp + race + educ + income + insured,
+    cost    = cost_barrier ~ cc_cat2 + agegrp + race + educ + income + insured
+  ),
+  
+  insured = list(
+    routine = routine_care ~ cc_cat2 + agegrp + sex + race + educ + income,
+    cost    = cost_barrier ~ cc_cat2 + agegrp + sex + race + educ + income
+  ),
+  
+  uninsured = list(
+    routine = routine_care ~ cc_cat2 + agegrp + sex + race + educ + income,
+    cost    = cost_barrier ~ cc_cat2 + agegrp + sex + race + educ + income
+  )
+)
 
-sensitivity_models <- map(subset_designs, function(dsg){
+sensitivity_models <- imap(subset_designs, function(dsg, name){
+  
+  f <- formulas[[name]]
+  
   list(
-    routine = svyglm(routine_care ~ cc_cat2 + agegrp + sex + race + educ + income + insured,
-                     design = dsg, family = quasibinomial()),
-    cost    = svyglm(cost_barrier ~ cc_cat2 + agegrp + sex + race + educ + income + insured,
-                     design = dsg, family = quasibinomial())
+    routine = svyglm(f$routine, design = dsg, family = quasibinomial()),
+    cost    = svyglm(f$cost,    design = dsg, family = quasibinomial())
   )
 })
 
-sensitivity_or <- map(sensitivity_models, ~map(.x, extract_or))
+sensitivity_or <- imap(sensitivity_models, function(models, group){
+  
+  bind_rows(
+    extract_or_clean(models$routine) %>% mutate(outcome = "Routine Care"),
+    extract_or_clean(models$cost)    %>% mutate(outcome = "Cost Barrier")
+  ) %>%
+    mutate(subgroup = group)
+})
+
+sensitivity_or_df <- bind_rows(sensitivity_or)
+
+
+write_csv(
+  sensitivity_or_df,
+  "/Users/moh/Desktop/Research Assistant/BRFSS_multimorbidity_project/tables/sensitivity_odds_ratios.csv"
+)
+
+write_csv(
+  sensitivity_or_df,
+  "/Users/moh/Desktop/Research Assistant/BRFSS_multimorbidity_project/tables/sensitivity_odds_ratios.csv"
+)
+
 
