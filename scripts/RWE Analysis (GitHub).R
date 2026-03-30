@@ -353,9 +353,13 @@ write_csv(
   "/Users/moh/Desktop/Research Assistant/BRFSS_multimorbidity_project/tables/AUC Results.csv")
 
 # ------------------------------
-# 10. Calibration plots
+# 10. Calibration plots with saving
 # ------------------------------
-calibration_plot <- function(model, design, outcome, color){
+calibration_plot <- function(model, design, outcome, color, filename, folder_path){
+  # Ensure folder exists
+  dir.create(folder_path, showWarnings = FALSE, recursive = TRUE)
+  
+  # Compute decile-level observed vs predicted probabilities
   data <- design$variables %>%
     mutate(
       pred = predict(model, type = "response"),
@@ -368,7 +372,8 @@ calibration_plot <- function(model, design, outcome, color){
       .groups = "drop"
     )
   
-  ggplot(data, aes(x = pred, y = obs)) +
+  # Create the calibration plot
+  fig <- ggplot(data, aes(x = pred, y = obs)) +
     geom_point(color = color, size = 3) +
     geom_line(color = color, linewidth = 1) +
     geom_abline(intercept = 0, slope = 1, linetype = "dashed") +
@@ -378,10 +383,43 @@ calibration_plot <- function(model, design, outcome, color){
       title = paste("Calibration -", outcome)
     ) +
     theme_minimal(base_size = 14)
+  
+  # Save the plot to the specified folder
+  ggsave(
+    filename = file.path(folder_path, paste0(filename, ".pdf")),
+    plot = fig,
+    width = 8,
+    height = 6,
+    dpi = 600
+  )
+  
+  return(fig)
 }
 
-calibration_plot(model_routine_derv, design_routine_derv, "routine_care", "blue")
-calibration_plot(model_cost_derv, design_cost_derv, "cost_barrier", "red")
+# ------------------------------
+# Example usage
+# ------------------------------
+github_fig_path <- "/Users/moh/Desktop/Research Assistant/BRFSS_multimorbidity_project/figures"
+
+# Routine care calibration plot
+calibration_plot(
+  model = model_routine_derv,
+  design = design_routine_derv,
+  outcome = "routine_care",
+  color = "blue",
+  filename = "Calibration_Routine_Care",
+  folder_path = github_fig_path
+)
+
+# Cost barrier calibration plot
+calibration_plot(
+  model = model_cost_derv,
+  design = design_cost_derv,
+  outcome = "cost_barrier",
+  color = "red",
+  filename = "Calibration_Cost_Barrier",
+  folder_path = github_fig_path
+)
 
 # ------------------------------
 # 11. Sensitivity analyses
