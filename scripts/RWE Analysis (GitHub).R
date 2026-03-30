@@ -11,7 +11,7 @@ library(viridis)
 library(pROC)
 
 # ------------------------------
-# 1. Load Derived Dataset
+# 1. Load + Subsample Dataset
 # ------------------------------
 derv_br <- read_csv("/Users/moh/Desktop/Research Assistant/BRFSS_multimorbidity_project/data/brfss_example.csv", show_col_types = FALSE)
 
@@ -422,67 +422,53 @@ calibration_plot(
 )
 
 # ------------------------------
-# 11. Sensitivity analyses
+# 11. Sensitivity analyses (robust)
 # ------------------------------
-subset_designs <- list(
-  male       = subset(derv_design, sex == "Male"),
-  female     = subset(derv_design, sex == "Female"),
-  insured    = subset(derv_design, insured == "Insured"),
-  uninsured  = subset(derv_design, insured == "Uninsured")
+
+# Subgroups as logical vectors
+subgroups <- list(
+  male       = derv_br$sex == "Male",
+  female     = derv_br$sex == "Female",
+  insured    = derv_br$insured == "Insured",
+  uninsured  = derv_br$insured == "Uninsured"
 )
 
 formulas <- list(
-  male = list(
-    routine = routine_care ~ cc_cat2 + agegrp + race + educ + income + insured,
-    cost    = cost_barrier ~ cc_cat2 + agegrp + race + educ + income + insured
-  ),
-  
-  female = list(
-    routine = routine_care ~ cc_cat2 + agegrp + race + educ + income + insured,
-    cost    = cost_barrier ~ cc_cat2 + agegrp + race + educ + income + insured
-  ),
-  
-  insured = list(
-    routine = routine_care ~ cc_cat2 + agegrp + sex + race + educ + income,
-    cost    = cost_barrier ~ cc_cat2 + agegrp + sex + race + educ + income
-  ),
-  
-  uninsured = list(
-    routine = routine_care ~ cc_cat2 + agegrp + sex + race + educ + income,
-    cost    = cost_barrier ~ cc_cat2 + agegrp + sex + race + educ + income
-  )
+  routine = routine_care ~ cc_cat2 + agegrp + sex + race + educ + income + insured,
+  cost    = cost_barrier ~ cc_cat2 + agegrp + sex + race + educ + income + insured
 )
 
-sensitivity_models <- imap(subset_designs, function(dsg, name){
+sensitivity_results <- lapply(names(subgroups), function(group_name) {
   
-  f <- formulas[[name]]
+  # Subset the survey design
+  dsg <- subset(derv_design, subgroups[[group_name]])
   
-  list(
-    routine = svyglm(f$routine, design = dsg, family = quasibinomial()),
-    cost    = svyglm(f$cost,    design = dsg, family = quasibinomial())
-  )
-})
-
-sensitivity_or <- imap(sensitivity_models, function(models, group){
+  # Remove factors with only 1 level in the subset
+  dsg$variables <- dsg$variables %>%
+    mutate(across(where(is.factor), ~ fct_drop(.)))
   
-  bind_rows(
-    extract_or_clean(models$routine) %>% mutate(outcome = "Routine Care"),
-    extract_or_clean(models$cost)    %>% mutate(outcome = "Cost Barrier")
-  ) %>%
-    mutate(subgroup = group)
-})
+  # Fit models for both outcomes
+  lapply(names(formulas), function(outcome_name) {
+    model <- tryCatch(
+      svyglm(formulas[[outcome_name]], design = dsg, family = quasibinomial()),
+      error = function(e) return(NULL)
+    )
+    
+    if (is.null(model)) return(NULL)
+    
+    extract_or_clean(model) %>%
+      mutate(
+        outcome = ifelse(outcome_name == "routine", "Routine Care", "Cost Barrier"),
+        subgroup = group_name
+      )
+  }) %>% 
+    bind_rows()
+}) %>%
+  bind_rows()
 
-sensitivity_or_df <- bind_rows(sensitivity_or)
-
-
+# Save CSV
 write_csv(
-  sensitivity_or_df,
+  sensitivity_results,
   "/Users/moh/Desktop/Research Assistant/BRFSS_multimorbidity_project/tables/sensitivity_odds_ratios.csv"
 )
-
-write_csv(
-  sensitivity_or_df,
-  "/Users/moh/Desktop/Research Assistant/BRFSS_multimorbidity_project/tables/sensitivity_odds_ratios.csv"
-)
-
 
