@@ -421,54 +421,95 @@ calibration_plot(
   folder_path = github_fig_path
 )
 
-# ------------------------------
-# 11. Sensitivity analyses (robust)
-# ------------------------------
+# ==========================================================
+# Male Subgroup Sensitivity Analysis (fixed)
+# ==========================================================
 
-# Subgroups as logical vectors
-subgroups <- list(
-  male       = derv_br$sex == "Male",
-  female     = derv_br$sex == "Female",
-  insured    = derv_br$insured == "Insured",
-  uninsured  = derv_br$insured == "Uninsured"
+# ------------------------------
+# 1. Subset to Male Subgroup
+# ------------------------------
+df_male <- derv_br %>%
+  filter(sex == "Male", !is.na(LLCPWT)) %>%   # male only, drop missing weights
+  mutate(across(where(is.factor), ~ fct_drop(.))) %>% # drop unused levels
+  mutate(STSTR2 = as.character(STSTR2))
+
+# Handle singleton strata
+singleton_strata <- names(table(df_male$STSTR2))[table(df_male$STSTR2) == 1]
+df_male$STSTR2[df_male$STSTR2 %in% singleton_strata] <- "singleton"
+
+options(survey.lonely.psu = "adjust")
+
+# ------------------------------
+# 2. Prepare survey design
+# ------------------------------
+dsg_male <- svydesign(
+  ids     = ~PSU,
+  strata  = ~STSTR2,
+  weights = ~LLCPWT,
+  data    = df_male,
+  nest    = TRUE
 )
 
-formulas <- list(
-  routine = routine_care ~ cc_cat2 + agegrp + sex + race + educ + income + insured,
-  cost    = cost_barrier ~ cc_cat2 + agegrp + sex + race + educ + income + insured
+# ------------------------------
+# 3. Dynamic variable filtering
+# Only keep factors with >1 level
+# ------------------------------
+keep_vars <- function(df, vars){
+  vars[sapply(df[vars], function(x) !(is.factor(x) && nlevels(x) < 2))]
+}
+
+model_vars <- c("cc_cat2", "agegrp", "sex", "race", "educ", "income", "insured")
+
+# ------------------------------
+# 4. Fit Routine Care Model
+# ------------------------------
+vars_routine <- keep_vars(df_male, model_vars)
+
+if(length(vars_routine) == 0){
+  stop("No predictors with more than one level left for the male subgroup (routine care).")
+}
+
+formula_routine <- as.formula(
+  paste("routine_care ~", paste(vars_routine, collapse = " + "))
 )
 
-sensitivity_results <- lapply(names(subgroups), function(group_name) {
-  
-  # Subset the survey design
-  dsg <- subset(derv_design, subgroups[[group_name]])
-  
-  # Remove factors with only 1 level in the subset
-  dsg$variables <- dsg$variables %>%
-    mutate(across(where(is.factor), ~ fct_drop(.)))
-  
-  # Fit models for both outcomes
-  lapply(names(formulas), function(outcome_name) {
-    model <- tryCatch(
-      svyglm(formulas[[outcome_name]], design = dsg, family = quasibinomial()),
-      error = function(e) return(NULL)
-    )
-    
-    if (is.null(model)) return(NULL)
-    
-    extract_or_clean(model) %>%
-      mutate(
-        outcome = ifelse(outcome_name == "routine", "Routine Care", "Cost Barrier"),
-        subgroup = group_name
-      )
-  }) %>% 
-    bind_rows()
-}) %>%
-  bind_rows()
+model_routine_male <- svyglm(
+  formula_routine,
+  design = dsg_male,
+  family = quasibinomial()
+)
 
-# Save CSV
+routine_or_male <- extract_or_clean(model_routine_male) %>%
+  mutate(outcome = "Routine Care", subgroup = "Male")
+
+# ------------------------------
+# 5. Fit Cost Barrier Model
+# ------------------------------
+vars_cost <- keep_vars(df_male, model_vars)
+
+if(length(vars_cost) == 0){
+  stop("No predictors with more than one level left for the male subgroup (cost barrier).")
+}
+
+formula_cost <- as.formula(
+  paste("cost_barrier ~", paste(vars_cost, collapse = " + "))
+)
+
+model_cost_male <- svyglm(
+  formula_cost,
+  design = dsg_male,
+  family = quasibinomial()
+)
+
+cost_or_male <- extract_or_clean(model_cost_male) %>%
+  mutate(outcome = "Cost Barrier", subgroup = "Male")
+
+# ------------------------------
+# 6. Combine and Save Results
+# ------------------------------
+sensitivity_results_male <- bind_rows(routine_or_male, cost_or_male)
+
 write_csv(
-  sensitivity_results,
-  "/Users/moh/Desktop/Research Assistant/BRFSS_multimorbidity_project/tables/sensitivity_odds_ratios.csv"
+  sensitivity_results_male,
+  "/Users/moh/Desktop/Research Assistant/BRFSS_multimorbidity_project/tables/sensitivity_odds_ratios_male.csv"
 )
-
