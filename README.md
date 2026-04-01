@@ -53,6 +53,8 @@ Specifically, it evaluates:
 - Conducted **weighted descriptive analyses**
 - Applied **survey-weighted logistic regression (svyglm in R)**
 - Compared outcomes across multimorbidity levels using a “no chronic condition” baseline
+- Conducted assumption tests using ROC/AUC, calibration
+- Sensitivity analyses was not able to be done because all candidate predictors (cc_cat2, agegrp, sex, race, educ, income, insured) collapsed to zero usable levels.
 
 ---
 
