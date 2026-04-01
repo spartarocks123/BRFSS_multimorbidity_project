@@ -47,15 +47,38 @@ Specifically, it evaluates:
 
 ---
 
-## 3. Methods
+## **3. Methods**
 
-- Constructed a multimorbidity variable by aggregating chronic conditions
-- Conducted **weighted descriptive analyses**
-- Applied **survey-weighted logistic regression (svyglm in R)**
-- Compared outcomes across multimorbidity levels using a “no chronic condition” baseline
-- Conducted assumption tests using ROC/AUC, calibration
-- Sensitivity analyses was not able to be done because all candidate predictors (cc_cat2, agegrp, sex, race, educ, income, insured) collapsed to zero usable levels.
+### **Data Processing**
 
+- Recoded BRFSS variables into analytic categories
+- Removed invalid/missing categories (e.g., “don’t know/refused”)
+- Constructed multimorbidity variable
+- Applied **weighted reference level selection** (most frequent category as baseline)
+
+### **Survey Design**
+
+- Accounted for:
+    - **Primary sampling units (PSU)**
+    - **Strata (with singleton handling)**
+    - **Sampling weights (LLCPWT)**
+- Used `survey` package with `survey.lonely.psu = "adjust"`
+
+### **Modeling Approach**
+
+- **Survey-weighted logistic regression** (`svyglm`, quasibinomial)
+- Separate models for:
+    - Routine care
+    - Cost-related delay
+- **Complete-case analysis** for model inputs
+
+### **Post-Estimation**
+
+- Adjusted predicted probabilities (`ggeffects`)
+- Odds ratios with 95% CI (custom extraction pipeline)
+- Model evaluation:
+    - **ROC / AUC (weighted)**
+    - **Calibration plots (decile-based observed vs predicted)**
 ---
 
 ## 4. Results
