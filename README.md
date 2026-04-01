@@ -94,7 +94,6 @@ Specifically, it evaluates:
 ## 5. Key Insights
 
 - Individuals with higher disease burden are more engaged with healthcare systems **but also face greater financial barriers**
-- Increased utilization does not eliminate access inequities, particularly cost-related delays
 
 ---
 
