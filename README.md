@@ -70,6 +70,7 @@ Specifically, it evaluates:
     - Routine care
     - Cost-related delay
 - **Complete-case analysis** for model inputs
+- Models adjusted for age, sex, race/ethnicity, education, income, and insurance status, with “no chronic conditions” as the reference category for multimorbidity.
 
 ### **Post-Estimation**
 
