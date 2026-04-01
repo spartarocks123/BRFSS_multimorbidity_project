@@ -62,7 +62,6 @@ Specifically, it evaluates:
     - **Primary sampling units (PSU)**
     - **Strata (with singleton handling)**
     - **Sampling weights (LLCPWT)**
-- Used `survey` package with `survey.lonely.psu = "adjust"`
 
 ### **Modeling Approach**
 
@@ -74,7 +73,6 @@ Specifically, it evaluates:
 
 ### **Post-Estimation**
 
-- Adjusted predicted probabilities (`ggeffects`)
 - Odds ratios with 95% CI (custom extraction pipeline)
 - Model evaluation:
     - **ROC / AUC (weighted)**
@@ -88,7 +86,7 @@ Specifically, it evaluates:
     - Probability of routine checkups **increased significantly**
     - Probability of delaying care due to cost **also increased**
 - All associations were statistically significant (**p < 0.01**)
-- Odds ratios increased with higher multimorbidity burden
+- Odds ratios (OR) increased with higher multimorbidity burden
 
 ---
 
