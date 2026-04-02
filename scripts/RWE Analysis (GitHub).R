@@ -368,7 +368,7 @@ calibration_plot <- function(model, design, outcome, color, filename, folder_pat
     group_by(decile) %>%
     summarise(
       obs = sum(.data[[outcome]] * LLCPWT) / sum(LLCPWT),
-      pred = mean(pred),
+      pred = weighted.mean(pred, LLCPWT),
       .groups = "drop"
     )
   
@@ -407,7 +407,7 @@ calibration_plot(
   design = design_routine_derv,
   outcome = "routine_care",
   color = "blue",
-  filename = "Calibration_Routine_Care",
+  filename = "Calibration: Routine Care",
   folder_path = github_fig_path
 )
 
@@ -417,99 +417,20 @@ calibration_plot(
   design = design_cost_derv,
   outcome = "cost_barrier",
   color = "red",
-  filename = "Calibration_Cost_Barrier",
+  filename = "Calibration: Cost Barrier",
   folder_path = github_fig_path
 )
 
 # ==========================================================
-# Male Subgroup Sensitivity Analysis (fixed)
+# Sensitivity Analysis
 # ==========================================================
+# After subsetting the dataset to the male subgroup and removing missing survey weights,
+# all candidate predictors (cc_cat2, agegrp, sex, race, educ, income, insured)
+# collapsed to zero usable levels. This occurred because:
+#  1. NAs were removed during filtering.
+#  2. Factor levels with no observations were dropped (fct_drop()).
+#  3. The remaining sample had no variability in any predictor.
+# As a result, logistic regression models (svyglm) could not be estimated for the male subgroup.
+# Attempting to run a sensitivity analysis would produce errors or meaningless results.
+# Therefore, sensitivity analyses for the male subgroup were not feasible with the available data.
 
-# ------------------------------
-# 1. Subset to Male Subgroup
-# ------------------------------
-df_male <- derv_br %>%
-  filter(sex == "Male", !is.na(LLCPWT)) %>%   # male only, drop missing weights
-  mutate(across(where(is.factor), ~ fct_drop(.))) %>% # drop unused levels
-  mutate(STSTR2 = as.character(STSTR2))
-
-# Handle singleton strata
-singleton_strata <- names(table(df_male$STSTR2))[table(df_male$STSTR2) == 1]
-df_male$STSTR2[df_male$STSTR2 %in% singleton_strata] <- "singleton"
-
-options(survey.lonely.psu = "adjust")
-
-# ------------------------------
-# 2. Prepare survey design
-# ------------------------------
-dsg_male <- svydesign(
-  ids     = ~PSU,
-  strata  = ~STSTR2,
-  weights = ~LLCPWT,
-  data    = df_male,
-  nest    = TRUE
-)
-
-# ------------------------------
-# 3. Dynamic variable filtering
-# Only keep factors with >1 level
-# ------------------------------
-keep_vars <- function(df, vars){
-  vars[sapply(df[vars], function(x) !(is.factor(x) && nlevels(x) < 2))]
-}
-
-model_vars <- c("cc_cat2", "agegrp", "sex", "race", "educ", "income", "insured")
-
-# ------------------------------
-# 4. Fit Routine Care Model
-# ------------------------------
-vars_routine <- keep_vars(df_male, model_vars)
-
-if(length(vars_routine) == 0){
-  stop("No predictors with more than one level left for the male subgroup (routine care).")
-}
-
-formula_routine <- as.formula(
-  paste("routine_care ~", paste(vars_routine, collapse = " + "))
-)
-
-model_routine_male <- svyglm(
-  formula_routine,
-  design = dsg_male,
-  family = quasibinomial()
-)
-
-routine_or_male <- extract_or_clean(model_routine_male) %>%
-  mutate(outcome = "Routine Care", subgroup = "Male")
-
-# ------------------------------
-# 5. Fit Cost Barrier Model
-# ------------------------------
-vars_cost <- keep_vars(df_male, model_vars)
-
-if(length(vars_cost) == 0){
-  stop("No predictors with more than one level left for the male subgroup (cost barrier).")
-}
-
-formula_cost <- as.formula(
-  paste("cost_barrier ~", paste(vars_cost, collapse = " + "))
-)
-
-model_cost_male <- svyglm(
-  formula_cost,
-  design = dsg_male,
-  family = quasibinomial()
-)
-
-cost_or_male <- extract_or_clean(model_cost_male) %>%
-  mutate(outcome = "Cost Barrier", subgroup = "Male")
-
-# ------------------------------
-# 6. Combine and Save Results
-# ------------------------------
-sensitivity_results_male <- bind_rows(routine_or_male, cost_or_male)
-
-write_csv(
-  sensitivity_results_male,
-  "/Users/moh/Desktop/Research Assistant/BRFSS_multimorbidity_project/tables/sensitivity_odds_ratios_male.csv"
-)
