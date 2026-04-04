@@ -64,7 +64,6 @@ Due to complications with importing the BRFSS dataset directly into MySQL, the d
 - **Data insertion and updates** (`INSERT INTO`, `UPDATE`)
 - **Filtering** (`WHERE`, `BETWEEN`, `AND`, `OR`)
 - **Aggregation** (`COUNT()`, `SUM()`, `AVG()`, `GROUP BY`, `HAVING`)
-- **Joins** (`INNER JOIN`, `LEFT JOIN`, `CROSS JOIN`) and **temporary tables** (`WITH`)
 - **NULL handling** (`COALESCE()`)
 - **Sorting and limiting rows** (`ORDER BY`, `LIMIT`)
 
