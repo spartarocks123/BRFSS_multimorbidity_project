@@ -60,6 +60,13 @@ SELECT
     END AS cc_cat2
 FROM brfss_cleaned;
 
+-- CASE-WHEN for feature engineering (permanent version)
+UPDATE brfss_cleaned
+SET cc_cat2 = CASE
+    WHEN cc_count = 1 THEN '1'
+    WHEN cc_count = 2 THEN '2'
+    ELSE '+3'
+END;
 
 -- Aggregation & Sorting
 SELECT COUNT(*)
@@ -86,4 +93,9 @@ WHERE cc_count > (
     SELECT AVG(cc_count) FROM brfss_cleaned
 );
 
+SELECT 
+    SUM(CASE WHEN cc_count = 1 THEN 1 ELSE 0 END) AS n1,
+    SUM(CASE WHEN cc_count = 2 THEN 1 ELSE 0 END) AS n2,
+    SUM(CASE WHEN cc_count >= 3 THEN 1 ELSE 0 END) AS n3plus
+FROM brfss_cleaned;
 
