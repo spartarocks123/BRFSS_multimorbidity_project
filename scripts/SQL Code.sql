@@ -1,4 +1,4 @@
--- 1️⃣ Create table with explicit column types and basic constraints
+-- Create table with explicit column types and basic constraints
 CREATE TABLE brfss_cleaned (
     id INT PRIMARY KEY,                  -- unique respondent ID
     agegrp VARCHAR(2),
@@ -22,7 +22,7 @@ CREATE TABLE brfss_cleaned (
     cost_binary TINYINT
 );
 
--- 2️⃣ Insert sample rows manually
+-- Insert sample rows manually
 INSERT INTO brfss_cleaned (
     id, agegrp, sex, race, educ, income, insured,
     routine_care, cost_barrier,
@@ -31,9 +31,9 @@ INSERT INTO brfss_cleaned (
 )
 VALUES 
 (1, '01', 'Male', '01', '03', '05', 'Yes', 'Yes', 'No', 1,0,0,1,0,0,0, 2, '2', 1, 0),
-(2, '02', 'Female', '02', '04', '07', 'No', 'No', 'Yes', 0,1,1,0,1,1,1, 5, '3+', 0, 1);
+(2, '02', 'Female', '02', '04', '07', 'No', 'No', 'Yes', 0,1,1,0,1,1,1, 5, '+3', 0, 1);
 
--- 3️⃣ Example filtering rows
+-- Example filtering rows
 SELECT *
 FROM brfss_cleaned
 WHERE agegrp IS NOT NULL
@@ -43,10 +43,19 @@ WHERE agegrp IS NOT NULL
   AND income IS NOT NULL
   AND insured IS NOT NULL;
 
--- 4️⃣ Example of multimorbidity count using COALESCE()
+-- Example of multimorbidity count using COALESCE()
 SELECT id,
        (COALESCE(cc_mi,0) + COALESCE(cc_stroke,0) + COALESCE(cc_asthma,0) +
         COALESCE(cc_copd,0) + COALESCE(cc_diabetes,0) + COALESCE(cc_ckd,0) +
         COALESCE(cc_depress,0)) AS cc_count
 FROM brfss_cleaned;
 
+-- CASE-WHEN for feature engineering
+SELECT 
+    cc_count,
+    CASE 
+        WHEN cc_count = 1 THEN '1'
+        WHEN cc_count = 2 THEN '2'
+        ELSE '+3'
+    END AS cc_cat2
+FROM brfss_cleaned;
