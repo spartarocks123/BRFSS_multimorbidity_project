@@ -1,5 +1,5 @@
 # ==========================================================
-# Derived Dataset Analysis
+# Derived Dataset Analysis (GitHub)
 # ==========================================================
 
 library(tidyverse)
@@ -353,7 +353,7 @@ write_csv(
   "/Users/moh/Desktop/Research Assistant/BRFSS_multimorbidity_project/tables/AUC Results.csv")
 
 # ------------------------------
-# 10. Calibration plots with saving
+# 10. Calibration plots
 # ------------------------------
 calibration_plot <- function(model, design, outcome, color, filename, folder_path){
   # Ensure folder exists
