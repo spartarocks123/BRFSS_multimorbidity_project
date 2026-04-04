@@ -76,3 +76,14 @@ FROM brfss_cleaned;
 SELECT MAX(cc_count)
 FROM brfss_cleaned;
 
+
+SELECT AVG(cc_count)
+FROM brfss_cleaned;
+
+SELECT *
+FROM brfss_cleaned
+WHERE cc_count > (
+    SELECT AVG(cc_count) FROM brfss_cleaned
+);
+
+
