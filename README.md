@@ -54,11 +54,11 @@ Specifically, it evaluates:
 - Cleaned and recoded BRFSS variables into analytic categories.
 - Removed invalid or missing categories (e.g., “Don’t know / Refused”).
 - Constructed multimorbidity variable.
-- Applied weighted reference level selection (most frequent category as baseline).
+- Applied weighted reference level selection (most frequent categories as baseline).
 
 **SQL Workaround & Skills Highlighted:**
 
-Due to complications with importing the BRFSS dataset directly into MySQL, the derived analytic table `brfss_cleaned` was manually created with explicit column types. Sample rows were inserted using `INSERT INTO ... VALUES` statements. SQL was then used to demonstrate key data processing operations, including:
+Due to complications with importing the BRFSS dataset directly into MySQL, the derived analytic table `brfss_cleaned` was manually created with explicit column types. Sample rows were inserted using `INSERT INTO ... VALUES` statements. SQL is currently being used to demonstrate key data processing operations, including:
 
 - **Table creation with constraints** (`PRIMARY KEY`, `UNIQUE`, `NOT NULL`, `DEFAULT`)
 - **Data insertion and updates** (`INSERT INTO`, `UPDATE`)
@@ -67,9 +67,8 @@ Due to complications with importing the BRFSS dataset directly into MySQL, the d
 - **Joins** (`INNER JOIN`, `LEFT JOIN`, `CROSS JOIN`) and **temporary tables** (`WITH`)
 - **NULL handling** (`COALESCE()`)
 - **Sorting and limiting rows** (`ORDER BY`, `LIMIT`)
-- Integration with **R** and **SAS** for more advanced analyses.
 
-Codes for calculating derived columns, such as **multimorbidity count**, **categorical multimorbidity**, and **binary indicators for routine care and cost barriers**, were generated using **R** to ensure reproducible SQL queries in combination with the analytic table.
+Codes for calculating derived columns, such as **multimorbidity count**, **categorical multimorbidity**, and **binary indicators for routine care and cost barriers**, were generated using **R**.
 
 ### Survey Design
 
@@ -97,7 +96,6 @@ Codes for calculating derived columns, such as **multimorbidity count**, **categ
 ### SAS Contribution
 
 - Generated **weighted descriptive tables** for baseline characteristics and chronic condition prevalence.
-- Verified the distribution of covariates and outcomes using survey weights to ensure representativeness before modeling in **R**.
 
 **Integration Summary:**
 
