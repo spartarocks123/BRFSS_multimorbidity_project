@@ -32,12 +32,13 @@ set_ref_weighted <- function(x, w) {
   
   ref_level <- as.character(freq$x[which.max(freq$w_sum)])
   
-  # 🔥 Clean levels safely
+  # Clean levels safely
   new_levels <- unique(c(ref_level, setdiff(levels(x), ref_level)))
   
   factor(x, levels = new_levels)
 }
-# 🔥 FILTER HERE
+
+# FILTER HERE
 derv_br <- derv_br %>%
   filter(
     agegrp != "14",
@@ -46,7 +47,7 @@ derv_br <- derv_br %>%
     income != "9"
   )
 
-# 🔥 APPLY REFERENCE LEVEL LOGIC HERE
+# This code takes account the weighting when it comes to setting reference levels. 
 derv_br <- derv_br %>%
   mutate(
     cc_cat2 = set_ref_weighted(cc_cat2, LLCPWT),
@@ -304,13 +305,13 @@ fig2 <-ggplot(pred_cost_derv, aes(x = x, y = predicted)) +
   ) +
   theme_minimal(base_size = 16) +
   theme(
-    axis.line.x = element_blank(),   # 🔥 remove X-axis line
+    axis.line.x = element_blank(),   # remove X-axis line
     axis.line.y = element_blank(),
     axis.ticks = element_blank(),
     axis.text.y = element_blank(),
     panel.grid.minor = element_blank(),
     panel.grid = element_blank(),
-    plot.title = element_text(hjust = 0.5)  # 🔥 center title
+    plot.title = element_text(hjust = 0.5)  # center title
   )
 dir.create("figures", showWarnings = FALSE)
 ggsave(

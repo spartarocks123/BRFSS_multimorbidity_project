@@ -1,59 +1,52 @@
+-- 1️⃣ Create table with explicit column types and basic constraints
+CREATE TABLE brfss_cleaned (
+    id INT PRIMARY KEY,                  -- unique respondent ID
+    agegrp VARCHAR(2),
+    sex VARCHAR(10),
+    race VARCHAR(2),
+    educ VARCHAR(2),
+    income VARCHAR(2),
+    insured VARCHAR(3),
+    routine_care VARCHAR(3),
+    cost_barrier VARCHAR(3),
+    cc_mi TINYINT DEFAULT 0,
+    cc_stroke TINYINT DEFAULT 0,
+    cc_asthma TINYINT DEFAULT 0,
+    cc_copd TINYINT DEFAULT 0,
+    cc_diabetes TINYINT DEFAULT 0,
+    cc_ckd TINYINT DEFAULT 0,
+    cc_depress TINYINT DEFAULT 0,
+    cc_count TINYINT,
+    cc_cat2 VARCHAR(20),
+    routine_binary TINYINT,
+    cost_binary TINYINT
+);
 
+-- 2️⃣ Insert sample rows manually
+INSERT INTO brfss_cleaned (
+    id, agegrp, sex, race, educ, income, insured,
+    routine_care, cost_barrier,
+    cc_mi, cc_stroke, cc_asthma, cc_copd, cc_diabetes, cc_ckd, cc_depress,
+    cc_count, cc_cat2, routine_binary, cost_binary
+)
+VALUES 
+(1, '01', 'Male', '01', '03', '05', 'Yes', 'Yes', 'No', 1,0,0,1,0,0,0, 2, '2', 1, 0),
+(2, '02', 'Female', '02', '04', '07', 'No', 'No', 'Yes', 0,1,1,0,1,1,1, 5, '3+', 0, 1);
 
-SHOW TABLES;
-
-
-
-CREATE TABLE brfss_cleaned
-  SELECT *,
-  FROM brfss_example
-    -- Multimorbidity count (handles NULLs correctly)
-    (
-      COALESCE(cc_mi, 0) + 
-      COALESCE(cc_stroke, 0) +
-      COALESCE(cc_asthma, 0) +
-      COALESCE(cc_copd, 0) +
-      COALESCE(cc_diabetes, 0) +
-      COALESCE(cc_ckd, 0) +
-      COALESCE(cc_depress, 0)
-    ) AS cc_count
-
-SELECT
-  *,
-
-  -- Multimorbidity category
-  CASE
-    WHEN cc_count = 0 THEN '0'
-    WHEN cc_count = 1 THEN '1'
-    WHEN cc_count = 2 THEN '2'
-    ELSE '3+'
-  END AS cc_cat2,
-
-  -- Binary encoding: routine care
-  CASE 
-    WHEN routine_care = 'Yes' THEN 1
-    WHEN routine_care = 'No' THEN 0
-    ELSE NULL
-  END AS routine_binary,
-
-  -- Binary encoding: cost barrier
-  CASE 
-    WHEN cost_barrier = 'Yes' THEN 1
-    WHEN cost_barrier = 'No' THEN 0
-    ELSE NULL
-  END AS cost_binary
-
-  -- Remove missing values (complete-case logic) invalid BRFSS codes
-
-FROM temporary_table
-WHERE
-  agegrp IS NOT NULL
+-- 3️⃣ Example filtering rows
+SELECT *
+FROM brfss_cleaned
+WHERE agegrp IS NOT NULL
   AND sex IS NOT NULL
   AND race IS NOT NULL
-  AND educ IS NOT NULL
+  AND educ IS NOT NULL 
   AND income IS NOT NULL
-  AND insured IS NOT NULL
-  AND agegrp != '14'
-  AND race != '9'
-  AND educ != '9'
-  AND income != '9';
+  AND insured IS NOT NULL;
+
+-- 4️⃣ Example of multimorbidity count using COALESCE()
+SELECT id,
+       (COALESCE(cc_mi,0) + COALESCE(cc_stroke,0) + COALESCE(cc_asthma,0) +
+        COALESCE(cc_copd,0) + COALESCE(cc_diabetes,0) + COALESCE(cc_ckd,0) +
+        COALESCE(cc_depress,0)) AS cc_count
+FROM brfss_cleaned;
+
