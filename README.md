@@ -91,6 +91,8 @@ Specifically, it evaluates:
 - Based on the AUC results, the statistical model demonstrates **good discrimination** between individuals who had a routine checkup or delayed care due to cost versus those who did not.  
   - For routine checkups, the model correctly distinguishes individuals **approximately 75% of the time**.  
   - For delayed care due to cost, it correctly distinguishes individuals **approximately 81% of the time**.
+- Calibration plots show both model lines closely align with the dashed line, **demonstrating good calibration** across all deciles.
+
 ---
 
 ## 5. Key Insights
