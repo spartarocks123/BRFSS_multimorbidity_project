@@ -92,7 +92,7 @@ Specifically, it evaluates:
   - For routine checkups, the model correctly distinguishes individuals **approximately 75% of the time**.  
   - For delayed care due to cost, it correctly distinguishes individuals **approximately 81% of the time**.
 - Calibration plots show both model lines closely align with the dashed line, **demonstrating good calibration** across all deciles.
-Sensitivity analyses were attempted within gender and insurance subgroups. However, insufficient variability in these groups prevented estimation of results.
+- Sensitivity analyses were attempted within gender and insurance subgroups. However, insufficient variability in these groups prevented estimation of results.
 
 ---
 
