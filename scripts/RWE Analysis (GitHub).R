@@ -430,7 +430,7 @@ calibration_plot(
 #  1. NAs were removed during filtering.
 #  2. Factor levels with no observations were dropped (fct_drop()).
 #  3. The remaining sample had no variability in any predictor.
-# As a result, logistic regression models (svyglm) could not be estimated for the male subgroup.
+# As a result, logistic regression models (svyglm) could not be estimated for the subgroups.
 # Attempting to run a sensitivity analysis would produce errors or meaningless results.
-# Therefore, sensitivity analyses for the male subgroup were not feasible with the available data.
+# Therefore, sensitivity analyses were not feasible with the available data.
 
