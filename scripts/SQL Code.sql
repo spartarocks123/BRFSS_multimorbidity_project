@@ -59,3 +59,20 @@ SELECT
         ELSE '+3'
     END AS cc_cat2
 FROM brfss_cleaned;
+
+
+-- Aggregation & Sorting
+SELECT COUNT(*)
+FROM brfss_cleaned
+
+SELECT sex,
+COUNT(*)
+FROM brfss_cleaned
+GROUP BY sex;
+
+SELECT MIN(cc_count)
+FROM brfss_cleaned;
+
+SELECT MAX(cc_count)
+FROM brfss_cleaned;
+
