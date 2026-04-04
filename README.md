@@ -49,36 +49,44 @@ Specifically, it evaluates:
 
 ## **3. Methods**
 
-### **Data Processing**
+### Data Processing
 
-- Recoded BRFSS variables into analytic categories
-- Removed invalid/missing categories (e.g., “don’t know/refused”)
-- Constructed multimorbidity variable
-- Applied **weighted reference level selection** (most frequent category as baseline)
+- Cleaned and recoded BRFSS variables into analytic categories.
+- Removed invalid or missing categories (e.g., “Don’t know / Refused”).
+- Constructed multimorbidity variable.
+- Applied weighted reference level selection (most frequent category as baseline).
 
-### **Survey Design**
+**SQL Workaround:**
+
+Due to complications with importing the BRFSS dataset directly into MySQL, the derived analytic table `brfss_cleaned` was manually created with explicit column types. Sample rows were inserted using `INSERT INTO ... VALUES` statements. Calculated columns such as **multimorbidity count**, **categorical multimorbidity**, and **binary indicators for routine care and cost barriers** were generated using R and SAS.
+
+### Survey Design
 
 - Accounted for:
-    - **Primary sampling units (PSU)**
-    - **Strata (with singleton handling)**
-    - **Sampling weights (LLCPWT)**
+    - Primary sampling units (PSU)
+    - Strata (with singleton handling)
+    - Sampling weights (LLCPWT)
 
-### **Modeling Approach**
+### Modeling Approach
 
-- **Survey-weighted logistic regression** (`svyglm`, quasibinomial)
+- Survey-weighted logistic regression (`svyglm`, `quasibinomial`) in **R**.
 - Separate models for:
     - Routine care
     - Cost-related delay
-- **Complete-case analysis** for model inputs
-- Models adjusted for age, sex, race/ethnicity, education, income, and insurance status, with “no chronic conditions” as the reference category for multimorbidity.
+- Complete-case analysis for model inputs.
+- Models adjusted for **age, sex, race/ethnicity, education, income, and insurance status**, with “no chronic conditions” as the reference category for multimorbidity.
 
-### **Post-Estimation**
+### Post-Estimation
 
-- Odds ratios with 95% CI (custom extraction pipeline)
+- Odds ratios with 95% CI (custom extraction pipeline).
 - Model evaluation:
-    - **ROC / AUC (weighted)**
-    - **Calibration plots (decile-based observed vs predicted)**
----
+    - ROC / AUC (weighted)
+    - Calibration plots (decile-based observed vs predicted)
+
+**SAS Contribution:**
+
+- Generated **weighted descriptive tables** for baseline characteristics and chronic condition prevalence.
+- Verified the distribution of covariates and outcomes using survey weights to ensure representativeness before modeling in R.---
 
 ## 4. Results
 
