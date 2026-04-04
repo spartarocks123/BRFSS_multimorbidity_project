@@ -56,16 +56,27 @@ Specifically, it evaluates:
 - Constructed multimorbidity variable.
 - Applied weighted reference level selection (most frequent category as baseline).
 
-**SQL Workaround:**
+**SQL Workaround & Skills Highlighted:**
 
-Due to complications with importing the BRFSS dataset directly into MySQL, the derived analytic table `brfss_cleaned` was manually created with explicit column types. Sample rows were inserted using `INSERT INTO ... VALUES` statements. Calculated columns such as **multimorbidity count**, **categorical multimorbidity**, and **binary indicators for routine care and cost barriers** were generated using R and SAS.
+Due to complications with importing the BRFSS dataset directly into MySQL, the derived analytic table `brfss_cleaned` was manually created with explicit column types. Sample rows were inserted using `INSERT INTO ... VALUES` statements. SQL was then used to demonstrate key data processing operations, including:
+
+- **Table creation with constraints** (`PRIMARY KEY`, `UNIQUE`, `NOT NULL`, `DEFAULT`)
+- **Data insertion and updates** (`INSERT INTO`, `UPDATE`)
+- **Filtering** (`WHERE`, `BETWEEN`, `AND`, `OR`)
+- **Aggregation** (`COUNT()`, `SUM()`, `AVG()`, `GROUP BY`, `HAVING`)
+- **Joins** (`INNER JOIN`, `LEFT JOIN`, `CROSS JOIN`) and **temporary tables** (`WITH`)
+- **NULL handling** (`COALESCE()`)
+- **Sorting and limiting rows** (`ORDER BY`, `LIMIT`)
+- Integration with **R** and **SAS** for more advanced analyses.
+
+Codes for calculating derived columns, such as **multimorbidity count**, **categorical multimorbidity**, and **binary indicators for routine care and cost barriers**, were generated using **R** to ensure reproducible SQL queries in combination with the analytic table.
 
 ### Survey Design
 
 - Accounted for:
     - Primary sampling units (PSU)
     - Strata (with singleton handling)
-    - Sampling weights (LLCPWT)
+    - Sampling weights (`LLCPWT`)
 
 ### Modeling Approach
 
@@ -83,11 +94,16 @@ Due to complications with importing the BRFSS dataset directly into MySQL, the d
     - ROC / AUC (weighted)
     - Calibration plots (decile-based observed vs predicted)
 
-**SAS Contribution:**
+### SAS Contribution
 
 - Generated **weighted descriptive tables** for baseline characteristics and chronic condition prevalence.
-- Verified the distribution of covariates and outcomes using survey weights to ensure representativeness before modeling in R.---
+- Verified the distribution of covariates and outcomes using survey weights to ensure representativeness before modeling in **R**.
 
+**Integration Summary:**
+
+- **SAS**: weighted descriptive tables for accurate baseline representation.
+- **R**: survey-weighted logistic models, derived variables, and post-estimation evaluation.
+  
 ## 4. Results
 
 - A **dose-response relationship** was observed between multimorbidity and healthcare utilization
