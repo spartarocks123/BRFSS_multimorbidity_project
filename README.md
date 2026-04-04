@@ -61,11 +61,9 @@ Specifically, it evaluates:
 Due to complications with importing the BRFSS dataset directly into MySQL, the derived analytic table `brfss_cleaned` was manually created with explicit column types. Sample rows were inserted using `INSERT INTO ... VALUES` statements. SQL is currently being used to demonstrate key data processing operations, including:
 
 - **Table creation with constraints** (`PRIMARY KEY`, `UNIQUE`, `NOT NULL`, `DEFAULT`)
-- **Data insertion and updates** (`INSERT INTO`, `UPDATE`)
-- **Filtering** (`WHERE`, `BETWEEN`, `AND`, `OR`)
+- **Data insertion and updates** (`INSERT INTO`)
 - **Aggregation** (`COUNT()`, `SUM()`, `AVG()`, `GROUP BY`, `HAVING`)
 - **NULL handling** (`COALESCE()`)
-- **Sorting and limiting rows** (`ORDER BY`, `LIMIT`)
 
 Codes for calculating derived columns, such as **multimorbidity count**, **categorical multimorbidity**, and **binary indicators for routine care and cost barriers**, were generated using **R**.
 
