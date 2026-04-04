@@ -1,9 +1,15 @@
+
+
+SHOW TABLES;
+
+
+
 CREATE TABLE brfss_cleaned
   SELECT *,
   FROM brfss_example
     -- Multimorbidity count (handles NULLs correctly)
     (
-      COALESCE(cc_mi, 0) +
+      COALESCE(cc_mi, 0) + 
       COALESCE(cc_stroke, 0) +
       COALESCE(cc_asthma, 0) +
       COALESCE(cc_copd, 0) +
@@ -51,4 +57,3 @@ WHERE
   AND race != '9'
   AND educ != '9'
   AND income != '9';
-
