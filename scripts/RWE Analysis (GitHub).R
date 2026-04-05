@@ -143,6 +143,9 @@ model_cost_derv <- svyglm(
 # ------------------------------
 # 5. Predicted Probabilities
 # ------------------------------
+
+#This code generates predicted probabilities from survey-weighted logistic regression models for each level of multimorbidity (cc_cat2)
+# drop_na(x) removes any missing levels to ensure a clean dataset for plotting.
 pred_routine_derv <- ggpredict(model_routine_derv, terms = "cc_cat2") %>% drop_na(x)
 pred_cost_derv    <- ggpredict(model_cost_derv, terms = "cc_cat2") %>% drop_na(x)
 
