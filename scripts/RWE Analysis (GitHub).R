@@ -86,6 +86,7 @@ derv_design <- svydesign(
 # ------------------------------
 # 4. Models (complete case)
 # ------------------------------
+#This code filters out any observations that have missing (NA) values
 design_routine_derv <- subset(
   derv_design,
   !is.na(routine_care) &
@@ -97,6 +98,23 @@ design_routine_derv <- subset(
     !is.na(income) &
     !is.na(insured)
 )
+
+# This code uses svyglm() from the survey package to fit a survey-weighted logistic regression model.
+# It accounts for:
+# - Sampling weights (LLCPWT)
+# - Clustering (PSU)
+# - Stratification (STSTR2)
+
+# family = quasibinomial() is used instead of binomial() to allow for overdispersion.
+# Overdispersion occurs when the observed variance is greater than what the standard binomial model assumes.
+
+# In survey data like BRFSS, overdispersion can arise due to:
+# - Complex sampling design (clustering within PSUs)
+# - Unobserved heterogeneity between individuals
+# - Model misspecification (missing variables or imperfect fit)
+
+# quasibinomial() adjusts the variance (standard errors) using a dispersion parameter,
+# leading to more robust and reliable inference (wider, more realistic confidence intervals).
 
 model_routine_derv <- svyglm(
   routine_care ~ cc_cat2 + agegrp + sex + race + educ + income + insured,
