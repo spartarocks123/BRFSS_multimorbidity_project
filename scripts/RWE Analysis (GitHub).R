@@ -145,13 +145,17 @@ model_cost_derv <- svyglm(
 # ------------------------------
 
 #This code generates predicted probabilities from survey-weighted logistic regression models for each level of multimorbidity (cc_cat2)
-# drop_na(x) removes any missing levels to ensure a clean dataset for plotting.
+#drop_na(x) removes any missing levels to ensure a clean dataset for plotting.
 pred_routine_derv <- ggpredict(model_routine_derv, terms = "cc_cat2") %>% drop_na(x)
 pred_cost_derv    <- ggpredict(model_cost_derv, terms = "cc_cat2") %>% drop_na(x)
 
 # ------------------------------
 # 6. Clean OR Extraction
 # ------------------------------
+# Convert survey-weighted logistic regression coefficients to odds ratios (ORs)
+# with 95% confidence intervals, clean variable labels, and formatted p-values.
+# This produces tables for routine care and cost barrier models.
+
 extract_or_clean <- function(model){
   
   coef_table <- summary(model)$coefficients
@@ -231,7 +235,6 @@ extract_or_clean <- function(model){
     )
 }
 
-# ✅ Correct function calls
 routine_or <- extract_or_clean(model_routine_derv)
 cost_or    <- extract_or_clean(model_cost_derv)
 
