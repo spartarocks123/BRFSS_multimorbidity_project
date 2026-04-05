@@ -62,6 +62,11 @@ derv_br <- derv_br %>%
 # ------------------------------
 # 3. Survey Design
 # ------------------------------
+
+#The following code replaces singleton strata with a common label "singleton"
+#This groups all lonely strata together so variance can be computed. 
+#Variance estimates for strata with a single unit cannot be computed normally
+
 derv_br <- derv_br %>%
   mutate(STSTR2 = as.character(STSTR))
 
@@ -256,13 +261,13 @@ fig1 <- ggplot(pred_routine_derv, aes(x = x, y = predicted)) +
   ) +
   theme_minimal(base_size = 16) +
   theme(
-    axis.line.x = element_blank(),   # 🔥 remove X-axis line
+    axis.line.x = element_blank(),   # remove X-axis line
     axis.line.y = element_blank(),
     axis.ticks = element_blank(),
     axis.text.y = element_blank(),
     panel.grid.minor = element_blank(),
     panel.grid = element_blank(),
-    plot.title = element_text(hjust = 0.5)  # 🔥 center title
+    plot.title = element_text(hjust = 0.5)  # center title
   )
 dir.create("figures", showWarnings = FALSE)
 ggsave(
