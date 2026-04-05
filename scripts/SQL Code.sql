@@ -1,3 +1,7 @@
+-- Open a database
+USE brfss_db;
+
+
 -- Create table with explicit column types and basic constraints
 CREATE TABLE brfss_cleaned (
     id INT PRIMARY KEY,                  -- unique respondent ID
@@ -82,7 +86,6 @@ FROM brfss_cleaned;
 
 SELECT MAX(cc_count)
 FROM brfss_cleaned;
-
 
 SELECT AVG(cc_count)
 FROM brfss_cleaned;
