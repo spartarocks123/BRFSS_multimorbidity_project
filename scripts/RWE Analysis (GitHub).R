@@ -38,7 +38,7 @@ set_ref_weighted <- function(x, w) {
   factor(x, levels = new_levels)
 }
 
-# FILTER HERE
+# This code filters the "Don't Know/ Refused" responses from BRFSS
 derv_br <- derv_br %>%
   filter(
     agegrp != "14",
