@@ -257,52 +257,78 @@ write_csv(
 # 7. Figure 1: Routine Checkup
 # ------------------------------
 
+# ------------------------------
+# 7. Figure 1: Routine Checkup
+# ------------------------------
+
 # Create a ggplot object using predicted probabilities dataset
 fig1 <- ggplot(pred_routine_derv, aes(x = x, y = predicted)) +
+  
   # Bar plot (column chart) of predicted probabilities
-  geom_col(fill = viridis(1, option = "C", alpha = 0.85), width = 0.6) +
+  geom_col(
+    fill = viridis(1, option = "C", alpha = 0.85),  # color palette (single color from viridis)
+    width = 0.6                                     # controls bar width
+  ) +
+  
+  # Add error bars representing 95% confidence intervals
   geom_errorbar(
-    aes(ymin = conf.low, ymax = conf.high),
-    width = 0.2,
-    color = "black",
-    linewidth = 1.3,
-    alpha = 0.9
+    aes(ymin = conf.low, ymax = conf.high),  # lower and upper CI bounds
+    width = 0.2,                             # width of the error bar caps
+    color = "black",                         # error bar color
+    linewidth = 1.3,                         # thickness of error bars
+    alpha = 0.9                              # slight transparency
   ) +
+  
+  # Add text labels above each bar showing predicted probability as a percentage
   geom_text(
-    aes(label = percent(predicted, accuracy = 1),
-        y = conf.high + 0.015),
-    size = 4.2,
-    fontface = "bold"
+    aes(
+      label = percent(predicted, accuracy = 1),  # format probability as % (rounded to whole number)
+      y = conf.high + 0.015                      # position text slightly above upper CI
+    ),
+    size = 4.2,                                  # text size
+    fontface = "bold"                            # bold labels
   ) +
+  
+  # Customize Y-axis appearance
   scale_y_continuous(
-    labels = NULL,
-    breaks = NULL,
-    limits = c(0, max(pred_routine_derv$conf.high) * 1.1),
-    expand = expansion(mult = c(0, 0.05))
+    labels = NULL,   # remove Y-axis labels
+    breaks = NULL,   # remove tick marks
+    limits = c(0, max(pred_routine_derv$conf.high) * 1.1),  # dynamic upper bound (10% above max CI)
+    expand = expansion(mult = c(0, 0.05))  # small padding at top
   ) +
+  
+  # Add axis labels, title, and caption
   labs(
-    x = "Number of Chronic Conditions",
-    y = NULL,
+    x = "Number of Chronic Conditions",  # X-axis label
+    y = NULL,                            # remove Y-axis label
     title = "Figure 1: Adjusted Predicted Probability of Routine Checkup by Multimorbidity",
     caption = "Derived analytic dataset; survey-weighted logistic regression with 95% CI"
   ) +
+  
+  # Apply minimal theme with larger base font size
   theme_minimal(base_size = 16) +
+  
+  # Further customize theme elements (remove clutter for publication-style figure)
   theme(
     axis.line.x = element_blank(),   # remove X-axis line
-    axis.line.y = element_blank(),
-    axis.ticks = element_blank(),
-    axis.text.y = element_blank(),
-    panel.grid.minor = element_blank(),
-    panel.grid = element_blank(),
-    plot.title = element_text(hjust = 0.5)  # center title
+    axis.line.y = element_blank(),   # remove Y-axis line
+    axis.ticks = element_blank(),    # remove axis ticks
+    axis.text.y = element_blank(),   # remove Y-axis text labels
+    panel.grid.minor = element_blank(),  # remove minor gridlines
+    panel.grid = element_blank(),        # remove all gridlines
+    plot.title = element_text(hjust = 0.5)  # center-align title
   )
+
+# Create "figures" directory if it does not already exist
 dir.create("figures", showWarnings = FALSE)
+
+# Save the figure to disk as a high-resolution PDF
 ggsave(
   filename = "/Users/moh/Desktop/Research Assistant/BRFSS_multimorbidity_project/figures/Figure 1: Routine Checkup.pdf",
-  plot = fig1,
-  width = 15,
-  height = 10,
-  dpi = 600
+  plot = fig1,     # plot object to save
+  width = 15,      # width in inches (large for publication)
+  height = 10,     # height in inches
+  dpi = 600        # high resolution for print-quality output
 )
 
 # ------------------------------
