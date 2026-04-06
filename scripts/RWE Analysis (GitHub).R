@@ -257,10 +257,6 @@ write_csv(
 # 7. Figure 1: Routine Checkup
 # ------------------------------
 
-# ------------------------------
-# 7. Figure 1: Routine Checkup
-# ------------------------------
-
 # Create a ggplot object using predicted probabilities dataset
 fig1 <- ggplot(pred_routine_derv, aes(x = x, y = predicted)) +
   
