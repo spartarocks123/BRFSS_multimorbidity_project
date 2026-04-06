@@ -256,7 +256,10 @@ write_csv(
 # ------------------------------
 # 7. Figure 1: Routine Checkup
 # ------------------------------
+
+# Create a ggplot object using predicted probabilities dataset
 fig1 <- ggplot(pred_routine_derv, aes(x = x, y = predicted)) +
+  # Bar plot (column chart) of predicted probabilities
   geom_col(fill = viridis(1, option = "C", alpha = 0.85), width = 0.6) +
   geom_errorbar(
     aes(ymin = conf.low, ymax = conf.high),
