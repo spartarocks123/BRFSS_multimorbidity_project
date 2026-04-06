@@ -355,32 +355,68 @@ ggsave(
 # ------------------------------
 # 9. ROC / AUC
 # ------------------------------
+
+# Define a reusable function to:
+# 1) generate predicted probabilities from a model
+# 2) compute a (weighted) ROC curve
+# 3) plot the ROC curve
+# 4) return the AUC as a tidy tibble
 plot_roc_auc <- function(model, design, outcome, color){
   
+  # Generate predicted probabilities (P(Y=1)) from the fitted model
   probs <- predict(model, type = "response")
   
+  # Create ROC object using:
+  # - true outcome values from the survey design object
+  # - predicted probabilities from the model
+  # - sampling weights (LLCPWT) for weighted ROC estimation
   roc_obj <- roc(
-    design$variables[[outcome]],
-    probs,
-    weights = design$variables$LLCPWT
+    design$variables[[outcome]],      # observed binary outcome (0/1)
+    probs,                            # predicted probabilities
+    weights = design$variables$LLCPWT # BRFSS sampling weights
   )
   
-  plot(roc_obj, col = color, lwd = 2, main = paste("ROC -", outcome))
+  # Plot ROC curve with specified color and formatting
+  plot(
+    roc_obj,
+    col = color,                      # line color for the ROC curve
+    lwd = 2,                          # line width
+    main = paste("ROC -", outcome)    # dynamic plot title
+  )
   
+  # Return AUC in a tidy format for later steps in the script
   tibble(
-    outcome = outcome,
-    AUC = as.numeric(auc(roc_obj))
+    outcome = outcome,                # outcome name (label)
+    AUC = as.numeric(auc(roc_obj))   # extract AUC and coerce to numeric
   )
 }
 
-auc_routine <- plot_roc_auc(model_routine_derv, design_routine_derv, "routine_care", "blue")
-auc_cost    <- plot_roc_auc(model_cost_derv, design_cost_derv, "cost_barrier", "red")
+# Apply function to routine care model
+# - generates ROC plot
+# - returns 1-row tibble with AUC
+auc_routine <- plot_roc_auc(
+  model_routine_derv,
+  design_routine_derv,
+  "routine_care",
+  "blue"
+)
 
+# Apply function to cost barrier model
+auc_cost <- plot_roc_auc(
+  model_cost_derv,
+  design_cost_derv,
+  "cost_barrier",
+  "red"
+)
+
+# Combine both AUC results into a single dataframe
 auc_all <- bind_rows(auc_routine, auc_cost)
 
+# Write final AUC table to CSV file (absolute file path)
 write_csv(
   auc_all,
-  "/Users/moh/Desktop/Research Assistant/BRFSS_multimorbidity_project/tables/AUC Results.csv")
+  "/Users/moh/Desktop/Research Assistant/BRFSS_multimorbidity_project/tables/AUC Results.csv"
+)
 
 # ------------------------------
 # 10. Calibration plots
