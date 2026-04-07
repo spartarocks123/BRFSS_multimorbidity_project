@@ -120,9 +120,8 @@ Codes for calculating derived columns, such as **multimorbidity count**, **categ
 ## 5. Key Insights
 
 - Individuals with higher disease burden are more engaged with healthcare systems  
-- However, they also face disproportionately higher financial barriers to care  
-
-This suggests a structural inefficiency: populations with the greatest clinical need are also at elevated risk of cost-related access limitations.
+- However, they also face disproportionately higher financial barriers to care
+- This suggests a structural inefficiency: populations with the greatest clinical need are also at elevated risk of cost-related access limitations.
 ---
 
 ## 6. Reproducibility
