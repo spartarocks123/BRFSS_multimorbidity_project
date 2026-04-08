@@ -320,7 +320,7 @@ dir.create("figures", showWarnings = FALSE)
 
 # Save the figure to disk as a high-resolution PDF
 ggsave(
-  filename = "/Users/moh/Desktop/Research Assistant/BRFSS_multimorbidity_project/figures/Figure 1: Routine Checkup.pdf",
+  filename = "/filepath/Figure 1: Routine Checkup.pdf",
   plot = fig1,     # plot object to save
   width = 15,      # width in inches (large for publication)
   height = 10,     # height in inches
@@ -369,7 +369,7 @@ fig2 <-ggplot(pred_cost_derv, aes(x = x, y = predicted)) +
   )
 dir.create("figures", showWarnings = FALSE)
 ggsave(
-  filename = "/Users/moh/Desktop/Research Assistant/BRFSS_multimorbidity_project/figures/Figure 2: Cost Barrier.pdf",
+  filename = "/Users/moh/Desktop/Research Assistant/BRFSS_multimorbidity_project/data/Figure 2: Cost Barrier.pdf",
   plot = fig2,
   width = 15,
   height = 10,
@@ -440,7 +440,7 @@ auc_all <- bind_rows(auc_routine, auc_cost)
 # Write final AUC table to CSV file (absolute file path)
 write_csv(
   auc_all,
-  "/Users/moh/Desktop/Research Assistant/BRFSS_multimorbidity_project/tables/AUC Results.csv"
+  "/Users/moh/Desktop/Research Assistant/BRFSS_multimorbidity_project/data/AUC Results.csv"
 )
 
 # ------------------------------
@@ -490,7 +490,7 @@ calibration_plot <- function(model, design, outcome, color, filename, folder_pat
 # ------------------------------
 # Example usage
 # ------------------------------
-github_fig_path <- "/Users/moh/Desktop/Research Assistant/BRFSS_multimorbidity_project/figures"
+github_fig_path <- "/Users/moh/Desktop/Research Assistant/BRFSS_multimorbidity_project/data/figures"
 
 # Routine care calibration plot
 calibration_plot(
@@ -524,4 +524,10 @@ calibration_plot(
 # As a result, logistic regression models (svyglm) could not be estimated for the subgroups.
 # Attempting to run a sensitivity analysis would produce errors or meaningless results.
 # Therefore, sensitivity analyses were not feasible with the available data.
+
+
+write_csv(pred_routine_derv, "figures/predicted_routine.csv")
+write_csv(pred_cost_derv, "figures/predicted_cost.csv")
+write_csv(routine_or, "tables/routine_or.csv")
+write_csv(cost_or, "tables/cost_or.csv")
 
