@@ -526,8 +526,4 @@ calibration_plot(
 # Therefore, sensitivity analyses were not feasible with the available data.
 
 
-write_csv(pred_routine_derv, "figures/predicted_routine.csv")
-write_csv(pred_cost_derv, "figures/predicted_cost.csv")
-write_csv(routine_or, "tables/routine_or.csv")
-write_csv(cost_or, "tables/cost_or.csv")
 
