@@ -4,7 +4,7 @@
 
 ---
 
-## 1. Problem
+## 1. Purpose
 
 This project examines how multimorbidity (the presence of multiple chronic conditions) is associated with healthcare utilization and financial barriers to care in the U.S. adult population.
 
