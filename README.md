@@ -163,4 +163,4 @@ Codes for calculating derived columns, such as **multimorbidity count**, **categ
 - Survey-weighted regression outputs (odds ratios, 95% CI)
 - Model diagnostics (ROC/AUC, calibration plots)
 - Reproducible data pipeline across R, SAS, and SQL
-- Tableau visualization comparing routine care vs cost-related delay
+- Tableau visualization comparing the odds ratios of routine care vs cost-related delay
