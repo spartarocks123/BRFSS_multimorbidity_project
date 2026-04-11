@@ -127,7 +127,7 @@ Codes for calculating derived columns, such as **multimorbidity count**, **categ
 - The survey demonstrates a cross-sectional design. Therefore, no causal inference could be determined. 
 - Self-reported BRFSS data subject to recall and reporting bias
 - ROC/AUC estimates incorporate weights but did not fully account for complex survey design (clustering, stratification)
-- Complete-case analysis may introduce selection bias (e.g., some participants completed other sections but not some but are excluded anyway).
+- Complete-case analysis may introduce selection bias (e.g., participants with partial missingness across model variables were excluded).
 
 ## 7. Implications for Practice (“So What?”)
 
@@ -157,3 +157,10 @@ Individuals with multimorbidity engage more with routine care but are also more 
 - This project uses a **derived dataset** based on publicly available BRFSS data:
     - Raw data is not included
     - All transformations are reproducible via scripts in `/scripts`
+
+## 9. Deliverables
+
+- Survey-weighted regression outputs (odds ratios, 95% CI)
+- Model diagnostics (ROC/AUC, calibration plots)
+- Reproducible data pipeline across R, SAS, and SQL
+- Tableau visualization comparing routine care vs cost-related delay
