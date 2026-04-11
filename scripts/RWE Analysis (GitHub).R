@@ -12,7 +12,7 @@ library(pROC)
 # ------------------------------
 # Load Data
 # ------------------------------
-brfss <- read_xpt("/Users/moh/Desktop/LLCP2024.XPT ")
+brfss <- read_xpt("/filepath/LLCP2024.XPT ")
 
 # Clean names (removes leading underscores)
 names(brfss) <- gsub("^_", "", names(brfss))
@@ -111,7 +111,7 @@ brfss_clean <- brfss %>%
 # ------------------------------
 dir.create("data", showWarnings = FALSE, recursive = TRUE)
 
-write.csv(brfss_clean, "/Users/moh/Desktop/Research Assistant/BRFSS_multimorbidity_project/data/brfss_example.csv", row.names = FALSE)
+write.csv(brfss_clean, "/filepath/brfss_example.csv", row.names = FALSE)
 
 
 # ==========================================================
@@ -121,7 +121,7 @@ write.csv(brfss_clean, "/Users/moh/Desktop/Research Assistant/BRFSS_multimorbidi
 # ------------------------------
 # 1. Load + Subsample Dataset
 # ------------------------------
-derv_br <- read_csv("/Users/moh/Desktop/Research Assistant/BRFSS_multimorbidity_project/data/brfss_example.csv", show_col_types = FALSE)
+derv_br <- read_csv("/filepath/brfss_example.csv", show_col_types = FALSE)
 
 # ------------------------------
 # 2. Ensure Correct Factor Order
@@ -287,6 +287,7 @@ extract_or_clean <- function(model){
         
         # Sex
         term == "sex2" ~ "Female",
+        term == "sex1" ~ "Male",
         
         # Insurance
         term == "insuredUninsured" ~ "Uninsured",
@@ -353,12 +354,12 @@ dir.create("tables", showWarnings = FALSE)
 
 write_csv(
   routine_or,
-  "/Users/moh/Desktop/Research Assistant/BRFSS_multimorbidity_project/tables/routine_odds_ratios.csv"
+  "/filepath/routine_odds_ratios.csv"
 )
 
 write_csv(
   cost_or,
-  "/Users/moh/Desktop/Research Assistant/BRFSS_multimorbidity_project/tables/cost_odds_ratios.csv"
+  "/filepath/cost_odds_ratios.csv"
 )
 
 # ------------------------------
@@ -477,7 +478,7 @@ fig2 <-ggplot(pred_cost_derv, aes(x = x, y = predicted)) +
   )
 dir.create("figures", showWarnings = FALSE)
 ggsave(
-  filename = "/Users/moh/Desktop/Research Assistant/BRFSS_multimorbidity_project/data/Figure 2: Cost Barrier.pdf",
+  filename = "/filepath/Figure 2: Cost Barrier.pdf",
   plot = fig2,
   width = 15,
   height = 10,
@@ -548,7 +549,7 @@ auc_all <- bind_rows(auc_routine, auc_cost)
 # Write final AUC table to CSV file (absolute file path)
 write_csv(
   auc_all,
-  "/Users/moh/Desktop/Research Assistant/BRFSS_multimorbidity_project/data/AUC Results.csv"
+  "/filepath/AUC Results.csv"
 )
 
 # ------------------------------
@@ -598,7 +599,7 @@ calibration_plot <- function(model, design, outcome, color, filename, folder_pat
 # ------------------------------
 # Example usage
 # ------------------------------
-github_fig_path <- "/Users/moh/Desktop/Research Assistant/BRFSS_multimorbidity_project/data/figures"
+github_fig_path <- "/filepath/figures"
 
 # Routine care calibration plot
 calibration_plot(
