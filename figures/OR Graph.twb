@@ -1,0 +1,980 @@
+<?xml version='1.0' encoding='utf-8' ?>
+
+<!-- build 20261.26.0226.1626                               -->
+<workbook original-version='18.1' source-build='2026.1.0 (20261.26.0226.1626)' source-platform='mac' version='18.1' xmlns:user='http://www.tableausoftware.com/xml/user'>
+  <document-format-change-manifest>
+    <AnimationOnByDefault />
+    <MarkAnimation />
+    <ObjectModelEncapsulateLegacy />
+    <ObjectModelExtractV2 />
+    <ObjectModelTableType />
+    <PatternedLineMarks />
+    <SchemaViewerObjectModel />
+    <SheetIdentifierTracking />
+    <_.fcp.VConnDownstreamExtractsWithWarnings.true...VConnDownstreamExtractsWithWarnings />
+    <WindowsPersistSimpleIdentifiers />
+  </document-format-change-manifest>
+  <preferences>
+    <preference name='ui.encoding.shelf.height' value='24' />
+    <preference name='ui.shelf.height' value='26' />
+  </preferences>
+  <datasources>
+    <datasource caption='routine_odds_ratios+' inline='true' name='federated.1bidn25165r1uk1cc3no91kcvruw' version='18.1'>
+      <connection class='federated'>
+        <named-connections>
+          <named-connection caption='routine_odds_ratios' name='textscan.0npp2kc0zui88t161ruai0q10rpf'>
+            <connection class='textscan' directory='/Users/moh/Desktop/Research Assistant/BRFSS_multimorbidity_project/tables' filename='routine_odds_ratios.csv' password='' server='' />
+          </named-connection>
+        </named-connections>
+        <relation type='collection'>
+          <relation connection='textscan.0npp2kc0zui88t161ruai0q10rpf' name='routine_odds_ratios.csv' table='[routine_odds_ratios#csv]' type='table'>
+            <columns character-set='UTF-8' header='yes' locale='en_US' separator=','>
+              <column datatype='string' name='Variable' ordinal='0' />
+              <column datatype='real' name='OR' ordinal='1' />
+              <column datatype='real' name='CI_lower' ordinal='2' />
+              <column datatype='real' name='CI_upper' ordinal='3' />
+              <column datatype='real' name='p_value' ordinal='4' />
+            </columns>
+          </relation>
+          <relation join='inner' type='join'>
+            <clause type='join'>
+              <expression op='='>
+                <expression op='[cost_odds_ratios.csv].[Variable]' />
+                <expression op='[routine_odds_ratios.csv1].[Variable]' />
+              </expression>
+            </clause>
+            <relation connection='textscan.0npp2kc0zui88t161ruai0q10rpf' name='cost_odds_ratios.csv' table='[cost_odds_ratios#csv]' type='table'>
+              <columns character-set='UTF-8' header='yes' locale='en_US' separator=','>
+                <column datatype='string' name='Variable' ordinal='0' />
+                <column datatype='real' name='OR' ordinal='1' />
+                <column datatype='real' name='CI_lower' ordinal='2' />
+                <column datatype='real' name='CI_upper' ordinal='3' />
+                <column datatype='real' name='p_value' ordinal='4' />
+              </columns>
+            </relation>
+            <relation connection='textscan.0npp2kc0zui88t161ruai0q10rpf' name='routine_odds_ratios.csv1' table='[routine_odds_ratios#csv]' type='table'>
+              <columns character-set='UTF-8' header='yes' locale='en_US' separator=','>
+                <column datatype='string' name='Variable' ordinal='0' />
+                <column datatype='real' name='OR' ordinal='1' />
+                <column datatype='real' name='CI_lower' ordinal='2' />
+                <column datatype='real' name='CI_upper' ordinal='3' />
+                <column datatype='real' name='p_value' ordinal='4' />
+              </columns>
+            </relation>
+          </relation>
+        </relation>
+        <cols>
+          <map key='[CI_lower (cost_odds_ratios.csv)]' value='[cost_odds_ratios.csv].[CI_lower]' />
+          <map key='[CI_lower (routine_odds_ratios.csv1)]' value='[routine_odds_ratios.csv1].[CI_lower]' />
+          <map key='[CI_lower]' value='[routine_odds_ratios.csv].[CI_lower]' />
+          <map key='[CI_upper (cost_odds_ratios.csv)]' value='[cost_odds_ratios.csv].[CI_upper]' />
+          <map key='[CI_upper (routine_odds_ratios.csv1)]' value='[routine_odds_ratios.csv1].[CI_upper]' />
+          <map key='[CI_upper]' value='[routine_odds_ratios.csv].[CI_upper]' />
+          <map key='[OR (cost_odds_ratios.csv)]' value='[cost_odds_ratios.csv].[OR]' />
+          <map key='[OR (routine_odds_ratios.csv1)]' value='[routine_odds_ratios.csv1].[OR]' />
+          <map key='[OR]' value='[routine_odds_ratios.csv].[OR]' />
+          <map key='[Variable (cost_odds_ratios.csv)]' value='[cost_odds_ratios.csv].[Variable]' />
+          <map key='[Variable (routine_odds_ratios.csv1)]' value='[routine_odds_ratios.csv1].[Variable]' />
+          <map key='[Variable]' value='[routine_odds_ratios.csv].[Variable]' />
+          <map key='[p_value (cost_odds_ratios.csv)]' value='[cost_odds_ratios.csv].[p_value]' />
+          <map key='[p_value (routine_odds_ratios.csv1)]' value='[routine_odds_ratios.csv1].[p_value]' />
+          <map key='[p_value]' value='[routine_odds_ratios.csv].[p_value]' />
+        </cols>
+        <metadata-records>
+          <metadata-record class='capability'>
+            <remote-name />
+            <remote-type>0</remote-type>
+            <parent-name>[routine_odds_ratios.csv]</parent-name>
+            <remote-alias />
+            <aggregation>Count</aggregation>
+            <contains-null>true</contains-null>
+            <attributes>
+              <attribute datatype='string' name='character-set'>&quot;UTF-8&quot;</attribute>
+              <attribute datatype='string' name='collation'>&quot;en_US&quot;</attribute>
+              <attribute datatype='string' name='field-delimiter'>&quot;,&quot;</attribute>
+              <attribute datatype='string' name='header-row'>&quot;true&quot;</attribute>
+              <attribute datatype='string' name='locale'>&quot;en_US&quot;</attribute>
+              <attribute datatype='string' name='single-char'>&quot;&quot;</attribute>
+            </attributes>
+          </metadata-record>
+          <metadata-record class='capability'>
+            <remote-name />
+            <remote-type>0</remote-type>
+            <parent-name>[cost_odds_ratios.csv]</parent-name>
+            <remote-alias />
+            <aggregation>Count</aggregation>
+            <contains-null>true</contains-null>
+            <attributes>
+              <attribute datatype='string' name='character-set'>&quot;UTF-8&quot;</attribute>
+              <attribute datatype='string' name='collation'>&quot;en_US&quot;</attribute>
+              <attribute datatype='string' name='field-delimiter'>&quot;,&quot;</attribute>
+              <attribute datatype='string' name='header-row'>&quot;true&quot;</attribute>
+              <attribute datatype='string' name='locale'>&quot;en_US&quot;</attribute>
+              <attribute datatype='string' name='single-char'>&quot;&quot;</attribute>
+            </attributes>
+          </metadata-record>
+          <metadata-record class='capability'>
+            <remote-name />
+            <remote-type>0</remote-type>
+            <parent-name>[routine_odds_ratios.csv1]</parent-name>
+            <remote-alias />
+            <aggregation>Count</aggregation>
+            <contains-null>true</contains-null>
+            <attributes>
+              <attribute datatype='string' name='character-set'>&quot;UTF-8&quot;</attribute>
+              <attribute datatype='string' name='collation'>&quot;en_US&quot;</attribute>
+              <attribute datatype='string' name='field-delimiter'>&quot;,&quot;</attribute>
+              <attribute datatype='string' name='header-row'>&quot;true&quot;</attribute>
+              <attribute datatype='string' name='locale'>&quot;en_US&quot;</attribute>
+              <attribute datatype='string' name='single-char'>&quot;&quot;</attribute>
+            </attributes>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>Variable</remote-name>
+            <remote-type>129</remote-type>
+            <local-name>[Variable]</local-name>
+            <parent-name>[routine_odds_ratios.csv]</parent-name>
+            <remote-alias>Variable</remote-alias>
+            <ordinal>0</ordinal>
+            <local-type>string</local-type>
+            <aggregation>Count</aggregation>
+            <scale>1</scale>
+            <width>1073741823</width>
+            <contains-null>true</contains-null>
+            <collation flag='0' name='LEN_RUS' />
+            <object-id>[routine_odds_ratios.csv_BADA337B50A6447A9FBEF5615C8FFE8F]</object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>OR</remote-name>
+            <remote-type>5</remote-type>
+            <local-name>[OR]</local-name>
+            <parent-name>[routine_odds_ratios.csv]</parent-name>
+            <remote-alias>OR</remote-alias>
+            <ordinal>1</ordinal>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[routine_odds_ratios.csv_BADA337B50A6447A9FBEF5615C8FFE8F]</object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>CI_lower</remote-name>
+            <remote-type>5</remote-type>
+            <local-name>[CI_lower]</local-name>
+            <parent-name>[routine_odds_ratios.csv]</parent-name>
+            <remote-alias>CI_lower</remote-alias>
+            <ordinal>2</ordinal>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[routine_odds_ratios.csv_BADA337B50A6447A9FBEF5615C8FFE8F]</object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>CI_upper</remote-name>
+            <remote-type>5</remote-type>
+            <local-name>[CI_upper]</local-name>
+            <parent-name>[routine_odds_ratios.csv]</parent-name>
+            <remote-alias>CI_upper</remote-alias>
+            <ordinal>3</ordinal>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[routine_odds_ratios.csv_BADA337B50A6447A9FBEF5615C8FFE8F]</object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>p_value</remote-name>
+            <remote-type>5</remote-type>
+            <local-name>[p_value]</local-name>
+            <parent-name>[routine_odds_ratios.csv]</parent-name>
+            <remote-alias>p_value</remote-alias>
+            <ordinal>4</ordinal>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[routine_odds_ratios.csv_BADA337B50A6447A9FBEF5615C8FFE8F]</object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>Variable</remote-name>
+            <remote-type>129</remote-type>
+            <local-name>[Variable (cost_odds_ratios.csv)]</local-name>
+            <parent-name>[cost_odds_ratios.csv]</parent-name>
+            <remote-alias>Variable</remote-alias>
+            <ordinal>5</ordinal>
+            <local-type>string</local-type>
+            <aggregation>Count</aggregation>
+            <scale>1</scale>
+            <width>1073741823</width>
+            <contains-null>true</contains-null>
+            <collation flag='0' name='LEN_RUS' />
+            <object-id>[cost_odds_ratios.csv_6646E37971C842D99035819F5785C931]</object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>OR</remote-name>
+            <remote-type>5</remote-type>
+            <local-name>[OR (cost_odds_ratios.csv)]</local-name>
+            <parent-name>[cost_odds_ratios.csv]</parent-name>
+            <remote-alias>OR</remote-alias>
+            <ordinal>6</ordinal>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[cost_odds_ratios.csv_6646E37971C842D99035819F5785C931]</object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>CI_lower</remote-name>
+            <remote-type>5</remote-type>
+            <local-name>[CI_lower (cost_odds_ratios.csv)]</local-name>
+            <parent-name>[cost_odds_ratios.csv]</parent-name>
+            <remote-alias>CI_lower</remote-alias>
+            <ordinal>7</ordinal>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[cost_odds_ratios.csv_6646E37971C842D99035819F5785C931]</object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>CI_upper</remote-name>
+            <remote-type>5</remote-type>
+            <local-name>[CI_upper (cost_odds_ratios.csv)]</local-name>
+            <parent-name>[cost_odds_ratios.csv]</parent-name>
+            <remote-alias>CI_upper</remote-alias>
+            <ordinal>8</ordinal>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[cost_odds_ratios.csv_6646E37971C842D99035819F5785C931]</object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>p_value</remote-name>
+            <remote-type>5</remote-type>
+            <local-name>[p_value (cost_odds_ratios.csv)]</local-name>
+            <parent-name>[cost_odds_ratios.csv]</parent-name>
+            <remote-alias>p_value</remote-alias>
+            <ordinal>9</ordinal>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[cost_odds_ratios.csv_6646E37971C842D99035819F5785C931]</object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>Variable</remote-name>
+            <remote-type>129</remote-type>
+            <local-name>[Variable (routine_odds_ratios.csv1)]</local-name>
+            <parent-name>[routine_odds_ratios.csv1]</parent-name>
+            <remote-alias>Variable</remote-alias>
+            <ordinal>10</ordinal>
+            <local-type>string</local-type>
+            <aggregation>Count</aggregation>
+            <scale>1</scale>
+            <width>1073741823</width>
+            <contains-null>true</contains-null>
+            <collation flag='0' name='LEN_RUS' />
+            <object-id>[cost_odds_ratios.csv_6646E37971C842D99035819F5785C931]</object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>OR</remote-name>
+            <remote-type>5</remote-type>
+            <local-name>[OR (routine_odds_ratios.csv1)]</local-name>
+            <parent-name>[routine_odds_ratios.csv1]</parent-name>
+            <remote-alias>OR</remote-alias>
+            <ordinal>11</ordinal>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[cost_odds_ratios.csv_6646E37971C842D99035819F5785C931]</object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>CI_lower</remote-name>
+            <remote-type>5</remote-type>
+            <local-name>[CI_lower (routine_odds_ratios.csv1)]</local-name>
+            <parent-name>[routine_odds_ratios.csv1]</parent-name>
+            <remote-alias>CI_lower</remote-alias>
+            <ordinal>12</ordinal>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[cost_odds_ratios.csv_6646E37971C842D99035819F5785C931]</object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>CI_upper</remote-name>
+            <remote-type>5</remote-type>
+            <local-name>[CI_upper (routine_odds_ratios.csv1)]</local-name>
+            <parent-name>[routine_odds_ratios.csv1]</parent-name>
+            <remote-alias>CI_upper</remote-alias>
+            <ordinal>13</ordinal>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[cost_odds_ratios.csv_6646E37971C842D99035819F5785C931]</object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>p_value</remote-name>
+            <remote-type>5</remote-type>
+            <local-name>[p_value (routine_odds_ratios.csv1)]</local-name>
+            <parent-name>[routine_odds_ratios.csv1]</parent-name>
+            <remote-alias>p_value</remote-alias>
+            <ordinal>14</ordinal>
+            <local-type>real</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[cost_odds_ratios.csv_6646E37971C842D99035819F5785C931]</object-id>
+          </metadata-record>
+        </metadata-records>
+      </connection>
+      <aliases enabled='yes' />
+      <column caption='CI lower (cost odds ratios.csv)' datatype='real' name='[CI_lower (cost_odds_ratios.csv)]' role='measure' type='quantitative' />
+      <column caption='CI lower (routine odds ratios.csv1)' datatype='real' name='[CI_lower (routine_odds_ratios.csv1)]' role='measure' type='quantitative' />
+      <column caption='CI lower' datatype='real' name='[CI_lower]' role='measure' type='quantitative' />
+      <column caption='CI upper (cost odds ratios.csv)' datatype='real' name='[CI_upper (cost_odds_ratios.csv)]' role='measure' type='quantitative' />
+      <column caption='CI upper (routine odds ratios.csv1)' datatype='real' name='[CI_upper (routine_odds_ratios.csv1)]' role='measure' type='quantitative' />
+      <column caption='CI upper' datatype='real' name='[CI_upper]' role='measure' type='quantitative' />
+      <column caption='OR (cost odds ratios.csv)' datatype='real' name='[OR (cost_odds_ratios.csv)]' role='measure' type='quantitative' />
+      <column caption='OR (routine odds ratios.csv1)' datatype='real' name='[OR (routine_odds_ratios.csv1)]' role='measure' type='quantitative' />
+      <column caption='Variable (cost odds ratios.csv)' datatype='string' name='[Variable (cost_odds_ratios.csv)]' role='dimension' type='nominal'>
+        <aliases>
+          <alias key='&quot;sex1&quot;' value='Male' />
+        </aliases>
+      </column>
+      <column caption='Variable (routine odds ratios.csv1)' datatype='string' name='[Variable (routine_odds_ratios.csv1)]' role='dimension' type='nominal'>
+        <aliases>
+          <alias key='&quot;sex1&quot;' value='Male' />
+        </aliases>
+      </column>
+      <column caption='cost_odds_ratios.csv' datatype='table' name='[__tableau_internal_object_id__].[cost_odds_ratios.csv_6646E37971C842D99035819F5785C931]' role='measure' type='quantitative' />
+      <column caption='routine_odds_ratios.csv' datatype='table' name='[__tableau_internal_object_id__].[routine_odds_ratios.csv_BADA337B50A6447A9FBEF5615C8FFE8F]' role='measure' type='quantitative' />
+      <column caption='P Value (Cost Odds Ratios.Csv)' datatype='real' name='[p_value (cost_odds_ratios.csv)]' role='measure' type='quantitative' />
+      <column caption='P Value (Routine Odds Ratios.Csv1)' datatype='real' name='[p_value (routine_odds_ratios.csv1)]' role='measure' type='quantitative' />
+      <column caption='P Value' datatype='real' name='[p_value]' role='measure' type='quantitative' />
+      <extract _.fcp.VConnDownstreamExtractsWithWarnings.true...user-specific='false' count='-1' enabled='true' object-id='' units='records'>
+        <connection access_mode='readonly' author-locale='en_US' class='hyper' dbname='/var/folders/vy/7q5kxpsd2wq1r3kb6wvz6zwr0000gn/T/tableau-temp/#TableauTemp_1ru9yoc1rfrc7y14oj40h0rp3vgp.hyper' default-settings='hyper' schema='Extract' sslmode='' tablename='Extract' update-time='04/11/2026 02:45:29 AM' username='tableau_internal_user'>
+          <relation type='collection'>
+            <relation name='routine_odds_ratios.csv_BADA337B50A6447A9FBEF5615C8FFE8F' table='[Extract].[routine_odds_ratios.csv_BADA337B50A6447A9FBEF5615C8FFE8F]' type='table' />
+            <relation name='cost_odds_ratios.csv_6646E37971C842D99035819F5785C931' table='[Extract].[cost_odds_ratios.csv_6646E37971C842D99035819F5785C931]' type='table' />
+          </relation>
+          <cols>
+            <map key='[CI_lower (cost_odds_ratios.csv)]' value='[cost_odds_ratios.csv_6646E37971C842D99035819F5785C931].[CI_lower]' />
+            <map key='[CI_lower (routine_odds_ratios.csv1)]' value='[cost_odds_ratios.csv_6646E37971C842D99035819F5785C931].[CI_lower1]' />
+            <map key='[CI_lower]' value='[routine_odds_ratios.csv_BADA337B50A6447A9FBEF5615C8FFE8F].[CI_lower]' />
+            <map key='[CI_upper (cost_odds_ratios.csv)]' value='[cost_odds_ratios.csv_6646E37971C842D99035819F5785C931].[CI_upper]' />
+            <map key='[CI_upper (routine_odds_ratios.csv1)]' value='[cost_odds_ratios.csv_6646E37971C842D99035819F5785C931].[CI_upper1]' />
+            <map key='[CI_upper]' value='[routine_odds_ratios.csv_BADA337B50A6447A9FBEF5615C8FFE8F].[CI_upper]' />
+            <map key='[OR (cost_odds_ratios.csv)]' value='[cost_odds_ratios.csv_6646E37971C842D99035819F5785C931].[OR]' />
+            <map key='[OR (routine_odds_ratios.csv1)]' value='[cost_odds_ratios.csv_6646E37971C842D99035819F5785C931].[OR1]' />
+            <map key='[OR]' value='[routine_odds_ratios.csv_BADA337B50A6447A9FBEF5615C8FFE8F].[OR]' />
+            <map key='[Variable (cost_odds_ratios.csv)]' value='[cost_odds_ratios.csv_6646E37971C842D99035819F5785C931].[Variable]' />
+            <map key='[Variable (routine_odds_ratios.csv1)]' value='[cost_odds_ratios.csv_6646E37971C842D99035819F5785C931].[Variable1]' />
+            <map key='[Variable]' value='[routine_odds_ratios.csv_BADA337B50A6447A9FBEF5615C8FFE8F].[Variable]' />
+            <map key='[p_value (cost_odds_ratios.csv)]' value='[cost_odds_ratios.csv_6646E37971C842D99035819F5785C931].[p_value]' />
+            <map key='[p_value (routine_odds_ratios.csv1)]' value='[cost_odds_ratios.csv_6646E37971C842D99035819F5785C931].[p_value1]' />
+            <map key='[p_value]' value='[routine_odds_ratios.csv_BADA337B50A6447A9FBEF5615C8FFE8F].[p_value]' />
+          </cols>
+          <metadata-records>
+            <metadata-record class='column'>
+              <remote-name>Variable</remote-name>
+              <remote-type>129</remote-type>
+              <local-name>[Variable]</local-name>
+              <parent-name>[routine_odds_ratios.csv_BADA337B50A6447A9FBEF5615C8FFE8F]</parent-name>
+              <remote-alias>Variable</remote-alias>
+              <ordinal>0</ordinal>
+              <family>routine_odds_ratios.csv</family>
+              <local-type>string</local-type>
+              <aggregation>Count</aggregation>
+              <approx-count>33</approx-count>
+              <contains-null>true</contains-null>
+              <collation flag='0' name='LEN_RUS' />
+              <object-id>[routine_odds_ratios.csv_BADA337B50A6447A9FBEF5615C8FFE8F]</object-id>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>OR</remote-name>
+              <remote-type>5</remote-type>
+              <local-name>[OR]</local-name>
+              <parent-name>[routine_odds_ratios.csv_BADA337B50A6447A9FBEF5615C8FFE8F]</parent-name>
+              <remote-alias>OR</remote-alias>
+              <ordinal>1</ordinal>
+              <family>routine_odds_ratios.csv</family>
+              <local-type>real</local-type>
+              <aggregation>Sum</aggregation>
+              <approx-count>28</approx-count>
+              <contains-null>true</contains-null>
+              <object-id>[routine_odds_ratios.csv_BADA337B50A6447A9FBEF5615C8FFE8F]</object-id>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>CI_lower</remote-name>
+              <remote-type>5</remote-type>
+              <local-name>[CI_lower]</local-name>
+              <parent-name>[routine_odds_ratios.csv_BADA337B50A6447A9FBEF5615C8FFE8F]</parent-name>
+              <remote-alias>CI_lower</remote-alias>
+              <ordinal>2</ordinal>
+              <family>routine_odds_ratios.csv</family>
+              <local-type>real</local-type>
+              <aggregation>Sum</aggregation>
+              <approx-count>31</approx-count>
+              <contains-null>true</contains-null>
+              <object-id>[routine_odds_ratios.csv_BADA337B50A6447A9FBEF5615C8FFE8F]</object-id>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>CI_upper</remote-name>
+              <remote-type>5</remote-type>
+              <local-name>[CI_upper]</local-name>
+              <parent-name>[routine_odds_ratios.csv_BADA337B50A6447A9FBEF5615C8FFE8F]</parent-name>
+              <remote-alias>CI_upper</remote-alias>
+              <ordinal>3</ordinal>
+              <family>routine_odds_ratios.csv</family>
+              <local-type>real</local-type>
+              <aggregation>Sum</aggregation>
+              <approx-count>32</approx-count>
+              <contains-null>true</contains-null>
+              <object-id>[routine_odds_ratios.csv_BADA337B50A6447A9FBEF5615C8FFE8F]</object-id>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>p_value</remote-name>
+              <remote-type>5</remote-type>
+              <local-name>[p_value]</local-name>
+              <parent-name>[routine_odds_ratios.csv_BADA337B50A6447A9FBEF5615C8FFE8F]</parent-name>
+              <remote-alias>p_value</remote-alias>
+              <ordinal>4</ordinal>
+              <family>routine_odds_ratios.csv</family>
+              <local-type>real</local-type>
+              <aggregation>Sum</aggregation>
+              <approx-count>33</approx-count>
+              <contains-null>true</contains-null>
+              <object-id>[routine_odds_ratios.csv_BADA337B50A6447A9FBEF5615C8FFE8F]</object-id>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>Variable</remote-name>
+              <remote-type>129</remote-type>
+              <local-name>[Variable (cost_odds_ratios.csv)]</local-name>
+              <parent-name>[cost_odds_ratios.csv_6646E37971C842D99035819F5785C931]</parent-name>
+              <remote-alias>Variable</remote-alias>
+              <ordinal>5</ordinal>
+              <family>cost_odds_ratios.csv</family>
+              <local-type>string</local-type>
+              <aggregation>Count</aggregation>
+              <approx-count>33</approx-count>
+              <contains-null>true</contains-null>
+              <collation flag='0' name='LEN_RUS' />
+              <object-id>[cost_odds_ratios.csv_6646E37971C842D99035819F5785C931]</object-id>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>OR</remote-name>
+              <remote-type>5</remote-type>
+              <local-name>[OR (cost_odds_ratios.csv)]</local-name>
+              <parent-name>[cost_odds_ratios.csv_6646E37971C842D99035819F5785C931]</parent-name>
+              <remote-alias>OR</remote-alias>
+              <ordinal>6</ordinal>
+              <family>cost_odds_ratios.csv</family>
+              <local-type>real</local-type>
+              <aggregation>Sum</aggregation>
+              <approx-count>30</approx-count>
+              <contains-null>true</contains-null>
+              <object-id>[cost_odds_ratios.csv_6646E37971C842D99035819F5785C931]</object-id>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>CI_lower</remote-name>
+              <remote-type>5</remote-type>
+              <local-name>[CI_lower (cost_odds_ratios.csv)]</local-name>
+              <parent-name>[cost_odds_ratios.csv_6646E37971C842D99035819F5785C931]</parent-name>
+              <remote-alias>CI_lower</remote-alias>
+              <ordinal>7</ordinal>
+              <family>cost_odds_ratios.csv</family>
+              <local-type>real</local-type>
+              <aggregation>Sum</aggregation>
+              <approx-count>29</approx-count>
+              <contains-null>true</contains-null>
+              <object-id>[cost_odds_ratios.csv_6646E37971C842D99035819F5785C931]</object-id>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>CI_upper</remote-name>
+              <remote-type>5</remote-type>
+              <local-name>[CI_upper (cost_odds_ratios.csv)]</local-name>
+              <parent-name>[cost_odds_ratios.csv_6646E37971C842D99035819F5785C931]</parent-name>
+              <remote-alias>CI_upper</remote-alias>
+              <ordinal>8</ordinal>
+              <family>cost_odds_ratios.csv</family>
+              <local-type>real</local-type>
+              <aggregation>Sum</aggregation>
+              <approx-count>32</approx-count>
+              <contains-null>true</contains-null>
+              <object-id>[cost_odds_ratios.csv_6646E37971C842D99035819F5785C931]</object-id>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>p_value</remote-name>
+              <remote-type>5</remote-type>
+              <local-name>[p_value (cost_odds_ratios.csv)]</local-name>
+              <parent-name>[cost_odds_ratios.csv_6646E37971C842D99035819F5785C931]</parent-name>
+              <remote-alias>p_value</remote-alias>
+              <ordinal>9</ordinal>
+              <family>cost_odds_ratios.csv</family>
+              <local-type>real</local-type>
+              <aggregation>Sum</aggregation>
+              <approx-count>33</approx-count>
+              <contains-null>true</contains-null>
+              <object-id>[cost_odds_ratios.csv_6646E37971C842D99035819F5785C931]</object-id>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>Variable1</remote-name>
+              <remote-type>129</remote-type>
+              <local-name>[Variable (routine_odds_ratios.csv1)]</local-name>
+              <parent-name>[cost_odds_ratios.csv_6646E37971C842D99035819F5785C931]</parent-name>
+              <remote-alias>Variable1</remote-alias>
+              <ordinal>10</ordinal>
+              <family>routine_odds_ratios.csv1</family>
+              <local-type>string</local-type>
+              <aggregation>Count</aggregation>
+              <approx-count>33</approx-count>
+              <contains-null>true</contains-null>
+              <collation flag='0' name='LEN_RUS' />
+              <object-id>[cost_odds_ratios.csv_6646E37971C842D99035819F5785C931]</object-id>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>OR1</remote-name>
+              <remote-type>5</remote-type>
+              <local-name>[OR (routine_odds_ratios.csv1)]</local-name>
+              <parent-name>[cost_odds_ratios.csv_6646E37971C842D99035819F5785C931]</parent-name>
+              <remote-alias>OR1</remote-alias>
+              <ordinal>11</ordinal>
+              <family>routine_odds_ratios.csv1</family>
+              <local-type>real</local-type>
+              <aggregation>Sum</aggregation>
+              <approx-count>28</approx-count>
+              <contains-null>true</contains-null>
+              <object-id>[cost_odds_ratios.csv_6646E37971C842D99035819F5785C931]</object-id>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>CI_lower1</remote-name>
+              <remote-type>5</remote-type>
+              <local-name>[CI_lower (routine_odds_ratios.csv1)]</local-name>
+              <parent-name>[cost_odds_ratios.csv_6646E37971C842D99035819F5785C931]</parent-name>
+              <remote-alias>CI_lower1</remote-alias>
+              <ordinal>12</ordinal>
+              <family>routine_odds_ratios.csv1</family>
+              <local-type>real</local-type>
+              <aggregation>Sum</aggregation>
+              <approx-count>31</approx-count>
+              <contains-null>true</contains-null>
+              <object-id>[cost_odds_ratios.csv_6646E37971C842D99035819F5785C931]</object-id>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>CI_upper1</remote-name>
+              <remote-type>5</remote-type>
+              <local-name>[CI_upper (routine_odds_ratios.csv1)]</local-name>
+              <parent-name>[cost_odds_ratios.csv_6646E37971C842D99035819F5785C931]</parent-name>
+              <remote-alias>CI_upper1</remote-alias>
+              <ordinal>13</ordinal>
+              <family>routine_odds_ratios.csv1</family>
+              <local-type>real</local-type>
+              <aggregation>Sum</aggregation>
+              <approx-count>32</approx-count>
+              <contains-null>true</contains-null>
+              <object-id>[cost_odds_ratios.csv_6646E37971C842D99035819F5785C931]</object-id>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>p_value1</remote-name>
+              <remote-type>5</remote-type>
+              <local-name>[p_value (routine_odds_ratios.csv1)]</local-name>
+              <parent-name>[cost_odds_ratios.csv_6646E37971C842D99035819F5785C931]</parent-name>
+              <remote-alias>p_value1</remote-alias>
+              <ordinal>14</ordinal>
+              <family>routine_odds_ratios.csv1</family>
+              <local-type>real</local-type>
+              <aggregation>Sum</aggregation>
+              <approx-count>33</approx-count>
+              <contains-null>true</contains-null>
+              <object-id>[cost_odds_ratios.csv_6646E37971C842D99035819F5785C931]</object-id>
+            </metadata-record>
+          </metadata-records>
+        </connection>
+      </extract>
+      <layout dim-ordering='alphabetic' measure-ordering='alphabetic' show-structure='true' />
+      <semantic-values>
+        <semantic-value key='[Country].[Name]' value='&quot;United States&quot;' />
+      </semantic-values>
+      <object-graph>
+        <objects>
+          <object caption='cost_odds_ratios.csv' id='cost_odds_ratios.csv_6646E37971C842D99035819F5785C931'>
+            <properties context=''>
+              <relation join='inner' type='join'>
+                <clause type='join'>
+                  <expression op='='>
+                    <expression op='[cost_odds_ratios.csv].[Variable]' />
+                    <expression op='[routine_odds_ratios.csv1].[Variable]' />
+                  </expression>
+                </clause>
+                <relation connection='textscan.0npp2kc0zui88t161ruai0q10rpf' name='cost_odds_ratios.csv' table='[cost_odds_ratios#csv]' type='table'>
+                  <columns character-set='UTF-8' header='yes' locale='en_US' separator=','>
+                    <column datatype='string' name='Variable' ordinal='0' />
+                    <column datatype='real' name='OR' ordinal='1' />
+                    <column datatype='real' name='CI_lower' ordinal='2' />
+                    <column datatype='real' name='CI_upper' ordinal='3' />
+                    <column datatype='real' name='p_value' ordinal='4' />
+                  </columns>
+                </relation>
+                <relation connection='textscan.0npp2kc0zui88t161ruai0q10rpf' name='routine_odds_ratios.csv1' table='[routine_odds_ratios#csv]' type='table'>
+                  <columns character-set='UTF-8' header='yes' locale='en_US' separator=','>
+                    <column datatype='string' name='Variable' ordinal='0' />
+                    <column datatype='real' name='OR' ordinal='1' />
+                    <column datatype='real' name='CI_lower' ordinal='2' />
+                    <column datatype='real' name='CI_upper' ordinal='3' />
+                    <column datatype='real' name='p_value' ordinal='4' />
+                  </columns>
+                </relation>
+              </relation>
+            </properties>
+            <properties context='extract'>
+              <relation name='cost_odds_ratios.csv_6646E37971C842D99035819F5785C931' table='[Extract].[cost_odds_ratios.csv_6646E37971C842D99035819F5785C931]' type='table' />
+            </properties>
+          </object>
+          <object caption='routine_odds_ratios.csv' id='routine_odds_ratios.csv_BADA337B50A6447A9FBEF5615C8FFE8F'>
+            <properties context=''>
+              <relation connection='textscan.0npp2kc0zui88t161ruai0q10rpf' name='routine_odds_ratios.csv' table='[routine_odds_ratios#csv]' type='table'>
+                <columns character-set='UTF-8' header='yes' locale='en_US' separator=','>
+                  <column datatype='string' name='Variable' ordinal='0' />
+                  <column datatype='real' name='OR' ordinal='1' />
+                  <column datatype='real' name='CI_lower' ordinal='2' />
+                  <column datatype='real' name='CI_upper' ordinal='3' />
+                  <column datatype='real' name='p_value' ordinal='4' />
+                </columns>
+              </relation>
+            </properties>
+            <properties context='extract'>
+              <relation name='routine_odds_ratios.csv_BADA337B50A6447A9FBEF5615C8FFE8F' table='[Extract].[routine_odds_ratios.csv_BADA337B50A6447A9FBEF5615C8FFE8F]' type='table' />
+            </properties>
+          </object>
+        </objects>
+        <relationships>
+          <relationship>
+            <expression op='='>
+              <expression op='[OR]' />
+              <expression op='[OR (cost_odds_ratios.csv)]' />
+            </expression>
+            <first-end-point object-id='routine_odds_ratios.csv_BADA337B50A6447A9FBEF5615C8FFE8F' />
+            <second-end-point object-id='cost_odds_ratios.csv_6646E37971C842D99035819F5785C931' />
+          </relationship>
+        </relationships>
+      </object-graph>
+    </datasource>
+  </datasources>
+  <worksheets>
+    <worksheet name='OR Graph'>
+      <layout-options>
+        <title>
+          <formatted-text>
+            <run>OR Routine vs Cost Barrier</run>
+          </formatted-text>
+        </title>
+      </layout-options>
+      <table>
+        <view>
+          <datasources>
+            <datasource caption='routine_odds_ratios+' name='federated.1bidn25165r1uk1cc3no91kcvruw' />
+          </datasources>
+          <datasource-dependencies datasource='federated.1bidn25165r1uk1cc3no91kcvruw'>
+            <column caption='OR (cost odds ratios.csv)' datatype='real' name='[OR (cost_odds_ratios.csv)]' role='measure' type='quantitative' />
+            <column caption='OR (routine odds ratios.csv1)' datatype='real' name='[OR (routine_odds_ratios.csv1)]' role='measure' type='quantitative' />
+            <column caption='Variable (cost odds ratios.csv)' datatype='string' name='[Variable (cost_odds_ratios.csv)]' role='dimension' type='nominal'>
+              <aliases>
+                <alias key='&quot;sex1&quot;' value='Male' />
+              </aliases>
+            </column>
+            <column caption='Variable (routine odds ratios.csv1)' datatype='string' name='[Variable (routine_odds_ratios.csv1)]' role='dimension' type='nominal'>
+              <aliases>
+                <alias key='&quot;sex1&quot;' value='Male' />
+              </aliases>
+            </column>
+            <column-instance column='[Variable (cost_odds_ratios.csv)]' derivation='None' name='[none:Variable (cost_odds_ratios.csv):nk]' pivot='key' type='nominal' />
+            <column-instance column='[Variable (routine_odds_ratios.csv1)]' derivation='None' name='[none:Variable (routine_odds_ratios.csv1):nk]' pivot='key' type='nominal' />
+            <column-instance column='[OR (cost_odds_ratios.csv)]' derivation='Sum' name='[sum:OR (cost_odds_ratios.csv):qk]' pivot='key' type='quantitative' />
+            <column-instance column='[OR (routine_odds_ratios.csv1)]' derivation='Sum' name='[sum:OR (routine_odds_ratios.csv1):qk]' pivot='key' type='quantitative' />
+          </datasource-dependencies>
+          <aggregation value='true' />
+        </view>
+        <style>
+          <style-rule element='axis'>
+            <encoding attr='space' class='0' field='[federated.1bidn25165r1uk1cc3no91kcvruw].[sum:OR (routine_odds_ratios.csv1):qk]' field-type='quantitative' fold='true' scope='rows' type='space' />
+          </style-rule>
+          <style-rule element='cell'>
+            <format attr='width' field='[federated.1bidn25165r1uk1cc3no91kcvruw].[none:Variable (routine_odds_ratios.csv1):nk]' value='187' />
+          </style-rule>
+        </style>
+        <panes>
+          <pane selection-relaxation-option='selection-relaxation-allow'>
+            <view>
+              <breakdown value='auto' />
+            </view>
+            <mark class='Line' />
+            <encodings>
+              <color column='[federated.1bidn25165r1uk1cc3no91kcvruw].[:Measure Names]' />
+            </encodings>
+            <style>
+              <style-rule element='mark'>
+                <format attr='mark-line-pattern' value='solid' />
+                <format attr='line-interpolation' value='step' />
+              </style-rule>
+              <style-rule element='pane'>
+                <format attr='minwidth' value='-1' />
+                <format attr='maxwidth' value='-1' />
+              </style-rule>
+            </style>
+          </pane>
+          <pane id='1' selection-relaxation-option='selection-relaxation-allow' y-axis-name='[federated.1bidn25165r1uk1cc3no91kcvruw].[sum:OR (cost_odds_ratios.csv):qk]'>
+            <view>
+              <breakdown value='auto' />
+            </view>
+            <mark class='Line' />
+            <encodings>
+              <color column='[federated.1bidn25165r1uk1cc3no91kcvruw].[:Measure Names]' />
+            </encodings>
+            <style>
+              <style-rule element='mark'>
+                <format attr='mark-line-pattern' value='solid' />
+                <format attr='line-interpolation' value='step' />
+              </style-rule>
+            </style>
+          </pane>
+          <pane id='2' selection-relaxation-option='selection-relaxation-allow' y-axis-name='[federated.1bidn25165r1uk1cc3no91kcvruw].[sum:OR (routine_odds_ratios.csv1):qk]'>
+            <view>
+              <breakdown value='auto' />
+            </view>
+            <mark class='Line' />
+            <encodings>
+              <color column='[federated.1bidn25165r1uk1cc3no91kcvruw].[:Measure Names]' />
+            </encodings>
+            <style>
+              <style-rule element='mark'>
+                <format attr='mark-line-pattern' value='dotted' />
+                <format attr='line-interpolation' value='step' />
+              </style-rule>
+            </style>
+          </pane>
+        </panes>
+        <rows>([federated.1bidn25165r1uk1cc3no91kcvruw].[sum:OR (cost_odds_ratios.csv):qk] + [federated.1bidn25165r1uk1cc3no91kcvruw].[sum:OR (routine_odds_ratios.csv1):qk])</rows>
+        <cols>([federated.1bidn25165r1uk1cc3no91kcvruw].[none:Variable (cost_odds_ratios.csv):nk] / [federated.1bidn25165r1uk1cc3no91kcvruw].[none:Variable (routine_odds_ratios.csv1):nk])</cols>
+      </table>
+      <simple-id uuid='{F96A407D-BBA1-4AFC-8195-416612D12CD1}' />
+    </worksheet>
+  </worksheets>
+  <windows source-height='30'>
+    <window class='worksheet' maximized='true' name='OR Graph'>
+      <cards>
+        <edge name='left'>
+          <strip size='160'>
+            <card type='pages' />
+            <card type='filters' />
+            <card type='marks' />
+          </strip>
+        </edge>
+        <edge name='top'>
+          <strip size='2147483647'>
+            <card type='columns' />
+          </strip>
+          <strip size='2147483647'>
+            <card type='rows' />
+          </strip>
+          <strip size='31'>
+            <card type='title' />
+          </strip>
+        </edge>
+        <edge name='right'>
+          <strip size='160'>
+            <card pane-specification-id='1' param='[federated.1bidn25165r1uk1cc3no91kcvruw].[:Measure Names]' type='color' />
+          </strip>
+        </edge>
+      </cards>
+      <viewpoint>
+        <highlight>
+          <color-one-way>
+            <field>[federated.1bidn25165r1uk1cc3no91kcvruw].[:Measure Names]</field>
+            <field>[federated.1bidn25165r1uk1cc3no91kcvruw].[none:Variable (cost_odds_ratios.csv):nk]</field>
+            <field>[federated.1bidn25165r1uk1cc3no91kcvruw].[none:Variable (routine_odds_ratios.csv1):nk]</field>
+            <field>[federated.1bidn25165r1uk1cc3no91kcvruw].[sum:OR (routine_odds_ratios.csv1):qk]</field>
+          </color-one-way>
+        </highlight>
+      </viewpoint>
+      <simple-id uuid='{6F58C96A-43B9-449E-8B78-8CDBD14718CB}' />
+    </window>
+  </windows>
+  <thumbnails>
+    <thumbnail height='384' name='OR Graph' width='384'>
+      iVBORw0KGgoAAAANSUhEUgAAAYAAAAGACAYAAACkx7W/AAAACXBIWXMAAA7DAAAOwwHHb6hk
+      AAAgAElEQVR4nO3dfXBU933v8c/ZBy16ltADYiUMEsJCiGcwch2BHeNrB9tNfce5cdLQpO1M
+      n6bJ+DZjj502d246k8a509zpDHWbjJs76aROel2PM6EQ4icw5kEgC/EgHiQQD0ISi4QkhLTa
+      lc7uas/9Q5dNsACvsc4u8nm//lnrcPac734tnc/+zp49P8OyLEsAAMdxpbsAAEB6EAAA4FAE
+      AAA41F0VAIFAIN0lAIBj3FUBAABIHQIAAGxgmqbi8Xji5/Hx8Vuue/DgwRvWnc59W5Z1y30T
+      AABwC9/73vckSd3d3fr5z39+y/Vef/11Xb169YZlr7zyivr7+xM/f/e7373pczs7O9Xa2iqX
+      K7nD8S9/+cuPXOeVV17RwMCAJCkSiegHP/jBTdfzJLVHAHAgr9erS5cuae/evaqpqdGOHTt0
+      9OhRVVVVacWKFTp8+LCCwaBKSkqUkZGhH/3oR+rt7dUTTzwhafJALEnf+ta3JElDQ0P64Q9/
+      KI/Ho29+85vyeDzatm2bnnnmGQWDQW3ZskXZ2dn6whe+oFdeeUVZWVn6+te/ri1btsgwDD3x
+      xBP66U9/qrNnz+qb3/ymDMPQli1bNDAwoK985SvyeDz66U9/qgsXLuiZZ57Rj370Iw0ODkqS
+      jhw5ou3bt6uyslKbN29WNBplBAAAt/Lggw9q//79On78uFauXKmamhpVVFTonXfe0dDQkE6c
+      OKE//uM/1oULFxSNRrVixQqVlJTonXfekST96Z/+qebPn69Tp05Jkn7961+ruLhYpmnq6NGj
+      kqSrV6+qtLRUv/rVr/TYY4/p2Wef1Wuvvaa//Mu/1JIlS7Rz505dunRJDQ0NqqurU11dnZ57
+      7jm5XC51dHQoOztbf/3Xf61///d/16uvvqrnn39e69atU1dXl8bHx/Xcc89Jkk6fPq3c3Fx9
+      5jOfkSTF43ECAABuZfXq1Tpw4IBycnLkdrv1wx/+UI8++qjy8/MlSevXr1dGRoYkKRwO6xe/
+      +IUef/zxxPn3cDis7u5uFRQUSJKysrIUj8f1uc99TmVlZZIkl8ulWCym3NxcBQIBDQ4OKjs7
+      W/39/erv71dhYaGef/557d27VydOnFA0GtXg4KAsy1JWVpYGBwc1NDQkn88nwzA0PDys4eFh
+      uVwujY6OJkYAn/nMZ/Tkk0/q7//+7xOvz/2d73znO6lq5kcJBoPKzc1NdxkAIGny4Gyaph54
+      4AGVlpbK4/GosbFRK1as0L333qv8/HwVFRVJkqqqqnTlyhVduXJFS5cuVXV1tfbs2aOlS5dq
+      9erVkqSNGzfq9OnT6unp0cqVK5WZmanx8XH19vbq4Ycf1tGjR9XR0aEvfvGL2rp1qwoLC7V+
+      /Xr98pe/VHZ2th555BHNnTtXW7duVX19vfLz8xUMBrVnzx790R/9kZYvX67XX39dFRUVamho
+      0MjIiE6ePKlVq1ZJmhyBPPLII1qwYIEMw5BxN90LKBAIyO/3p7sMAEiZiYkJbdmyRc8++2zS
+      HwRPFwIAAByKzwDAN7DTgJ6nXjAYVDAYTHcZdxUCAAAcigAAAIciAADAoQgAAHAoAgAAHIoA
+      AACHIgAAwKEIAABwKAIAAByKAAAAhyIAAMChCAAAcKhPfQDEYjGdP3/+pv929erVKfN4fhTL
+      stTT0/OJ67py5YqGh4fV3d0tafKWsJI0MjKi4eHhT7z9dLl06ZL2799/09dAv+1jWZZOnjyp
+      /fv3a3R0dMq/p7P3oVBIgUDgU9P7U6dOae/evYnXcX02MEnq6OhQS0uLurq6EutHo1E1Njaq
+      r69PktTb26vGxsbEc44ePaozZ84k1o/H4/q4N2n+7ZqGh4d14MCBRL9PnjyplpYW9fb2JtYP
+      hULav3//pz8Adu/erdbW1huWjY6Oqq+vT8PDw+rr61NXV5csy1I4HNbo6KhM09TQ0JAuX74s
+      aXJWn/7+/sTMOh7P5FTKAwMDN/wCX7t2LbFOIBDQtWvXJE02u7u7W+FwWNLkH+OZM2c0Ojoq
+      r9ersbExbd++XQMDA3K5XHK73YrH4+rs7NT4+Lji8biCwaA6OzsTv3R3o3g8rkAgoOXLl2vv
+      3r2J5XfS70AgoJGREUnp77dpmurq6lIsFrO/iR9Da2urjhw5ong8rng8rpycHK1atUrvvfde
+      Yh27ftevb1dSYuYqaWrvR0ZGdP78eQ0MDHwqet/R0aG+vj4ZhqFQKJQI3bGxMUnS2bNnVV1d
+      rZKSksRzdu3apSVLliQO+gcPHlRtbW3i2JSZmam+vr7EAbqxsVGnT5/W2NiYxsbG1NnZmZhh
+      TJr8O2tpaVFHR8dNazp//ryWLl2qQ4cOybIsdXZ2qrq6WoWFhTfUtHLlyk//jGBVVVW6dOmS
+      qqqqJE0eNPbs2SOPx6OMjAydPn1a0WhUpmnq/fff18DAgHJyctTS0qJ4PK7+/n4dPXpUHo9H
+      hw4dUl1dnT744AMFg0FduXJFExMTKioq0sWLF3Xq1CkZhqGenh6FQiG1tbWppKREW7duVWlp
+      qQ4fPixp8h1DJBJRcXGx2tvbVVpaqvb2dpWUlGhsbEyjo6M6dOiQ8vPztW/fPlVUVGjbtm2a
+      PXu2Lly4oHnz5k1rj6ar74ZhqLy8XMePH1dOTo78fv8d9fvgwYPKz8/XoUOHVFtbm/Z+t7a2
+      qrCwUKZpKi8v7xP3SZqens+ZM0cul0uvvvqqFi9erNHRUe3bt0+LFy9WcXGxbb/rv73dUCik
+      Cxcu6MqVKzIMQ2+++Wai9/n5+WpubpbP55Pb7dbFixfT2vtIJCJJ8vl8d7wNl8ulI0eOKDs7
+      W/fee69KS0s1Pj6u4uJi+Xw+HThwQCMjIyoqKlJWVpakyd+/uro6hUIhjY+PKysrS5WVlTp/
+      /rxCoZDWrVunwsJCnT17VhUVFTp9+rRcLpcKCwv19ttvq6SkRIcPH9bChQvV3d2tPXv2aMmS
+      JbrnnntuWtPcuXPV19enq1evqry8XEeOHNHIyIjmzp2beO3d3d1avHjxp38E8GE9PT1au3at
+      li9fLsMwtGzZMi1atEimaWr27Nl69NFHdfXqVa1evVpr1qxJ/JEsW7YsMfWbNHlKob6+Xvfe
+      e6+kyf/J69ev15IlS3T16lWtWrVKK1euVCAQUEVFhWpqapSVlaXu7m6tX79e5eXliW0VFBSo
+      tLRUlZWViWVut1vV1dWaPXu2YrGYFi9erCVLlsg0zdQ16w689dZbysvL09q1ayXdWb+Li4tV
+      W1ubmHdVSm+/a2trdf78+cS72rvF8ePHdezYMT311FPKy8tTZWWlGhoaEqc87fpd/+3tdnV1
+      6Xd+53d0//33q6ur64benz9/Xhs2bND8+fMT25rpvS8sLEzM+dvU1DTl37/61a/q4Ycf1oED
+      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
+      AAAAAElFTkSuQmCC
+    </thumbnail>
+  </thumbnails>
+</workbook>
