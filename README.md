@@ -109,10 +109,8 @@ Codes for calculating derived columns, such as **multimorbidity count**, **categ
     - Probability of delaying care due to cost **also increased**
 - All associations were statistically significant (**p < 0.01**)
 - Odds ratios (OR) increased with higher multimorbidity burden
-- Based on the AUC results, the statistical model demonstrates **good discrimination** between individuals who had a routine checkup or delayed care due to cost versus those who did not.  
-  - For routine checkups, the model correctly distinguishes individuals **approximately 75% of the time**.  
-  - For delayed care due to cost, it correctly distinguishes individuals **approximately 81% of the time**.
-  - **NOTE:** While these values suggest good ability to distinguish between individuals with and without the outcomes, though estimates should be interpreted with caution given partial incorporation of survey design.
+- Models demonstrated moderate-to-strong discrimination (AUC: 0.75 for routine care; 0.81 for cost-related delay).
+  - **NOTE:** While these values suggest good ability to distinguish between individuals with and without the outcomes, though estimates should be interpreted with caution given partial incorporation of the survey design.
 - Calibration plots show both model lines closely align with the dashed line, **demonstrating good calibration** across all deciles.
 - Sensitivity analyses were attempted within gender and insurance subgroups. However, insufficient variability in these groups prevented estimation of results.
 
@@ -129,9 +127,26 @@ Codes for calculating derived columns, such as **multimorbidity count**, **categ
 - The survey demonstrates a cross-sectional design. Therefore, no causal inference could be determined. 
 - Self-reported BRFSS data subject to recall and reporting bias
 - ROC/AUC estimates incorporate weights but did not fully account for complex survey design (clustering, stratification)
-- Complete-case analysis may introduce selection bias (e.g., some participants completed other sections but not some but are excluded anyway). 
+- Complete-case analysis may introduce selection bias (e.g., some participants completed other sections but not some but are excluded anyway).
 
-## 7. Reproducibility
+## 7. Implications for Practice (“So What?”)
+
+- **High-need populations are not access-secure**
+Individuals with multimorbidity engage more with routine care but are also more likely to delay care due to cost, demonstrating gaps in financial protection.
+- **Targeted interventions are warranted**
+Patients with ≥2 chronic conditions could have a greater need for the following:
+    - Cost assistance programs
+    - Insurance navigation support
+    - Care coordination services
+- **Healthcare systems may be inefficiently allocating resources**
+Increased utilization without reduced financial barriers suggests that access alone does not equate to affordability.
+- **Policy relevance**
+Findings support expansion of:
+    - Subsidized care programs
+    - Preventive care coverage
+    - Chronic disease management initiatives with financial safeguards
+
+## 8. Reproducibility
 
 - All analysis conducted in **R** using survey-weighted methods
 - Project structure:
