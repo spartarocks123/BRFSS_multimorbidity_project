@@ -110,7 +110,7 @@ Codes for calculating derived columns, such as **multimorbidity count**, **categ
 - All associations were statistically significant (**p < 0.01**)
 - Odds ratios (OR) increased with higher multimorbidity burden
 - Models demonstrated moderate-to-strong discrimination (AUC: 0.75 for routine care; 0.81 for cost-related delay).
-  - **NOTE:** While these values suggest good ability to distinguish between individuals with and without the outcomes, though estimates should be interpreted with caution as ROC/AUC calculations incorporated sampling weights but did not fully account for clustering and stratification.
+  - **NOTE:** These estimates should be interpreted with caution as ROC/AUC calculations incorporated sampling weights but did not fully account for clustering and stratification.
 - Calibration plots show both model lines closely align with the dashed line, **demonstrating good calibration** across all deciles.
 - Sensitivity analyses were attempted within gender and insurance subgroups. However, insufficient variability in these groups prevented estimation of results.
 
