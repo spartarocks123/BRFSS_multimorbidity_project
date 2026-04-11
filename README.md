@@ -132,7 +132,7 @@ Codes for calculating derived columns, such as **multimorbidity count**, **categ
 ## 7. Implications for Practice (“So What?”)
 
 - **High-need populations are not access-secure**
-Individuals with multimorbidity engage more with routine care but are also more likely to delay care due to cost, demonstrating gaps in financial protection.
+    - Individuals with multimorbidity engage more with routine care but are also more likely to delay care due to cost, demonstrating gaps in financial protection.
 - **Targeted interventions are warranted**
     - Patients with ≥2 chronic conditions could have a greater need for the following:
         - Cost assistance programs
