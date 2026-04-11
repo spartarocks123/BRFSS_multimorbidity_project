@@ -112,6 +112,7 @@ Codes for calculating derived columns, such as **multimorbidity count**, **categ
 - Based on the AUC results, the statistical model demonstrates **good discrimination** between individuals who had a routine checkup or delayed care due to cost versus those who did not.  
   - For routine checkups, the model correctly distinguishes individuals **approximately 75% of the time**.  
   - For delayed care due to cost, it correctly distinguishes individuals **approximately 81% of the time**.
+  - **NOTE:** While these values suggest good ability to distinguish between individuals with and without the outcomes, though estimates should be interpreted with caution given partial incorporation of survey design.
 - Calibration plots show both model lines closely align with the dashed line, **demonstrating good calibration** across all deciles.
 - Sensitivity analyses were attempted within gender and insurance subgroups. However, insufficient variability in these groups prevented estimation of results.
 
@@ -123,8 +124,14 @@ Codes for calculating derived columns, such as **multimorbidity count**, **categ
 - However, they also face disproportionately higher financial barriers to care
 - This suggests a structural inefficiency: populations with the greatest clinical need are also at elevated risk of cost-related access limitations.
 ---
+## 6. Limitations
 
-## 6. Reproducibility
+- The survey demonstrates a cross-sectional design. Therefore, no causal inference could be determined. 
+- Self-reported BRFSS data subject to recall and reporting bias
+- ROC/AUC estimates incorporate weights but did not fully account for complex survey design (clustering, stratification)
+- Complete-case analysis may introduce selection bias (e.g., some participants completed other sections but not some but are excluded anyway). 
+
+## 7. Reproducibility
 
 - All analysis conducted in **R** using survey-weighted methods
 - Project structure:
