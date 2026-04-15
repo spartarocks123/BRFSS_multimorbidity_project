@@ -79,8 +79,6 @@ brfss <- brfss %>%
   
   filter(!is.na(routine_care), !is.na(cost_barrier)) %>%
   
-  mutate(across(c(cc_cat2, agegrp, sex, race, educ, income, insured), droplevels))
-
 # ------------------------------
 # Keep Only Clean Variables
 # ------------------------------
