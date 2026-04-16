@@ -1,5 +1,5 @@
 # ------------------------------
-# 3. Survey Design
+# Survey Design
 # ------------------------------
 
 #The following code replaces singleton strata with a common label "singleton"
@@ -23,7 +23,7 @@ derv_design <- svydesign(
 )
 
 # ------------------------------
-# 4. Models (complete case)
+# Models (complete case)
 # ------------------------------
 #This code filters out any observations that have missing (NA) values
 design_routine_derv <- subset(
@@ -80,7 +80,7 @@ model_cost_derv <- svyglm(
 )
 
 # ------------------------------
-# 5. Predicted Probabilities
+# Predicted Probabilities
 # ------------------------------
 
 #This code generates predicted probabilities from survey-weighted logistic regression models for each level of multimorbidity (cc_cat2)
@@ -90,7 +90,7 @@ pred_cost_derv    <- ggpredict(model_cost_derv, terms = "cc_cat2") %>% drop_na(x
 
 
 # ------------------------------
-# 6. Clean OR Extraction
+# Clean OR Extraction
 # ------------------------------
 # Convert survey-weighted logistic regression coefficients to odds ratios (ORs)
 # with 95% confidence intervals, clean variable labels, and formatted p-values.
@@ -206,7 +206,7 @@ cost_or <- tidy(model_cost, conf.int = TRUE, exponentiate = TRUE) %>%
 write_csv(routine_or, file.path(output_path, "tables/routine_odds_ratios.csv"))
 write_csv(cost_or, file.path(output_path, "tables/cost_odds_ratios.csv"))
 # ------------------------------
-# 7. Save Tables
+# Save Tables
 # ------------------------------
 dir.create("tables", showWarnings = FALSE)
 

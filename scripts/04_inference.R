@@ -1,7 +1,7 @@
 
 
 # ------------------------------
-# 7. Figure 1: Routine Checkup
+# Figure 1: Routine Checkup
 # ------------------------------
 
 # Create a ggplot object using predicted probabilities dataset
@@ -75,7 +75,7 @@ ggsave(
 )
 
 # ------------------------------
-# 8. Figure 2: Cost Barrier
+# Figure 2: Cost Barrier
 # ------------------------------
 fig2 <-ggplot(pred_cost_derv, aes(x = x, y = predicted)) +
   geom_col(fill = viridis(1, option = "D", alpha = 0.85), width = 0.6) +
@@ -125,7 +125,7 @@ ggsave(
 
 
 # ------------------------------
-# 9. ROC / AUC
+# ROC / AUC
 # ------------------------------
 
 # Define a reusable function to:
@@ -191,7 +191,7 @@ write_csv(
 )
 
 # ------------------------------
-# 10. Calibration plots
+# Calibration plots
 # ------------------------------
 calibration_plot <- function(model, design, outcome, color, filename, folder_path){
   # Ensure folder exists
