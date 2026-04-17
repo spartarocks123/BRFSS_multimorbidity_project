@@ -64,7 +64,7 @@ brfss <- brfss %>%
   
   filter(!is.na(routine_care), !is.na(cost_barrier)) %>%
   
-  # ------------------------------
+# ------------------------------
 # Keep Only Clean Variables
 # ------------------------------
 brfss_clean <- brfss %>%
@@ -102,12 +102,12 @@ write.csv(brfss_clean, "/filepath/brfss_example.csv", row.names = FALSE)
 # ==========================================================
 
 # ------------------------------
-# 1. Load + Subsample Dataset
+# Load + Subsample Dataset
 # ------------------------------
 derv_br <- read_csv("/filepath/brfss_example.csv", show_col_types = FALSE)
 
 # ------------------------------
-# 2. Ensure Correct Factor Order
+# Ensure Correct Factor Order
 # ------------------------------
 
 #This code helps set the reference = category representing the largest weighted population
