@@ -1,4 +1,6 @@
 
+source("scripts/03_inference.R")
+
 
 # ------------------------------
 # Figure 1: Routine Checkup

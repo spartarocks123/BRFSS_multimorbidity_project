@@ -1,3 +1,6 @@
+
+source("scripts/02_data_manipulation.R")
+
 # ------------------------------
 # Survey Design
 # ------------------------------
@@ -95,8 +98,6 @@ pred_cost_derv    <- ggpredict(model_cost_derv, terms = "cc_cat2") %>% drop_na(x
 # Convert survey-weighted logistic regression coefficients to odds ratios (ORs)
 # with 95% confidence intervals, clean variable labels, and formatted p-values.
 # This produces tables for routine care and cost barrier models.
-
-source("scripts/00_setup.R")
 
 # ------------------------------
 # Load Models
