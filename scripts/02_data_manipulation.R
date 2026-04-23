@@ -103,10 +103,9 @@ brfss_clean <- brfss %>%
 # ------------------------------
 # Save cleaned dataset
 # ------------------------------
-dir.create("data", showWarnings = FALSE, recursive = TRUE)
+dir.create(data_dir, showWarnings = FALSE, recursive = TRUE)
 
-write.csv(brfss_clean, "/Users/moh/Desktop/Research Assistant/BRFSS_multimorbidity_project/data/brfss_example.csv", row.names = FALSE)
-
+write.csv(brfss_clean, clean_data_path, row.names = FALSE)
 
 # ==========================================================
 # Derived Dataset Analysis (GitHub)
@@ -115,7 +114,7 @@ write.csv(brfss_clean, "/Users/moh/Desktop/Research Assistant/BRFSS_multimorbidi
 # ------------------------------
 # Load + Subsample Dataset
 # ------------------------------
-derv_br <- read_csv("/Users/moh/Desktop/Research Assistant/BRFSS_multimorbidity_project/data/brfss_example.csv", show_col_types = FALSE)
+derv_br <- read_csv(clean_data_path, show_col_types = FALSE)
 
 # ------------------------------
 # Ensure Correct Factor Order
