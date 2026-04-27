@@ -91,6 +91,9 @@ model_cost_derv <- svyglm(
 pred_routine_derv <- ggpredict(model_routine_derv, terms = "cc_cat2") %>% drop_na(x)
 pred_cost_derv    <- ggpredict(model_cost_derv, terms = "cc_cat2") %>% drop_na(x)
 
+list.files(output_dir)
+list.files(table_path)
+list.files(model_path)
 
 # ------------------------------
 # Clean OR Extraction
@@ -102,9 +105,8 @@ pred_cost_derv    <- ggpredict(model_cost_derv, terms = "cc_cat2") %>% drop_na(x
 # ------------------------------
 # Load Models
 # ------------------------------
-model_routine <- readRDS(file.path(output_path, "data/model_routine.rds"))
-model_cost    <- readRDS(file.path(output_path, "data/model_cost.rds"))
-
+model_routine <- readRDS(file.path(model_path, "model_routine_derv.rds"))
+model_cost    <- readRDS(file.path(model_path, "model_cost_derv.rds"))
 # ------------------------------
 # Tidy OR Extraction (broom)
 # ------------------------------
@@ -204,19 +206,14 @@ cost_or <- tidy(model_cost, conf.int = TRUE, exponentiate = TRUE) %>%
 # ------------------------------
 # Save Outputs
 # ------------------------------
-write_csv(routine_or, file.path(output_path, "tables/routine_odds_ratios.csv"))
-write_csv(cost_or, file.path(output_path, "tables/cost_odds_ratios.csv"))
+write_csv(routine_or, file.path(table_path, "routine_odds_ratios.csv"))
+write_csv(cost_or, file.path(table_path, "cost_odds_ratios.csv"))
+
 # ------------------------------
 # Save Tables
 # ------------------------------
 dir.create("tables", showWarnings = FALSE)
 
-write_csv(
-  routine_or,
-  "/filepath/routine_odds_ratios.csv"
-)
+write_csv(routine_or, file.path(table_path, "routine_odds_ratios.csv"))
+write_csv(cost_or,    file.path(table_path, "cost_odds_ratios.csv"))
 
-write_csv(
-  cost_or,
-  "/filepath/cost_odds_ratios.csv"
-)

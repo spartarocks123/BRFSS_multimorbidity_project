@@ -36,9 +36,10 @@ library(viridis)
 library(scales)
 
 # Functions
-functions_path <- file.path(project_path, "scripts", "utils")
+#functions_path <- file.path(project_path, "scripts", "utils")
 
-source(file.path(functions_path, "set_ref_weighted.R"))
-source(file.path(functions_path, "roc_auc.R"))
-source(file.path(functions_path, "calibration_plot.R"))
+# source(file.path(functions_path, "set_ref_weighted.R"))
+# source(file.path(functions_path, "roc_auc.R"))
+# source(file.path(functions_path, "calibration_plot.R"))
+
 
