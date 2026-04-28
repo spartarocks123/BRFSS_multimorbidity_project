@@ -159,12 +159,9 @@ The project is organized into a clear, step-by-step script workflow:
 * `03_modeling.R` — Builds survey-weighted regression models
 * `04_inference.R` — Generates predicted probabilities, figures, and model evaluation metrics
 
-**/data**
+**folders**
 
-* Contains the cleaned dataset (`brfss_clean.csv`)
-
-**/output**
-
+* `/data` — Contains the cleaned dataset (`brfss_clean.csv`)
 * `/models` — Saved model objects
 * `/tables` — Regression results and summary tables
 * `/figures` — Final visualizations
