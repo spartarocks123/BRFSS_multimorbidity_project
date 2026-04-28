@@ -1,8 +1,7 @@
-
-
+#------------------------------
+# 01_load_data.R
 # ------------------------------
-# Load Data Huh
-# ------------------------------
+
 source("scripts/00_setup.R")
 
 brfss <- read_xpt(raw_data_path)
