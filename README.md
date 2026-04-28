@@ -145,17 +145,41 @@ Codes for calculating derived columns, such as **multimorbidity count**, **categ
         - Preventive care coverage
         - Chronic disease management initiatives with financial safeguards
 
-## 8. Reproducibility
+### 8. Reproducibility
 
-- All analysis conducted in **R** using survey-weighted methods
-- Project structure:
-    - `/data` → Derived analytic dataset with cleaned and recoded variables
-    - `/scripts` → Data cleaning, variable construction, modeling, and visualization
-    - `/tables` → Output tables
-    - `/figures` → Visualizations
-- This project uses a **derived dataset** based on publicly available BRFSS data:
-    - Raw data is not included
-    - All transformations are reproducible via scripts in `/scripts`
+All analyses were conducted in R using survey-weighted methods to properly account for the BRFSS sampling design.
+
+The project is organized into a clear, step-by-step script workflow:
+
+**/scripts**
+
+* `00_setup.R` — Sets file paths and loads required libraries
+* `01_load_data.R` — Loads raw BRFSS data
+* `02_data_manipulation.R` — Cleans data and creates analysis variables
+* `03_modeling.R` — Builds survey-weighted regression models
+* `04_inference.R` — Generates predicted probabilities, figures, and model evaluation metrics
+
+**/data**
+
+* Contains the cleaned dataset (`brfss_clean.csv`)
+
+**/output**
+
+* `/models` — Saved model objects
+* `/tables` — Regression results and summary tables
+* `/figures` — Final visualizations
+
+Reproducibility is supported by:
+
+* Environment variables for flexible file paths (`BRFSS_DATA`, `BRFSS_PROJECT`)
+* Consistent file handling using `file.path()`
+* A sequential workflow (scripts run from 00 → 04)
+* Saving all key outputs (data, models, tables, figures)
+
+This project uses publicly available BRFSS data:
+
+* Raw data is not included due to size constraints
+* All steps to clean, analyze, and generate results are fully reproducible using the provided scripts
 
 ## 9. Deliverables
 
