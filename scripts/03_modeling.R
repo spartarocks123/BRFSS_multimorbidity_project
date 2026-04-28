@@ -5,10 +5,6 @@ source("scripts/02_data_manipulation.R")
 # Survey Design
 # ------------------------------
 
-#The following code replaces singleton strata with a common label "singleton"
-#This groups all lonely strata together so variance can be computed. 
-#Variance estimates for strata with a single unit cannot be computed normally
-
 derv_br <- derv_br %>%
   mutate(STSTR2 = as.character(STSTR))
 
@@ -28,7 +24,7 @@ derv_design <- svydesign(
 # ------------------------------
 # Models (complete case)
 # ------------------------------
-#This code filters out any observations that have missing (NA) values
+
 design_routine_derv <- subset(
   derv_design,
   !is.na(routine_care) &
@@ -40,23 +36,6 @@ design_routine_derv <- subset(
     !is.na(income) &
     !is.na(insured)
 )
-
-# This code uses svyglm() from the survey package to fit a survey-weighted logistic regression model.
-# It accounts for:
-# - Sampling weights (LLCPWT)
-# - Clustering (PSU)
-# - Stratification (STSTR2)
-
-# family = quasibinomial() is used instead of binomial() to allow for overdispersion.
-# Overdispersion occurs when the observed variance is greater than what the standard binomial model assumes.
-
-# In survey data like BRFSS, overdispersion can arise due to:
-# - Complex sampling design (clustering within PSUs)
-# - Unobserved heterogeneity between individuals
-# - Model misspecification (missing variables or imperfect fit)
-
-# quasibinomial() adjusts the variance (standard errors) using a dispersion parameter,
-# leading to more robust and reliable inference (wider, more realistic confidence intervals).
 
 model_routine_derv <- svyglm(
   routine_care ~ cc_cat2 + agegrp + sex + race + educ + income + insured,
@@ -83,35 +62,28 @@ model_cost_derv <- svyglm(
 )
 
 # ------------------------------
+# Save Models (for reproducibility)
+# ------------------------------
+saveRDS(model_routine_derv, file.path(model_path, "model_routine_derv.rds"))
+saveRDS(model_cost_derv,    file.path(model_path, "model_cost_derv.rds"))
+
+# ------------------------------
 # Predicted Probabilities
 # ------------------------------
 
-#This code generates predicted probabilities from survey-weighted logistic regression models for each level of multimorbidity (cc_cat2)
-#drop_na(x) removes any missing levels to ensure a clean dataset for plotting.
 pred_routine_derv <- ggpredict(model_routine_derv, terms = "cc_cat2") %>% drop_na(x)
 pred_cost_derv    <- ggpredict(model_cost_derv, terms = "cc_cat2") %>% drop_na(x)
 
+# Optional sanity checks
 list.files(output_dir)
 list.files(table_path)
 list.files(model_path)
 
 # ------------------------------
-# Clean OR Extraction
-# ------------------------------
-# Convert survey-weighted logistic regression coefficients to odds ratios (ORs)
-# with 95% confidence intervals, clean variable labels, and formatted p-values.
-# This produces tables for routine care and cost barrier models.
-
-# ------------------------------
-# Load Models
-# ------------------------------
-model_routine <- readRDS(file.path(model_path, "model_routine_derv.rds"))
-model_cost    <- readRDS(file.path(model_path, "model_cost_derv.rds"))
-# ------------------------------
-# Tidy OR Extraction (broom)
+# Clean OR Extraction (broom)
 # ------------------------------
 
-routine_or <- tidy(model_routine, conf.int = TRUE, exponentiate = TRUE) %>%
+routine_or <- tidy(model_routine_derv, conf.int = TRUE, exponentiate = TRUE) %>%
   filter(term != "(Intercept)") %>%
   mutate(
     Variable = case_when(
@@ -184,8 +156,8 @@ routine_or <- tidy(model_routine, conf.int = TRUE, exponentiate = TRUE) %>%
     p_value = signif(p_value, 3)
   )
 
-# Repeat for cost model
-cost_or <- tidy(model_cost, conf.int = TRUE, exponentiate = TRUE) %>%
+# Cost model ORs
+cost_or <- tidy(model_cost_derv, conf.int = TRUE, exponentiate = TRUE) %>%
   filter(term != "(Intercept)") %>%
   mutate(
     Variable = case_when(
@@ -207,13 +179,4 @@ cost_or <- tidy(model_cost, conf.int = TRUE, exponentiate = TRUE) %>%
 # Save Outputs
 # ------------------------------
 write_csv(routine_or, file.path(table_path, "routine_odds_ratios.csv"))
-write_csv(cost_or, file.path(table_path, "cost_odds_ratios.csv"))
-
-# ------------------------------
-# Save Tables
-# ------------------------------
-dir.create("tables", showWarnings = FALSE)
-
-write_csv(routine_or, file.path(table_path, "routine_odds_ratios.csv"))
 write_csv(cost_or,    file.path(table_path, "cost_odds_ratios.csv"))
-
