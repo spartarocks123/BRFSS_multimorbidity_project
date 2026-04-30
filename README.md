@@ -184,4 +184,4 @@ This project uses publicly available BRFSS data:
 - Model diagnostics (ROC/AUC, calibration plots)
 - Reproducible data pipeline across R, SAS, and SQL
 - Tableau visualization comparing the odds ratios of routine care vs cost-related delay
-    - [View Interactive Dashboard](https://public.tableau.com/app/profile/muhammad.a.malik/viz/ORRoutinevsCostBarrier/ORGraph) 
+    - [View Interactive Dashboard](https://public.tableau.com/app/profile/muhammad.a.malik/viz/ORRoutineCarevsCostBarrier/ORGraph) 
