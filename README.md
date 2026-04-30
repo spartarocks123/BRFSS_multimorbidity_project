@@ -4,7 +4,7 @@
 
 ---
 
-## Project Snapshot
+## Project Abstract
 
 - Analyzed **2024 Behavioral Risk Factor Surveillance System (BRFSS)** using survey-weighted methods
 - Built **multivariable logistic regression models (`svyglm`)** to evaluate healthcare utilization and cost barriers
@@ -14,7 +14,7 @@
 - Model performance:
     - AUC = **0.75** (routine care)
     - AUC = **0.81** (cost-related delay)
-- Delivered a **fully reproducible pipeline** across R, SAS, SQL, and Tableau
+- Delivered a **reproducible pipeline** across R, SAS, SQL, and Tableau
 
 ---
 
@@ -28,7 +28,7 @@
 
 ## Objective
 
-Evaluate how **multimorbidity impacts both healthcare engagement and financial access barriers** in U.S. adults.
+Evaluate how **multimorbidity impacts both healthcare routine utilization and financial access barriers** in U.S. adults.
 
 ---
 
@@ -117,8 +117,8 @@ Project structured for full reproducibility:
 ### Reproducibility Features
 
 - Environment variables for file paths
-- Modular script pipeline (00 → 04)
-- Saved intermediate outputs (data, models, tables, figures)
+- Sequential script pipeline (00 → 04)
+- Saved outputs (data, models, tables, figures)
 
 ---
 
@@ -128,7 +128,7 @@ Project structured for full reproducibility:
 - Multivariable regression & inference
 - Data cleaning and feature engineering
 - Cross-platform analytics (**R, SAS, SQL**)
-- Data visualization & storytelling
+- Data visualization
 - Reproducible research pipelines
 
 ---
