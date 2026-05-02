@@ -101,18 +101,19 @@ Project structured for full reproducibility:
 
 **/scripts**
 
-- `00_setup.R` — environment + libraries
+- `00_setup.R` — file paths + libraries
 - `01_load_data.R` — data ingestion
-- `02_data_manipulation.R` — cleaning + feature engineering
+- `02_data_manipulation.R` — data cleaning + data recoding
 - `03_modeling.R` — regression models
-- `04_figures.R` — figures ROC/AUC, Calibration plots
+- `04_figures.R` — figures + ROC/AUC + Calibration plots
 
 **/folders**
 
 - `/data` → cleaned dataset
-- `/models` → saved model objects
 - `/tables` → regression outputs
 - `/figures` → visualizations
+- `/scripts` → R + SAS + SQL scripts
+
 
 ### Reproducibility Features
 
