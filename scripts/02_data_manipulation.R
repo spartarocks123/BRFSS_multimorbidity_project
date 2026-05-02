@@ -1,3 +1,4 @@
+
 # ------------------------------
 # 02_data_manipulation.R
 # ------------------------------
@@ -5,7 +6,24 @@
 source("scripts/01_load_data.R")
 
 # ------------------------------
-# Clean + Recode (FIXED)
+# Libraries
+# ------------------------------
+library(tidyverse)
+library(haven)
+library(survey)
+library(ggeffects)
+library(pROC)
+library(broom)
+library(viridis)
+library(scales)
+
+# ------------------------------
+# Load Raw Data
+# ------------------------------
+brfss <- read_xpt(raw_data_path)
+
+# ------------------------------
+# Clean + Select Variables
 # ------------------------------
 brfss <- brfss %>%
   select(
@@ -16,17 +34,16 @@ brfss <- brfss %>%
     LLCPWT, STSTR, PSU
   ) %>%
   
-  # ---- FIX 1: force labelled variables into stable numeric form ----
-mutate(across(
-  c(MICHD, CVDSTRK3, ASTHMS1, CHCSCNC1, CHCOCNC1,
-    CHCCOPD3, ADDEPEV3, CHCKDNY2, DIABETE4,
-    CHECKUP1, MEDCOST1, HLTHPL2,
-    AGEG5YR, SEXVAR, RACE, EDUCAG, INCOMG1),
-  ~ as.numeric(as.character(.))
-)) %>%
+  mutate(across(
+    c(MICHD, CVDSTRK3, ASTHMS1, CHCSCNC1, CHCOCNC1,
+      CHCCOPD3, ADDEPEV3, CHCKDNY2, DIABETE4,
+      CHECKUP1, MEDCOST1, HLTHPL2,
+      AGEG5YR, SEXVAR, RACE, EDUCAG, INCOMG1),
+    ~ as.numeric(as.character(.))
+  )) %>%
   
   # ------------------------------
-# Chronic conditions (safe recode)
+# Chronic conditions (binary recode)
 # ------------------------------
 mutate(
   across(
@@ -83,10 +100,13 @@ mutate(
   income = factor(INCOMG1)
 ) %>%
   
-  filter(!is.na(routine_care), !is.na(cost_barrier))
+# ------------------------------
+# Keep analytic sample
+# ------------------------------
+filter(!is.na(routine_care), !is.na(cost_barrier))
 
 # ------------------------------
-# Keep Only Clean Variables
+# Final Clean Dataset
 # ------------------------------
 brfss_clean <- brfss %>%
   select(
@@ -106,28 +126,21 @@ brfss_clean <- brfss %>%
 # ------------------------------
 # Save cleaned dataset
 # ------------------------------
-dir.create(data_dir, showWarnings = FALSE, recursive = TRUE)
-
 write.csv(brfss_clean, clean_data_path, row.names = FALSE)
 
 # ==========================================================
-# Derived Dataset Analysis (GitHub)
+# Derived Dataset Analysis Setup
 # ==========================================================
 
 # ------------------------------
-# Load + Subsample Dataset
+# Load cleaned dataset
 # ------------------------------
 derv_br <- read_csv(clean_data_path, show_col_types = FALSE)
 
 # ------------------------------
-# Ensure Correct Factor Order
+# Weighted reference level function
 # ------------------------------
-
-#This code helps set the reference = category representing the largest weighted population
-
 set_ref_weighted <- function(x, w) {
-  
-  # Ensure factor
   x <- factor(x)
   
   df <- data.frame(x = x, w = w)
@@ -138,22 +151,25 @@ set_ref_weighted <- function(x, w) {
   
   ref_level <- as.character(freq$x[which.max(freq$w_sum)])
   
-  # Clean levels safely
   new_levels <- unique(c(ref_level, setdiff(levels(x), ref_level)))
   
   factor(x, levels = new_levels)
 }
 
-# This code filters the "Don't Know/ Refused" responses from BRFSS
+# ------------------------------
+# Filter DK / Refused categories
+# ------------------------------
 derv_br <- derv_br %>%
   filter(
-    !(agegrp=="14"|
-        race=="9"|
-        educ=="9"|
-        income=="9")
+    !(agegrp == "14" |
+        race == "9" |
+        educ == "9" |
+        income == "9")
   )
 
-# This code takes account the weighting when it comes to setting reference levels. 
+# ------------------------------
+# Apply weighted reference coding
+# ------------------------------
 derv_br <- derv_br %>%
   mutate(
     cc_cat2 = set_ref_weighted(cc_cat2, LLCPWT),

@@ -54,7 +54,7 @@ dir.create(figure_path, recursive = TRUE, showWarnings = FALSE)
 
 # Save Figure 1
 ggsave(
-  filename = file.path(figure_path, "figure_1_routine_checkup.pdf"),
+  filename = file.path(figure_path, "Figure 1: Routine Checkup"),
   plot = fig1,
   width = 15,
   height = 10,
@@ -105,7 +105,7 @@ fig2 <- ggplot(pred_cost_derv, aes(x = x, y = predicted)) +
 
 # Save Figure 2
 ggsave(
-  filename = file.path(figure_path, "figure_2_cost_barrier.pdf"),
+  filename = file.path(figure_path, "Figure 2: Cost Barrier"),
   plot = fig2,
   width = 15,
   height = 10,
