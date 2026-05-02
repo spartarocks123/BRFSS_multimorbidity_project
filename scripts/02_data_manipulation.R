@@ -25,6 +25,10 @@ brfss <- read_xpt(raw_data_path)
 # ------------------------------
 # Clean + Select Variables
 # ------------------------------
+
+# Clean names (removes leading underscores)
+names(brfss) <- gsub("^_", "", names(brfss))
+
 brfss <- brfss %>%
   select(
     MICHD, CVDSTRK3, ASTHMS1, CHCSCNC1, CHCOCNC1,

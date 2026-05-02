@@ -1,8 +1,8 @@
 # ------------------------------
-# 04_figures.R
+# 04_inference.R
 # ------------------------------
 
-source("scripts/03_modeling.R")
+source("scripts/03_inference.R")
 
 # ------------------------------
 # Figure 1: Routine Checkup
