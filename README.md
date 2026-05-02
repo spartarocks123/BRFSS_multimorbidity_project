@@ -105,7 +105,7 @@ Project structured for full reproducibility:
 - `01_load_data.R` — data ingestion
 - `02_data_manipulation.R` — cleaning + feature engineering
 - `03_modeling.R` — regression models
-- `04_inference.R` — predictions, evaluation, figures
+- `04_figures.R` — figures ROC/AUC, Calibration plots
 
 **/folders**
 
