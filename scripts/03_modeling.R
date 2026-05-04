@@ -75,13 +75,13 @@ model_cost_derv <- svyglm(
 pred_routine_derv <- ggpredict(model_routine_derv, terms = "cc_cat2") %>% drop_na(x)
 pred_cost_derv    <- ggpredict(model_cost_derv, terms = "cc_cat2") %>% drop_na(x)
 
-write_csv(pred_routine_derv, file.path(output_dir, "pred_routine.csv"))
-write_csv(pred_cost_derv,    file.path(output_dir, "pred_cost.csv"))
+# write_csv(pred_routine_derv, file.path(output_dir, "pred_routine.csv"))
+# write_csv(pred_cost_derv,    file.path(output_dir, "pred_cost.csv"))
 
 # Sanity checks
-list.files(model_path)
+# list.files(model_path)
 list.files(table_path)
-list.files(output_dir)
+# list.files(output_dir)
 
 # ==========================================================
 # Odds Ratio extraction helper 

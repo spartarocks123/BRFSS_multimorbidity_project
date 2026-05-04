@@ -4,6 +4,10 @@
 
 source("scripts/03_modeling.R")
 
+# Ensure output directories exist
+dir.create(figure_path, recursive = TRUE, showWarnings = FALSE)
+dir.create(table_path, recursive = TRUE, showWarnings = FALSE)
+
 # ------------------------------
 # Figure 1: Routine Checkup
 # ------------------------------
@@ -49,12 +53,8 @@ fig1 <- ggplot(pred_routine_derv, aes(x = x, y = predicted)) +
     plot.title = element_text(hjust = 0.5)
   )
 
-# Ensure figures directory exists (already handled in setup, but safe)
-dir.create(figure_path, recursive = TRUE, showWarnings = FALSE)
-
-# Save Figure 1
 ggsave(
-  filename = file.path(figure_path, "Figure 1: Routine Checkup"),
+  filename = file.path(figure_path, "figure_1_routine_checkup.png"),
   plot = fig1,
   width = 15,
   height = 10,
@@ -66,7 +66,10 @@ ggsave(
 # ------------------------------
 
 fig2 <- ggplot(pred_cost_derv, aes(x = x, y = predicted)) +
-  geom_col(fill = viridis(1, option = "D", alpha = 0.85), width = 0.6) +
+  geom_col(
+    fill = viridis(1, option = "D", alpha = 0.85),
+    width = 0.6
+  ) +
   geom_errorbar(
     aes(ymin = conf.low, ymax = conf.high),
     width = 0.2,
@@ -103,9 +106,8 @@ fig2 <- ggplot(pred_cost_derv, aes(x = x, y = predicted)) +
     plot.title = element_text(hjust = 0.5)
   )
 
-# Save Figure 2
 ggsave(
-  filename = file.path(figure_path, "Figure 2: Cost Barrier"),
+  filename = file.path(figure_path, "figure_2_cost_barrier.png"),
   plot = fig2,
   width = 15,
   height = 10,
@@ -116,14 +118,27 @@ ggsave(
 # ROC / AUC
 # ------------------------------
 
-plot_roc_auc <- function(model, design, outcome, color){
+plot_roc_auc <- function(model, design, outcome, color, filename) {
   
   probs <- predict(model, type = "response")
   
   roc_obj <- roc(
-    design$variables[[outcome]],
-    probs,
+    response = design$variables[[outcome]],
+    predictor = probs,
     weights = design$variables$LLCPWT
+  )
+  
+  auc_tbl <- tibble(
+    outcome = outcome,
+    AUC = as.numeric(auc(roc_obj))
+  )
+  
+  png(
+    filename = file.path(figure_path, paste0(filename, ".png")),
+    width = 8,
+    height = 6,
+    units = "in",
+    res = 600
   )
   
   plot(
@@ -133,29 +148,29 @@ plot_roc_auc <- function(model, design, outcome, color){
     main = paste("ROC -", outcome)
   )
   
-  tibble(
-    outcome = outcome,
-    AUC = as.numeric(auc(roc_obj))
-  )
+  dev.off()
+  
+  return(auc_tbl)
 }
 
 auc_routine <- plot_roc_auc(
-  model_routine_derv,
-  design_routine_derv,
-  "routine_care",
-  "blue"
+  model = model_routine_derv,
+  design = design_routine_derv,
+  outcome = "routine_care",
+  color = "blue",
+  filename = "roc_routine_care"
 )
 
 auc_cost <- plot_roc_auc(
-  model_cost_derv,
-  design_cost_derv,
-  "cost_barrier",
-  "red"
+  model = model_cost_derv,
+  design = design_cost_derv,
+  outcome = "cost_barrier",
+  color = "red",
+  filename = "roc_cost_barrier"
 )
 
 auc_all <- bind_rows(auc_routine, auc_cost)
 
-# Save AUC table
 write_csv(
   auc_all,
   file.path(table_path, "auc_results.csv")
@@ -165,9 +180,7 @@ write_csv(
 # Calibration plots
 # ------------------------------
 
-calibration_plot <- function(model, design, outcome, color, filename, folder_path){
-  
-  dir.create(folder_path, recursive = TRUE, showWarnings = FALSE)
+calibration_plot <- function(model, design, outcome, color, filename) {
   
   data <- design$variables %>%
     mutate(
@@ -193,7 +206,7 @@ calibration_plot <- function(model, design, outcome, color, filename, folder_pat
     theme_minimal(base_size = 14)
   
   ggsave(
-    filename = file.path(folder_path, paste0(filename, ".pdf")),
+    filename = file.path(figure_path, paste0(filename, ".png")),
     plot = fig,
     width = 8,
     height = 6,
@@ -203,23 +216,20 @@ calibration_plot <- function(model, design, outcome, color, filename, folder_pat
   return(fig)
 }
 
-# Use predefined figure_path instead of hardcoded path
-calibration_plot(
+calibration_routine <- calibration_plot(
   model = model_routine_derv,
   design = design_routine_derv,
   outcome = "routine_care",
   color = "blue",
-  filename = "calibration_routine_care",
-  folder_path = figure_path
+  filename = "calibration_routine_care"
 )
 
-calibration_plot(
+calibration_cost <- calibration_plot(
   model = model_cost_derv,
   design = design_cost_derv,
   outcome = "cost_barrier",
   color = "red",
-  filename = "calibration_cost_barrier",
-  folder_path = figure_path
+  filename = "calibration_cost_barrier"
 )
 
 # ==========================================================
