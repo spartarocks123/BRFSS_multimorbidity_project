@@ -113,20 +113,103 @@ clean_or_table <- function(model, var_map) {
 # ==========================================================
 
 var_map_full <- c(
-  "cc_cat21" = "1 chronic condition",
-  "cc_cat22" = "2 chronic conditions",
+  # Chronic condition category
+  "cc_cat21"  = "1 chronic condition",
+  "cc_cat22"  = "2 chronic conditions",
   "cc_cat23+" = "≥3 chronic conditions",
   
-  "sex2" = "Female",
-  "sex1" = "Male",
+  # Age group
+  "agegrp2"  = "Age 25 to 29",
+  "agegrp3"  = "Age 30 to 34",
+  "agegrp4"  = "Age 35 to 39",
+  "agegrp5"  = "Age 40 to 44",
+  "agegrp6"  = "Age 45 to 49",
+  "agegrp7"  = "Age 50 to 54",
+  "agegrp8"  = "Age 55 to 59",
+  "agegrp9"  = "Age 60 to 64",
+  "agegrp10" = "Age 65 to 69",
+  "agegrp11" = "Age 70 to 74",
+  "agegrp12" = "Age 75 to 79",
+  "agegrp13" = "Age 80 or older",
   
+  # Sex
+  "sex1" = "Male",
+  "sex2" = "Female",
+  
+  # Race / ethnicity
+  "race2" = "Black only, non-Hispanic",
+  "race3" = "American Indian or Alaskan Native only, non-Hispanic",
+  "race4" = "Asian only, non-Hispanic",
+  "race5" = "Native Hawaiian or other Pacific Islander only, non-Hispanic",
+  "race6" = "Other race only, non-Hispanic",
+  "race7" = "Multiracial, non-Hispanic",
+  "race8" = "Hispanic",
+  
+  # Education
+  "educ1" = "Did not graduate high school",
+  "educ2" = "Graduated high school",
+  "educ3" = "Attended college or technical school",
+  
+  # Income
+  "income1" = "Less than $15,000",
+  "income2" = "$15,000 to < $25,000",
+  "income3" = "$25,000 to < $35,000",
+  "income4" = "$35,000 to < $50,000",
+  "income6" = "$100,000 to < $200,000",
+  "income7" = "$200,000 or more",
+  
+  # Insurance
   "insuredUninsured" = "Uninsured"
 )
 
 var_map_simple <- c(
-  "cc_cat21" = "1 chronic condition",
-  "cc_cat22" = "2 chronic conditions",
-  "cc_cat23+" = "≥3 chronic conditions"
+  # Chronic condition category
+  "cc_cat21"  = "1 chronic condition",
+  "cc_cat22"  = "2 chronic conditions",
+  "cc_cat23+" = "≥3 chronic conditions",
+  
+  # Age group
+  "agegrp2"  = "Age 25 to 29",
+  "agegrp3"  = "Age 30 to 34",
+  "agegrp4"  = "Age 35 to 39",
+  "agegrp5"  = "Age 40 to 44",
+  "agegrp6"  = "Age 45 to 49",
+  "agegrp7"  = "Age 50 to 54",
+  "agegrp8"  = "Age 55 to 59",
+  "agegrp9"  = "Age 60 to 64",
+  "agegrp10" = "Age 65 to 69",
+  "agegrp11" = "Age 70 to 74",
+  "agegrp12" = "Age 75 to 79",
+  "agegrp13" = "Age 80 or older",
+  
+  # Sex
+  "sex1" = "Male",
+  "sex2" = "Female",
+  
+  # Race / ethnicity
+  "race2" = "Black only, non-Hispanic",
+  "race3" = "American Indian or Alaskan Native only, non-Hispanic",
+  "race4" = "Asian only, non-Hispanic",
+  "race5" = "Native Hawaiian or other Pacific Islander only, non-Hispanic",
+  "race6" = "Other race only, non-Hispanic",
+  "race7" = "Multiracial, non-Hispanic",
+  "race8" = "Hispanic",
+  
+  # Education
+  "educ1" = "Did not graduate high school",
+  "educ2" = "Graduated high school",
+  "educ3" = "Attended college or technical school",
+  
+  # Income
+  "income1" = "Less than $15,000",
+  "income2" = "$15,000 to < $25,000",
+  "income3" = "$25,000 to < $35,000",
+  "income4" = "$35,000 to < $50,000",
+  "income6" = "$100,000 to < $200,000",
+  "income7" = "$200,000 or more",
+  
+  # Insurance
+  "insuredUninsured" = "Uninsured"
 )
 
 # ==========================================================
