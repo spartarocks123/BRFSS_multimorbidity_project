@@ -14,11 +14,13 @@ data_dir    <- file.path(project_path, "data")
 clean_data_path <- file.path(data_dir, "brfss_clean.csv")
 table_path      <- file.path(project_path, "tables")
 figure_path     <- file.path(project_path, "figures")
+model_path <- file.path(project_path, "models")
 
 # Create dirs
 dir.create(data_dir, recursive = TRUE, showWarnings = FALSE)
 dir.create(table_path, recursive = TRUE, showWarnings = FALSE)
 dir.create(figure_path, recursive = TRUE, showWarnings = FALSE)
+dir.create(model_path, recursive = TRUE, showWarnings = FALSE)
 
 # Libraries
 library(tidyverse)

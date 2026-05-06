@@ -226,3 +226,8 @@ cost_or    <- clean_or_table(model_cost_derv, var_map_simple)
 write_csv(routine_or, file.path(table_path, "routine_odds_ratios.csv"))
 write_csv(cost_or,    file.path(table_path, "cost_odds_ratios.csv"))
 
+
+saveRDS(model_routine_derv, file.path(model_path, "model_routine_derv.rds"))
+saveRDS(model_cost_derv, file.path(model_path, "model_cost_derv.rds"))
+saveRDS(pred_routine_derv, file.path(model_path, "pred_routine_derv.rds"))
+saveRDS(pred_cost_derv, file.path(model_path, "pred_cost_derv.rds"))

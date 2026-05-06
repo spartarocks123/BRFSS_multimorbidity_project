@@ -2,7 +2,12 @@
 # 04_figures.R
 # ------------------------------
 
-source("scripts/03_modeling.R")
+source("scripts/00_setup.R")
+
+model_routine_derv <- readRDS(file.path(model_path, "model_routine_derv.rds"))
+model_cost_derv    <- readRDS(file.path(model_path, "model_cost_derv.rds"))
+pred_routine_derv  <- readRDS(file.path(model_path, "pred_routine_derv.rds"))
+pred_cost_derv     <- readRDS(file.path(model_path, "pred_cost_derv.rds"))
 
 # Ensure output directories exist
 dir.create(figure_path, recursive = TRUE, showWarnings = FALSE)
@@ -54,7 +59,7 @@ fig1 <- ggplot(pred_routine_derv, aes(x = x, y = predicted)) +
   )
 
 ggsave(
-  filename = file.path(figure_path, "figure_1_routine_checkup.png"),
+  filename = file.path(figure_path, "Figure_1_Routine_Checkup.png"),
   plot = fig1,
   width = 15,
   height = 10,
@@ -107,7 +112,7 @@ fig2 <- ggplot(pred_cost_derv, aes(x = x, y = predicted)) +
   )
 
 ggsave(
-  filename = file.path(figure_path, "figure_2_cost_barrier.png"),
+  filename = file.path(figure_path, "Figure_2_Cost_Barrier.png"),
   plot = fig2,
   width = 15,
   height = 10,
@@ -231,6 +236,7 @@ calibration_cost <- calibration_plot(
   color = "red",
   filename = "calibration_cost_barrier"
 )
+
 
 # ==========================================================
 # Sensitivity Analysis
