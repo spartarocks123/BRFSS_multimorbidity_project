@@ -128,6 +128,7 @@ Project structured for full reproducibility:
 ## Skills Demonstrated
 
 - Survey-weighted statistical modeling
+- Survey-aware cross-validation (v-fold CV)
 - Multivariable regression & inference
 - Data cleaning and feature engineering
 - Cross-platform analytics (**R, SAS, SQL**)
