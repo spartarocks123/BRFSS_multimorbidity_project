@@ -106,6 +106,7 @@ Project structured for full reproducibility:
 - `02_data_manipulation.R` — data cleaning + data recoding
 - `03_modeling.R` — regression models
 - `04_figures.R` — figures + ROC/AUC + Calibration plots
+- `05_validation.R`   → survey-weighted CV / performance checks
 
 **/folders**
 
