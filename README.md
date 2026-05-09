@@ -40,7 +40,7 @@ Evaluate how **multimorbidity impacts both healthcare routine utilization and fi
 - **Outcomes:**
     - Routine checkup (past 12 months)
     - Delayed care due to cost
-- **Covariates:** Age, sex, race/ethnicity, income, education, insurance
+- **Covariates:** age, sex, race/ethnicity, income, education, insurance
 
 ### Modeling
 
