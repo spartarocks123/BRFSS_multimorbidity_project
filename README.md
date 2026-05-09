@@ -113,7 +113,7 @@ Project structured for full reproducibility:
 - `/tables` → regression outputs
 - `/figures` → visualizations
 - `/scripts` → R + SAS + SQL scripts
-- `/models` → saved survey-weighted logistic regression models and predicted probabilities stored as `.rds` files
+- `/models` → survey-weighted logistic regression models and predicted probabilities stored as `.rds` files
 
 
 ### Reproducibility Features
