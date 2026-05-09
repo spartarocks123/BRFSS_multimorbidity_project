@@ -67,11 +67,14 @@ Evaluate how **multimorbidity impacts both healthcare routine utilization and fi
 ## Key Findings
 
 - **Dose-response relationship confirmed**
-- Higher multimorbidity →
-    - ↑ likelihood of routine care utilization
-    - ↑ likelihood of delaying care due to cost
+- Higher multimorbidity was associated with:
+  - ↑ likelihood of routine care utilization
+  - ↑ likelihood of delaying care due to cost
+- PSU-level survey-weighted cross-validation demonstrated stable model discrimination:
+  - Routine care model: mean AUC = **0.750**; range: **0.747–0.752**
+  - Cost barrier model: mean AUC = **0.810**; range: **0.808–0.815**
 - Indicates a **system-level inefficiency**:
-    - High-need populations are engaged with care but **not financially protected**
+  - High-need populations are engaged with care but **not financially protected**
 
 ---
 
