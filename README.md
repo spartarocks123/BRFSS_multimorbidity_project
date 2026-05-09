@@ -113,6 +113,7 @@ Project structured for full reproducibility:
 - `/tables` → regression outputs
 - `/figures` → visualizations
 - `/scripts` → R + SAS + SQL scripts
+- `/models` → saved survey-weighted logistic regression models and predicted probabilities stored as `.rds` files
 
 
 ### Reproducibility Features
@@ -129,7 +130,7 @@ Project structured for full reproducibility:
 - Multivariable regression & inference
 - Data cleaning and feature engineering
 - Cross-platform analytics (**R, SAS, SQL**)
-- Data visualization
+- Data visualization (**Tableau**)
 - Reproducible research pipelines
 
 ---
