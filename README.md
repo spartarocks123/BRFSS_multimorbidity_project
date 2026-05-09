@@ -120,7 +120,7 @@ Project structured for full reproducibility:
 ### Reproducibility Features
 
 - Environment variables for file paths
-- Sequential script pipeline (00 → 04)
+- Sequential script pipeline (00 → 05)
 - Saved outputs (data, models, tables, figures)
 
 ---
