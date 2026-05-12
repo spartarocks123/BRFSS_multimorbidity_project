@@ -2,7 +2,9 @@
 
 **Author:** Muhammad Amish-Malik
 
-## Problem
+---
+
+# Problem
 
 How does increasing chronic disease burden affect both healthcare utilization and financial access barriers among U.S. adults?
 
@@ -22,11 +24,11 @@ Built a reproducible healthcare analytics pipeline using:
 - PSU-level cross-validation
 - calibration assessment
 
-### Data Source
+## Data Source
 
 - 2024 BRFSS (Behavioral Risk Factor Surveillance System)
 
-### Key Predictors
+## Key Predictors
 
 - multimorbidity burden
 - insurance status
@@ -36,10 +38,12 @@ Built a reproducible healthcare analytics pipeline using:
 - income
 - education
 
-### Tech Stack
+---
+
+# Tech Stack
 
 | Tool | Purpose |
-| --- | --- |
+|---|---|
 | R | Modeling, validation, feature engineering |
 | SAS | Weighted descriptive statistics |
 | SQL | Data transformation and querying |
@@ -50,12 +54,12 @@ Built a reproducible healthcare analytics pipeline using:
 # Key Results
 
 - Higher multimorbidity was associated with:
-    - increased routine healthcare utilization
-    - increased cost-related delays in care
+  - increased routine healthcare utilization
+  - increased cost-related delays in care
 - Models demonstrated stable discrimination:
-    - Routine care model: AUC = **0.75**
-    - Cost-barrier model: AUC = **0.81**
-- PSU-level survey-weighted cross-validation showed consistent performance across folds
+  - Routine care model: AUC = **0.75**
+  - Cost-barrier model: AUC = **0.81**
+- PSU-level survey-weighted cross-validation showed consistent performance across validation folds
 - Developed a modular reproducible analytics workflow across R, SAS, SQL, and Tableau
 
 ---
@@ -65,7 +69,6 @@ Built a reproducible healthcare analytics pipeline using:
 The findings suggest a healthcare systems gap:
 
 > High-need populations remain engaged with healthcare systems but are not financially protected from barriers to care.
-> 
 
 Potential applications include:
 
@@ -79,7 +82,7 @@ Potential applications include:
 
 # Reproducibility
 
-```
+```text
 /scripts
   00_setup.R
   01_load_data.R
@@ -112,5 +115,4 @@ Key workflow features:
 ---
 
 # Tableau Dashboard
-
 [View on Tableau Public](https://public.tableau.com/app/profile/muhammad.a.malik/viz/ORRoutineCarevsCostBarrier/ORGraph)
