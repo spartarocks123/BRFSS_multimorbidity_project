@@ -1,6 +1,6 @@
 # Multimorbidity Burden and Healthcare Access
 
-**Author:** Mohammed Amish-Malik
+**Author:** Muhammad Amish-Malik
 
 ## Problem
 
