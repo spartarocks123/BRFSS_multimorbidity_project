@@ -1,148 +1,106 @@
-# Multimorbidity Burden and Healthcare Access
+Multimorbidity Burden and Healthcare Access
 
-**Author:** Muhammad Amish-Malik
+Author: Mohammed Amish-Malik
 
----
+Overview
 
-## Project Abstract
+Analyzed 2024 Behavioral Risk Factor Surveillance System (BRFSS) data to evaluate how increasing chronic disease burden impacts healthcare utilization and financial access barriers among U.S. adults.
 
-- Analyzed **2024 Behavioral Risk Factor Surveillance System (BRFSS)** using survey-weighted methods
-- Built **multivariable logistic regression models (`svyglm`)** to evaluate healthcare utilization and cost barriers
-- Identified a **dose-response relationship**:
-    - ↑ chronic conditions → ↑ routine care utilization
-    - ↑ chronic conditions → ↑ cost-related care delays
-- Model performance:
-    - AUC = **0.75** (routine care)
-    - AUC = **0.81** (cost-related delay)
-- Delivered a **reproducible pipeline** across R, SAS, SQL, and Tableau
+Using survey-weighted logistic regression models, this project identified a clear pattern:
 
----
+Individuals with more chronic conditions were more likely to engage with routine healthcare
+The same populations were also more likely to delay care due to cost
 
-## Key Visualization
+This highlights a healthcare systems gap where high-need populations remain financially vulnerable despite increased healthcare engagement.
 
-**Tableau Interactive Dashboard:**
+Key Results
+Built survey-weighted multivariable logistic regression models using BRFSS 2024 data
+Identified a dose-response relationship between multimorbidity and:
+Increased routine healthcare utilization
+Increased cost-related delays in care
+Model performance demonstrated stable discrimination:
+Routine care model: AUC = 0.75
+Cost-barrier model: AUC = 0.81
+Survey-weighted cross-validation demonstrated consistent model performance across validation folds
+Delivered a reproducible analytics pipeline across R, SAS, SQL, and Tableau
+Technical Approach
+Data Source
+2024 BRFSS (Behavioral Risk Factor Surveillance System)
+Exposure
+Number of chronic conditions (multimorbidity burden)
+Outcomes
+Routine medical checkup within the past 12 months
+Delayed medical care due to cost
+Covariates
+Age
+Sex
+Race/ethnicity
+Income
+Education
+Insurance status
+Modeling & Validation
+Survey-weighted logistic regression (svyglm)
+Weighted ROC/AUC evaluation
+Calibration assessment
+Survey-weighted cross-validation
+Tech Stack
+Tool	Purpose
+R	Survey modeling, validation, feature engineering
+SAS	Weighted descriptive statistics
+SQL	Structured data transformation and querying
+Tableau	Interactive healthcare data visualization
+Reproducibility & Workflow
 
+Designed a modular, reproducible analytics workflow with:
+
+sequential script execution
+environment-variable based file paths
+saved model outputs and figures
+reusable project structure
+/scripts
+  00_setup.R
+  01_load_data.R
+  02_data_manipulation.R
+  03_modeling.R
+  04_figures.R
+  05_validation.R
+
+/data
+/tables
+/figures
+/models
+Why This Matters
+
+This project demonstrates how healthcare analytics can identify populations at elevated risk for:
+
+delayed medical care
+financial healthcare barriers
+chronic disease burden
+
+Potential applications include:
+
+population health initiatives
+care coordination programs
+insurance navigation strategies
+targeted cost-assistance interventions
+
+The findings suggest that healthcare access does not necessarily translate to healthcare affordability for high-need populations.
+
+Skills Demonstrated
+Survey-weighted statistical modeling
+Healthcare data analytics
+Multivariable regression analysis
+Cross-validation and model evaluation
+Data cleaning and feature engineering
+SQL-based data operations
+Tableau dashboard development
+Reproducible research workflows
+Deliverables
+Survey-weighted regression outputs
+ROC/AUC and calibration diagnostics
+Tableau visualization dashboard
+Reproducible multi-language analytics pipeline
+Tableau Dashboard
+
+Interactive Dashboard:
 [View on Tableau Public](https://public.tableau.com/app/profile/muhammad.a.malik/viz/ORRoutineCarevsCostBarrier/ORGraph)
-
----
-
-## Objective
-
-Evaluate how **multimorbidity impacts both healthcare routine utilization and financial access barriers** in U.S. adults.
-
----
-
-## Methods & Technical Approach
-
-- **Design:** Cross-sectional, survey-weighted analysis
-- **Data Source:** 2024 BRFSS
-- **Exposure:** Number of chronic conditions (multimorbidity)
-- **Outcomes:**
-    - Routine checkup (past 12 months)
-    - Delayed care due to cost
-- **Covariates:** age, sex, race/ethnicity, income, education, insurance
-
-### Modeling
-
-- Survey-weighted logistic regression (`svyglm`, quasibinomial)
-- Reference group: **0 chronic conditions**
-- Complete-case analysis
-
-### Model Evaluation
-
-- ROC / AUC (weighted)
-- Calibration plots (decile-based observed vs predicted)
-
----
-
-## Tech Stack
-
-- **R** → survey modeling, feature engineering, post-estimation
-- **SAS** → weighted descriptive statistics
-- **SQL** → structured data operations (`GROUP BY`, `COALESCE`, constraints)
-- **Tableau** → odds ratio visualization
-
----
-
-## Key Findings
-
-- **Dose-response relationship confirmed**
-- Higher multimorbidity was associated with:
-  - ↑ likelihood of routine care utilization
-  - ↑ likelihood of delaying care due to cost
-- PSU-level survey-weighted cross-validation demonstrated stable model discrimination:
-  - Routine care model: mean AUC = **0.750**; range: **0.747–0.752**
-  - Cost barrier model: mean AUC = **0.810**; range: **0.808–0.815**
-- Indicates a **system-level inefficiency**:
-  - High-need populations are engaged with care but **not financially protected**
-
----
-
-## Why This Matters
-
-- Identifies **high-risk populations (≥2 conditions)** for targeted intervention
-- Supports development of:
-    - Cost assistance programs
-    - Insurance navigation strategies
-    - Chronic disease care coordination
-- Suggests **access ≠ affordability** in current healthcare systems
-
----
-
-## Limitations
-
-- Cross-sectional design → no causal inference
-- Self-reported BRFSS data (recall/reporting bias)
-- ROC/AUC partially accounts for survey design (weights only)
-- Complete-case analysis may introduce selection bias
-
----
-
-## Reproducibility
-
-Project structured for full reproducibility:
-
-**/scripts**
-
-- `00_setup.R` — file paths + libraries
-- `01_load_data.R` — data ingestion
-- `02_data_manipulation.R` — data cleaning + data recoding
-- `03_modeling.R` — regression models
-- `04_figures.R` — figures + ROC/AUC + Calibration plots
-- `05_validation.R`   → survey-weighted CV / performance checks
-
-**/folders**
-
-- `/data` → cleaned dataset
-- `/tables` → regression outputs
-- `/figures` → visualizations
-- `/scripts` → R + SAS + SQL scripts
-- `/models` → survey-weighted logistic regression models and predicted probabilities stored as `.rds` files
-
-
-### Reproducibility Features
-
-- Environment variables for file paths
-- Sequential script pipeline (00 → 05)
-- Saved outputs (data, models, tables, figures)
-
----
-
-## Skills Demonstrated
-
-- Survey-weighted statistical modeling
-- Survey-aware cross-validation (v-fold CV)
-- Multivariable regression & inference
-- Data cleaning and feature engineering
-- Cross-platform analytics (**R, SAS, SQL**)
-- Data visualization (**Tableau**)
-- Reproducible research pipelines
-
----
-
-## Deliverables
-
-- Survey-weighted regression outputs (ORs, 95% CI)
-- Model diagnostics (ROC/AUC, calibration)
-- Tableau dashboard for odds ratio comparison
-- Fully reproducible multi-language workflow
