@@ -4,9 +4,11 @@
 
 ## Overview
 
-Analyzed 2024 Behavioral Risk Factor Surveillance System (BRFSS) data to evaluate how increasing chronic disease burden impacts healthcare utilization and financial access barriers among U.S. adults.
+**Goal:** Evaluate how multimorbidity influences both healthcare engagement and cost-related barriers among U.S. adults.
 
-Using survey-weighted logistic regression models, this project identified a clear pattern:
+Analyzed 2024 Behavioral Risk Factor Surveillance System (BRFSS) data to examine how increasing chronic disease burden impacts healthcare utilization and financial access barriers.
+
+Survey-weighted logistic regression models identified a clear pattern:
 
 - Individuals with more chronic conditions were more likely to engage with routine healthcare
 - The same populations were also more likely to delay care due to cost
@@ -19,13 +21,13 @@ This highlights a healthcare systems gap where high-need populations remain fina
 
 - Built survey-weighted multivariable logistic regression models using BRFSS 2024 data
 - Identified a dose-response relationship between multimorbidity and:
-    - Increased routine healthcare utilization
-    - Increased cost-related delays in care
-- Model performance demonstrated stable discrimination:
+    - increased routine healthcare utilization
+    - increased cost-related delays in care
+- Models demonstrated stable discriminatory performance:
     - Routine care model: AUC = 0.75
     - Cost-barrier model: AUC = 0.81
-- Survey-weighted cross-validation demonstrated consistent model performance across validation folds
-- Delivered a reproducible analytics pipeline across R, SAS, SQL, and Tableau
+- Survey-weighted cross-validation showed consistent performance across validation folds
+- Developed a reproducible analytics pipeline across R, SAS, SQL, and Tableau
 
 ---
 
@@ -56,7 +58,7 @@ This highlights a healthcare systems gap where high-need populations remain fina
 ## Modeling & Validation
 
 - Survey-weighted logistic regression (`svyglm`)
-- Weighted ROC/AUC evaluation
+- Survey-weighted ROC/AUC evaluation
 - Calibration assessment
 - Survey-weighted cross-validation
 
@@ -75,12 +77,12 @@ This highlights a healthcare systems gap where high-need populations remain fina
 
 # Reproducibility & Workflow
 
-Designed a modular, reproducible analytics workflow with:
+Designed a modular analytics workflow with:
 
 - sequential script execution
 - environment-variable based file paths
 - saved model outputs and figures
-- reusable project structure
+- organized project directories for reproducibility
 
 ```
 /scripts
@@ -104,7 +106,7 @@ Designed a modular, reproducible analytics workflow with:
 This project demonstrates how healthcare analytics can identify populations at elevated risk for:
 
 - delayed medical care
-- financial healthcare barriers
+- financial barriers to care
 - chronic disease burden
 
 Potential applications include:
@@ -120,8 +122,8 @@ The findings suggest that healthcare access does not necessarily translate to he
 
 # Skills Demonstrated
 
-- Survey-weighted statistical modeling
 - Healthcare data analytics
+- Survey-weighted statistical modeling
 - Multivariable regression analysis
 - Cross-validation and model evaluation
 - Data cleaning and feature engineering
