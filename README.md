@@ -73,10 +73,8 @@ The findings suggest a healthcare systems gap:
 Potential applications include:
 
 - population health initiatives
-- risk stratification
 - care coordination
 - targeted financial assistance programs
-- healthcare access analytics
 
 ---
 
@@ -99,9 +97,8 @@ Potential applications include:
 
 Key workflow features:
 
-- modular script architecture
-- environment-variable based file paths
-- reproducible outputs and validation workflows
+- Sequential script architecture (00 -> 05)
+- Reproducible outputs 
 
 ---
 
