@@ -48,6 +48,7 @@ Built a reproducible healthcare analytics pipeline using:
 | SAS | Weighted descriptive statistics |
 | SQL | Data transformation and querying |
 | Tableau | Visualization dashboard |
+| Git/GitHub | Version control, reproducibility, and project tracking |
 
 ---
 
