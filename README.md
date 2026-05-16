@@ -114,3 +114,20 @@ Key workflow features:
 
 # Tableau Dashboard
 [View on Tableau Public](https://public.tableau.com/app/profile/muhammad.a.malik/viz/ORRoutineCarevsCostBarrier/ORGraph)
+
+## Running the Project
+
+Run scripts in order:
+
+1. `scripts/00_setup.R`
+2. `scripts/01_load_data.R`
+3. `scripts/02_data_manipulation.R`
+4. `scripts/03_modeling.R`
+5. `scripts/04_figures.R`
+6. `scripts/05_validation.R`
+
+Required local setup:
+
+- Download the 2024 BRFSS XPT file
+- Create a local `.Renviron` file with `BRFSS_DATA` and `BRFSS_PROJECT`
+- `.Renviron` is excluded from GitHub via `.gitignore`
