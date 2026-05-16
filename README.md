@@ -40,7 +40,7 @@ Built a reproducible healthcare analytics pipeline using:
 
 ---
 
-# Tech Stack
+# Technical Stack
 
 | Tool | Purpose |
 |---|---|
