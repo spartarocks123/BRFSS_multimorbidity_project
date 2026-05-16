@@ -61,7 +61,7 @@ Built a reproducible healthcare analytics pipeline using:
   - Cost-barrier model: AUC = **0.81**
 - PSU-level survey-weighted cross-validation showed consistent performance across validation folds
 - Developed a modular reproducible analytics workflow across R, SAS, SQL, and Tableau
-- Calibration plots demonstrated strong agreement between predicted and observed outcome probabilities
+- Survey-weighted calibration plots demonstrated strong correlation between predicted and observed outcome probabilities
 
 ---
 
