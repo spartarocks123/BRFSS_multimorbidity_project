@@ -100,7 +100,7 @@ Potential applications include:
 
 Key workflow features:
 
-- Sequential script architecture (00 -> 05)
+- Sequential script architecture in R (00 -> 05)
 - Reproducible outputs 
 
 ---
