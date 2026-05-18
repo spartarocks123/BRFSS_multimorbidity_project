@@ -49,6 +49,7 @@ Built a reproducible healthcare analytics pipeline using:
 | SQL | Data transformation and querying |
 | Tableau | Visualization dashboard |
 | Git/GitHub | Version control, reproducibility, and project tracking |
+| Python *(coming soon)* | Automated data quality checks |
 
 ---
 
