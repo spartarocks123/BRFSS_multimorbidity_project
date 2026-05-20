@@ -1,0 +1,14 @@
+variable,missing_count,missing_percent
+routine_care,0,0.0
+cost_barrier,0,0.0
+cc_count,0,0.0
+cc_cat2,0,0.0
+insured,17359,3.85
+agegrp,0,0.0
+sex,0,0.0
+race,0,0.0
+educ,0,0.0
+income,0,0.0
+LLCPWT,0,0.0
+STSTR,0,0.0
+PSU,0,0.0
