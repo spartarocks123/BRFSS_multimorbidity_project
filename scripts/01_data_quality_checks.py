@@ -5,7 +5,7 @@ import pandas as pd
 from pathlib import Path
 
  # Project paths
-project_path = Path("/Users/moh/Desktop/Research Assistant/BRFSS_multimorbidity_project")
+project_path = Path.cwd()
 data_path = project_path / "data" / "brfss_clean.csv"
 output_path = project_path / "tables" / "python_data_quality_report.csv"
  
