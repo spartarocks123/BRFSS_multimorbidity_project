@@ -4,8 +4,9 @@
 import pandas as pd
 from pathlib import Path
 
- # Project paths
-project_path = Path.cwd()
+# Project paths
+project_path = Path(__file__).resolve().parents[1]
+
 data_path = project_path / "data" / "brfss_clean.csv"
 output_path = project_path / "tables" / "python_data_quality_report.csv"
  
