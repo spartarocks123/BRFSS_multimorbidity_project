@@ -108,7 +108,7 @@ Key workflow features:
 # Deliverables
 
 - Survey-weighted regression outputs
-- ROC/AUC and calibration diagnostics
+- ROC/AUC and calibration assessments
 - Tableau dashboard
 - Reproducible healthcare analytics pipeline
 
