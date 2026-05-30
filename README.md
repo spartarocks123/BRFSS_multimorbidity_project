@@ -44,9 +44,9 @@ Built a reproducible healthcare analytics pipeline using:
 
 | Tool | Purpose |
 |---|---|
-| R | Modeling, validation, feature engineering |
+| R | Modeling, validation, calibration assessment, feature engineering |
 | SAS | Weighted descriptive statistics |
-| SQL | Data transformation and querying |
+| SQL | Data transformation, querying, feature engineering, CTE-based summary, aggregation, and sorting |
 | Tableau | Visualization dashboard |
 | Git/GitHub | Version control, reproducibility, and project tracking |
 | Python | Data quality checks, duplicate detection, missingness analysis |
