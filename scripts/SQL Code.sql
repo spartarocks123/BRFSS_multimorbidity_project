@@ -102,3 +102,33 @@ SELECT
     SUM(CASE WHEN cc_count >= 3 THEN 1 ELSE 0 END) AS n3plus
 FROM brfss_cleaned;
 
+-- CTE (Common Table Expression) example: summarize healthcare access outcomes by multimorbidity group
+WITH multimorbidity_summary AS (
+SELECT
+cc_cat2,
+COUNT(*) AS n,
+AVG(routine_binary) AS routine_care_rate,
+AVG(cost_binary) AS cost_barrier_rate
+FROM brfss_cleaned
+GROUP BY cc_cat2
+)
+
+SELECT
+cc_cat2,
+n,
+routine_care_rate,
+cost_barrier_rate
+FROM multimorbidity_summary
+ORDER BY cc_cat2;
+
+-- Analytic aggregation: healthcare access rates by insurance status
+SELECT
+    insured,
+    COUNT(*) AS n,
+    AVG(routine_binary) AS routine_care_rate,
+    AVG(cost_binary) AS cost_barrier_rate,
+    AVG(cc_count) AS avg_chronic_conditions
+FROM brfss_cleaned
+GROUP BY insured;
+
+
