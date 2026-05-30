@@ -1,10 +1,12 @@
--- Open a database
+-- Open database
 USE brfss_db;
 
+-- Reset table before recreating
+DROP TABLE IF EXISTS brfss_cleaned;
 
 -- Create table with explicit column types and basic constraints
 CREATE TABLE brfss_cleaned (
-    id INT PRIMARY KEY,                  -- unique respondent ID
+    id INT PRIMARY KEY,
     agegrp VARCHAR(2),
     sex VARCHAR(10),
     race VARCHAR(2),
@@ -34,8 +36,10 @@ INSERT INTO brfss_cleaned (
     cc_count, cc_cat2, routine_binary, cost_binary
 )
 VALUES 
-(1, '01', 'Male', '01', '03', '05', 'Yes', 'Yes', 'No', 1,0,0,1,0,0,0, 2, '2', 1, 0),
-(2, '02', 'Female', '02', '04', '07', 'No', 'No', 'Yes', 0,1,1,0,1,1,1, 5, '+3', 0, 1);
+(1, '01', 'Male',   '01', '03', '05', 'Yes', 'Yes', 'No',  0,0,0,0,0,0,0, 0, '0',  1, 0),
+(2, '02', 'Female', '02', '04', '07', 'No',  'No',  'Yes', 1,0,0,0,0,0,0, 1, '1',  0, 1),
+(3, '03', 'Male',   '01', '03', '04', 'Yes', 'Yes', 'No',  1,0,0,1,0,0,0, 2, '2',  1, 0),
+(4, '04', 'Female', '02', '04', '06', 'Yes', 'No',  'Yes', 1,1,1,0,1,1,1, 6, '3+', 0, 1);
 
 -- Example filtering rows
 SELECT *
@@ -48,80 +52,87 @@ WHERE agegrp IS NOT NULL
   AND insured IS NOT NULL;
 
 -- Example of multimorbidity count using COALESCE()
-SELECT id,
-       (COALESCE(cc_mi,0) + COALESCE(cc_stroke,0) + COALESCE(cc_asthma,0) +
-        COALESCE(cc_copd,0) + COALESCE(cc_diabetes,0) + COALESCE(cc_ckd,0) +
-        COALESCE(cc_depress,0)) AS cc_count
+SELECT 
+    id,
+    (COALESCE(cc_mi, 0) + COALESCE(cc_stroke, 0) + COALESCE(cc_asthma, 0) +
+     COALESCE(cc_copd, 0) + COALESCE(cc_diabetes, 0) + COALESCE(cc_ckd, 0) +
+     COALESCE(cc_depress, 0)) AS calculated_cc_count
 FROM brfss_cleaned;
 
 -- CASE-WHEN for feature engineering
 SELECT 
     cc_count,
     CASE 
+        WHEN cc_count = 0 THEN '0'
         WHEN cc_count = 1 THEN '1'
         WHEN cc_count = 2 THEN '2'
-        ELSE '+3'
-    END AS cc_cat2
+        WHEN cc_count >= 3 THEN '3+'
+    END AS derived_cc_cat2
 FROM brfss_cleaned;
 
--- CASE-WHEN for feature engineering (permanent version)
+-- CASE-WHEN for feature engineering: permanent version
 UPDATE brfss_cleaned
 SET cc_cat2 = CASE
+    WHEN cc_count = 0 THEN '0'
     WHEN cc_count = 1 THEN '1'
     WHEN cc_count = 2 THEN '2'
-    ELSE '+3'
+    WHEN cc_count >= 3 THEN '3+'
 END;
 
--- Aggregation & Sorting
-SELECT COUNT(*)
-FROM brfss_cleaned
+-- Aggregation and sorting
+SELECT COUNT(*) AS total_rows
+FROM brfss_cleaned;
 
-SELECT sex,
-COUNT(*)
+SELECT 
+    sex,
+    COUNT(*) AS n
 FROM brfss_cleaned
 GROUP BY sex;
 
-SELECT MIN(cc_count)
+SELECT MIN(cc_count) AS min_cc_count
 FROM brfss_cleaned;
 
-SELECT MAX(cc_count)
+SELECT MAX(cc_count) AS max_cc_count
 FROM brfss_cleaned;
 
-SELECT AVG(cc_count)
+SELECT AVG(cc_count) AS avg_cc_count
 FROM brfss_cleaned;
 
+-- Subquery: respondents above average multimorbidity count
 SELECT *
 FROM brfss_cleaned
 WHERE cc_count > (
-    SELECT AVG(cc_count) FROM brfss_cleaned
+    SELECT AVG(cc_count) 
+    FROM brfss_cleaned
 );
 
+-- Count respondents by multimorbidity group
 SELECT 
+    SUM(CASE WHEN cc_count = 0 THEN 1 ELSE 0 END) AS n0,
     SUM(CASE WHEN cc_count = 1 THEN 1 ELSE 0 END) AS n1,
     SUM(CASE WHEN cc_count = 2 THEN 1 ELSE 0 END) AS n2,
     SUM(CASE WHEN cc_count >= 3 THEN 1 ELSE 0 END) AS n3plus
 FROM brfss_cleaned;
 
--- CTE (Common Table Expression) example: summarize healthcare access outcomes by multimorbidity group
+-- Summarize routine care & cost barrier rates by multimorbidity group
 WITH multimorbidity_summary AS (
-SELECT
-cc_cat2,
-COUNT(*) AS n,
-AVG(routine_binary) AS routine_care_rate,
-AVG(cost_binary) AS cost_barrier_rate
-FROM brfss_cleaned
-GROUP BY cc_cat2
+    SELECT
+        cc_cat2,
+        COUNT(*) AS n,
+        AVG(routine_binary) AS routine_care_rate,
+        AVG(cost_binary) AS cost_barrier_rate
+    FROM brfss_cleaned
+    GROUP BY cc_cat2
 )
-
 SELECT
-cc_cat2,
-n,
-routine_care_rate,
-cost_barrier_rate
+    cc_cat2,
+    n,
+    routine_care_rate,
+    cost_barrier_rate
 FROM multimorbidity_summary
 ORDER BY cc_cat2;
 
--- Analytic aggregation: healthcare access rates by insurance status
+-- Routine care & cost barrier rates by insurance status
 SELECT
     insured,
     COUNT(*) AS n,
@@ -130,5 +141,3 @@ SELECT
     AVG(cc_count) AS avg_chronic_conditions
 FROM brfss_cleaned
 GROUP BY insured;
-
-
