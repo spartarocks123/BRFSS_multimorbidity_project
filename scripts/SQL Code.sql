@@ -70,15 +70,6 @@ SELECT
     END AS derived_cc_cat2
 FROM brfss_cleaned;
 
--- CASE-WHEN for feature engineering: permanent version
-UPDATE brfss_cleaned
-SET cc_cat2 = CASE
-    WHEN cc_count = 0 THEN '0'
-    WHEN cc_count = 1 THEN '1'
-    WHEN cc_count = 2 THEN '2'
-    WHEN cc_count >= 3 THEN '3+'
-END;
-
 -- Aggregation and sorting
 SELECT COUNT(*) AS total_rows
 FROM brfss_cleaned;
